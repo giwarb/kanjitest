@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>文字描画評価ツール</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #sample-container {
+            margin-bottom: 20px;
+        }
+
+        #sample-svg {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+        }
+
+        #canvas {
+            border: 1px solid #000;
+            touch-action: none;
+            /* タッチデバイスでの描画をサポート */
+            cursor: crosshair;
+            background-color: #f9f9f9;
+        }
+
+        #controls {
+            margin-top: 10px;
+        }
+
+        #result {
+            margin-top: 10px;
+            white-space: pre-line;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>文字描画評価ツール</h1>
+
+    <div id="question-container">
+        <!-- 出題文表示 -->
+        <div id="question"></div>
+    </div>
+
+    <!-- 描画キャンバス -->
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <canvas id="canvasAnswer" width="500" height="500" style="display:none; border:1px solid #000;"></canvas>
+
+    <!-- 現在何画目を表示する領域 -->
+    <div id="strokeCounter"></div>
+
+    <!-- コントロールボタン -->
+    <div id="controls">
+        <button id="evaluate">評価</button>
+        <button id="clear">クリア</button>
+        <button id="nextQuestion" style="display:none;">次の問題</button>
+    </div>
+
+    <!-- 評価結果の表示 -->
+    <div id="result"></div>
+
+    <!-- 正解表示用の領域 -->
+    <div id="answer">
+        <h2>正解</h2>
+        <div id="svg"></div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
