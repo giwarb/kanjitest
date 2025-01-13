@@ -1,84 +1,86 @@
-import { useEffect, useRef, useState } from "react";
-import "./App.css";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  CanvasDrawingManager,
   compareStrokes,
   drawSampleStrokes,
   getSVGStrokes,
   showEvaluationOverlay,
 } from "./functions";
+import { useDrawingManager } from "./useDrawingManager";
 import { data } from "./data";
+import "./App.css";
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const answerCanvasRef = useRef<HTMLCanvasElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
-  const [manager, setManager] = useState<CanvasDrawingManager | null>(null);
+  const { userStrokes, clearStrokes } = useDrawingManager(
+    canvasRef.current,
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [question, setQuestion] = useState("");
   const [svgContent, setSvgContent] = useState("");
-  const [completed, setCompleted] = useState(false);
   const [showNext, setShowNext] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [showSVG, setShowSVG] = useState(false);
   const [result, setResult] = useState("");
 
-  useEffect(() => {
-    if (!manager) {
-      if (canvasRef.current) {
-        setManager(new CanvasDrawingManager(canvasRef.current));
-      }
-      return;
-    }
-    if (currentIndex >= data.length) {
-      setCompleted(true);
-      return;
-    }
-    const masked = data[currentIndex].sentence.replace(
-      new RegExp(data[currentIndex].target, "g"),
+  const completed = currentIndex >= data.length;
+
+  const loadQuestion = useCallback((idx: number) => {
+    const masked = data[idx].sentence.replace(
+      new RegExp(data[idx].target, "g"),
       "＿＿",
     );
     setQuestion(masked);
-    setSvgContent(data[currentIndex].svg);
+    setSvgContent(data[idx].svg);
     setShowNext(false);
     setShowAnswer(false);
+    setShowSVG(false);
     setResult("");
-    manager.clearStrokes();
-  }, [currentIndex, manager]);
+    clearStrokes();
+  }, [clearStrokes]);
+
+  useEffect(() => {
+    loadQuestion(0);
+  }, [loadQuestion]);
 
   const handleClear = () => {
-    manager?.clearStrokes();
+    clearStrokes();
     setResult("");
   };
 
   const handleEvaluate = () => {
-    if (!manager) return;
     if (!answerRef.current) return;
     if (!canvasRef.current) return;
     const svg = answerRef.current.querySelector("svg");
     if (!svg) return;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    const answerCtx = answerCanvasRef.current?.getContext("2d");
+    if (!answerCtx) return;
     const strokesSvg = getSVGStrokes(svg);
-    const userStrokes = manager.getStrokes();
+    if (strokesSvg.length !== userStrokes.length) {
+      setResult("描画されたストローク数が異なります。");
+      setShowSVG(true);
+      setShowNext(true);
+      return;
+    }
     const { avgScore, percent, strokeResults, normParamsUser } = compareStrokes(
       strokesSvg,
       userStrokes,
     );
-    manager.getCanvasContext().clearRect(
+    ctx.clearRect(
       0,
       0,
       canvasRef.current.width,
       canvasRef.current.height,
     );
     showEvaluationOverlay(
-      manager.getCanvasContext(),
+      ctx,
       strokeResults,
       normParamsUser,
     );
-    if (answerCanvasRef.current) {
-      const answerCtx = answerCanvasRef.current?.getContext("2d");
-      if (answerCtx) {
-        drawSampleStrokes(answerCtx, strokeResults, normParamsUser);
-      }
-    }
+    drawSampleStrokes(answerCtx, strokeResults, normParamsUser);
     setShowNext(true);
     setShowAnswer(true);
     setResult(
@@ -91,15 +93,22 @@ function App() {
   };
 
   const handleNextQuestion = () => {
-    if (!completed) setCurrentIndex((prev) => prev + 1);
+    if (!completed) {
+      setCurrentIndex((prev) => prev + 1);
+      loadQuestion(currentIndex + 1);
+    }
   };
 
+  const hasStrokes = userStrokes.length > 0;
+
   return (
-    <div>
-      <h1>文字描画評価ツール(React版)</h1>
-      {completed
-        ? <div>全問正解です！お疲れさまでした。</div>
-        : <div dangerouslySetInnerHTML={{ __html: question }} />}
+    <div className="app">
+      {completed ? <div>全問正解です！お疲れさまでした。</div> : (
+        <div
+          className="question"
+          dangerouslySetInnerHTML={{ __html: question }}
+        />
+      )}
       <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
         <canvas
           ref={canvasRef}
@@ -116,21 +125,33 @@ function App() {
             display: showAnswer ? "block" : "none",
           }}
         />
+        <div
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+          style={{
+            border: "1px solid #000",
+            display: showSVG ? "block" : "none",
+          }}
+          ref={answerRef}
+        />
       </div>
-      <div>
-        <button onClick={handleEvaluate}>評価</button>
-        <button onClick={handleClear}>クリア</button>
+      <div>{result}</div>
+      <div className="button-container">
+        <button
+          onClick={handleEvaluate}
+          disabled={!hasStrokes}
+          style={{ display: showNext ? "none" : "block" }}
+        >
+          評価
+        </button>
+        <button
+          onClick={handleClear}
+          disabled={!hasStrokes}
+          style={{ display: showNext ? "none" : "block" }}
+        >
+          クリア
+        </button>
         {showNext && <button onClick={handleNextQuestion}>次の問題</button>}
       </div>
-      <div
-        dangerouslySetInnerHTML={{ __html: svgContent }}
-        style={{
-          border: "1px solid #ccc",
-          display: showAnswer ? "block" : "none",
-        }}
-        ref={answerRef}
-      />
-      <div>{result}</div>
     </div>
   );
 }

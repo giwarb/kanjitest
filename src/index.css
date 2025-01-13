@@ -37,7 +37,7 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #606060;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -52,6 +52,10 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+button:disabled {
+  border-color: #a3a3a3;
+  cursor: not-allowed;
 }
 
 @media (prefers-color-scheme: light) {
