@@ -29,10 +29,10 @@ export function getSVGStrokes(element: SVGSVGElement): Point[][] {
  */
 function parseSVGPath(pathData: string): Array<{ type: string; points: Point[] }> {
     // コマンド+残りの文字列に分割
-    const commandTokens = pathData.match(/([MmLlCcZz])([^MmLlCcZz]*)/g) || [];
+    const commandTokens = pathData.match(/([MmLlCcSsZz])([^MmLlCcSsZz]*)/g) || [];
     if (!commandTokens.length) return [];
 
-    const segments = [];
+    const segments: Array<{ type: string; points: Point[] }> = [];
     let currentPoint = { x: 0, y: 0 };
 
     // 浮動小数＋指数表記（例: 1.23e-2）にも対応したいなら、もう少し複雑な正規表現にする
@@ -98,11 +98,73 @@ function parseSVGPath(pathData: string): Array<{ type: string; points: Point[] }
                 break;
 
             case 'L':
-                // ... 2個単位
+                // 2個単位で処理
+                for (let i = 0; i < args.length; i += 2) {
+                    if (i + 1 >= args.length) break;
+                    const x = isRelative ? currentPoint.x + args[i] : args[i];
+                    const y = isRelative ? currentPoint.y + args[i + 1] : args[i + 1];
+                    segments.push({
+                        type: 'L',
+                        points: [
+                            { x: currentPoint.x, y: currentPoint.y },
+                            { x, y }
+                        ]
+                    });
+                    currentPoint = { x, y };
+                }
+                break;
+
+            case 'S':
+                // 2個単位で処理: cp2, end
+                for (let i = 0; i < args.length; i += 4) {
+                    if (i + 3 >= args.length) break;
+
+                    // 前のコマンドが C または S の場合、その最後のコントロールポイントを反転
+                    let cp1x = currentPoint.x;
+                    let cp1y = currentPoint.y;
+                    if (segments.length > 0) {
+                        const prevSeg = segments[segments.length - 1];
+                        if (prevSeg.type === 'C' || prevSeg.type === 'S') {
+                            const prevEnd = prevSeg.points[prevSeg.points.length - 1];
+                            const prevCP = prevSeg.points[prevSeg.points.length - 2];
+                            cp1x = 2 * prevEnd.x - prevCP.x;
+                            cp1y = 2 * prevEnd.y - prevCP.y;
+                        }
+                    }
+
+                    const cp2x = isRelative ? currentPoint.x + args[i] : args[i];
+                    const cp2y = isRelative ? currentPoint.y + args[i + 1] : args[i + 1];
+                    const endx = isRelative ? currentPoint.x + args[i + 2] : args[i + 2];
+                    const endy = isRelative ? currentPoint.y + args[i + 3] : args[i + 3];
+
+                    segments.push({
+                        type: 'C',
+                        points: [
+                            { x: currentPoint.x, y: currentPoint.y },
+                            { x: cp1x, y: cp1y },
+                            { x: cp2x, y: cp2y },
+                            { x: endx, y: endy }
+                        ]
+                    });
+                    currentPoint = { x: endx, y: endy };
+                }
                 break;
 
             case 'Z':
-                // ... 閉じる
+                if (segments.length > 0) {
+                    // 最初のMoveToコマンドを探す
+                    const firstMove = segments.find(seg => seg.type === 'M') as { type: string; points: Point[] } | undefined;
+                    if (firstMove) {
+                        segments.push({
+                            type: 'Z',
+                            points: [
+                                currentPoint,
+                                firstMove.points[0]
+                            ]
+                        });
+                        currentPoint = firstMove.points[0];
+                    }
+                }
                 break;
 
             default:
