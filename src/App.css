@@ -6,6 +6,8 @@
   height: 100vh;
   width: 100vw;
   gap: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
 .read-the-docs {
@@ -13,7 +15,6 @@
 }
 
 .question {
-  font-size: 1.5rem;
   font-weight: bold;
 }
 

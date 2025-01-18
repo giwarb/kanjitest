@@ -29,17 +29,24 @@ function App() {
       correct: number;
       incorrectCount: number;
       percentage: number;
+      incorrectDetails: {
+        questionIndex: number;
+        incorrectCount: number;
+        sentence: string;
+      }[];
     } | null
   >(null);
 
   const loadQuestion = useCallback(() => {
     const currentQuestion = manager.getCurrentQuestion();
-    const masked = currentQuestion.sentence.replace(
-      new RegExp(currentQuestion.target, "g"),
-      "＿＿",
-    );
-    setQuestion(masked);
-    setSvgContent(currentQuestion.svg);
+    if (currentQuestion) {
+      const masked = currentQuestion.sentence.replace(
+        new RegExp(currentQuestion.target, "g"),
+        "＿＿",
+      );
+      setQuestion(masked);
+      setSvgContent(currentQuestion.svg);
+    }
     setShowNext(false);
     setShowAnswer(false);
     setShowSVG(false);
@@ -106,7 +113,12 @@ function App() {
     if (manager.moveToNext()) {
       loadQuestion();
     } else {
-      setResults(manager.getResults());
+      const scores = manager.getResultsScore();
+      const incorrectDetails = manager.getIncorrectCounts();
+      setResults({
+        ...scores,
+        incorrectDetails,
+      });
     }
   };
 
@@ -129,9 +141,7 @@ function App() {
         {results.incorrectCount > 0
           ? (
             <div>
-              <p
-                style={{ textAlign: "center" }}
-              >
+              <p style={{ textAlign: "center" }}>
                 {results.incorrectCount}もん まちがいました。
               </p>
               <button onClick={handleRestartReview}>
@@ -139,7 +149,42 @@ function App() {
               </button>
             </div>
           )
-          : <div>すべての もんだいを せいかいしました！</div>}
+          : (
+            <>
+              <div>
+                すべての もんだいを せいかいしました！
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <h3
+                  style={{
+                    color: "green",
+                    marginBottom: "10px",
+                  }}
+                >
+                  まちがえた もんだい
+                </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {results.incorrectDetails.map((detail) => (
+                    <div
+                      key={detail.questionIndex}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{ __html: detail.sentence }}
+                      >
+                      </div>
+                      <div>{detail.incorrectCount}かい まちがえました</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
       </div>
     );
   }
@@ -158,14 +203,14 @@ function App() {
       <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
         <canvas
           ref={canvasRef}
-          width="500"
-          height="500"
+          width="280"
+          height="280"
           style={{ border: "1px solid #000" }}
         />
         <canvas
           ref={answerCanvasRef}
-          width="500"
-          height="500"
+          width="280"
+          height="280"
           style={{
             border: "1px solid #000",
             display: showAnswer ? "block" : "none",
@@ -175,7 +220,7 @@ function App() {
           dangerouslySetInnerHTML={{
             __html: svgContent.replace(
               /(width|height)="[^"]+"/g,
-              '$1="500"',
+              '$1="280"',
             ),
           }}
           style={{

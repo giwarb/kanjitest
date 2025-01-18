@@ -15,6 +15,7 @@ export class KanjiQuestionManager {
     private targetQuestionIdices: number[];
     private currentIndex: number;
     private results: QuestionResult[];
+    private totalResults: QuestionResult[];
     private isReviewMode: boolean;
 
 
@@ -23,10 +24,11 @@ export class KanjiQuestionManager {
         this.targetQuestionIdices = [...Array(questions.length).keys()];
         this.currentIndex = 0;
         this.results = [];
+        this.totalResults = [];
         this.isReviewMode = false;
     }
 
-    getCurrentQuestion(): Question {
+    getCurrentQuestion(): Question | undefined {
         return this.questions[this.targetQuestionIdices[this.currentIndex]];
     }
 
@@ -39,11 +41,16 @@ export class KanjiQuestionManager {
             isCorrect,
             score
         });
+        this.totalResults.push({
+            questionIndex,
+            isCorrect,
+            score
+        });
     }
 
     moveToNext(): boolean {
         this.currentIndex++;
-        return this.currentIndex < this.questions.length;
+        return this.currentIndex < this.targetQuestionIdices.length;
     }
 
     hasIncorrectQuestions(): boolean {
@@ -57,7 +64,7 @@ export class KanjiQuestionManager {
         this.results = [];
     }
 
-    getResults(): {
+    getResultsScore(): {
         total: number;
         correct: number;
         incorrectCount: number;
@@ -76,6 +83,26 @@ export class KanjiQuestionManager {
         };
     }
 
+    getIncorrectCounts(): { questionIndex: number; incorrectCount: number; sentence: string }[] {
+        const incorrectCounts = new Map<number, number>();
+
+        this.totalResults.forEach(result => {
+            if (!result.isCorrect) {
+                const count = incorrectCounts.get(result.questionIndex) || 0;
+                incorrectCounts.set(result.questionIndex, count + 1);
+            }
+        });
+
+        return Array.from(incorrectCounts.entries())
+            .map(([questionIndex, incorrectCount]) => ({
+                questionIndex,
+                incorrectCount,
+                sentence: this.questions[questionIndex].sentence
+            }))
+            .filter(item => item.incorrectCount > 0)
+            .sort((a, b) => b.incorrectCount - a.incorrectCount);
+    }
+
     isInReviewMode(): boolean {
         return this.isReviewMode;
     }
@@ -88,6 +115,7 @@ export class KanjiQuestionManager {
         this.targetQuestionIdices = [...Array(this.questions.length).keys()];
         this.currentIndex = 0;
         this.results = [];
+        this.totalResults = [];
         this.isReviewMode = false;
     }
 }
