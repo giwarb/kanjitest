@@ -108,7 +108,9 @@ describe("useDrawingManager", () => {
             canvas.dispatchEvent(new MouseEvent("mouseup"));
         });
 
-        result.current.clearStrokes();
+        await act(async () => {
+            result.current.clearStrokes();
+        });
 
         expect(result.current.userStrokes).toEqual([]);
         expect(mockContext.clearRect).toHaveBeenCalledWith(0, 0, 500, 500);

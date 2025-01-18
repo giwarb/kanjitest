@@ -3,7 +3,7 @@ interface Point {
     y: number;
 }
 
-interface StrokeResult {
+export interface StrokeResult {
     score: number;
     sampleResampled: Point[];
     userResampled: Point[];
