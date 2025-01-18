@@ -1,6 +1,6 @@
 {
-  "name": "PWAサンプル",
-  "short_name": "PWAサンプル",
+  "name": "kanjitest",
+  "short_name": "kanjitest",
   "display": "standalone",
   "background_color": "#ffffff",
   "start_url": "./index.html",
