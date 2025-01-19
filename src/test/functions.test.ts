@@ -57,7 +57,7 @@ describe('ストローク比較のテスト', () => {
         expect(() => compareStrokes(sampleStrokes, userStrokes)).toThrow('The number of strokes does not match');
     });
 
-    it('完全に一致するストロークで高いスコアを返すこと', () => {
+    it('完全に一致するストロークの場合は高いスコアを返すこと', () => {
         const sampleStrokes = [
             [{ x: 0, y: 0 }, { x: 100, y: 100 }]
         ];
@@ -66,20 +66,47 @@ describe('ストローク比較のテスト', () => {
         ];
 
         const result = compareStrokes(sampleStrokes, userStrokes);
-        expect(result.avgScore).toBeGreaterThan(0.9);
-        expect(result.scores).toHaveLength(1);
-        expect(result.strokeResults).toHaveLength(1);
+        expect(result.strokeResults[0].score).toBeGreaterThan(0.9);
     });
 
-    it('大きく異なるストロークで低いスコアを返すこと', () => {
+    it('大きく異なるストロークの場合は低いスコアを返すこと', () => {
         const sampleStrokes = [
             [{ x: 0, y: 0 }, { x: 100, y: 100 }]
         ];
         const userStrokes = [
-            [{ x: 0, y: 0 }, { x: 100, y: 0 }] // 全く異なる方向
+            [{ x: 0, y: 0 }, { x: 100, y: 0 }] // 異なる方向のストローク
         ];
 
         const result = compareStrokes(sampleStrokes, userStrokes);
-        expect(result.avgScore).toBeLessThan(0.9);
+        expect(result.strokeResults[0].score).toBeLessThan(0.7);
+    });
+
+    it('異なるスケールと位置でも類似したストロークは高いスコアを返すこと', () => {
+        const sampleStrokes = [
+            [{ x: 0, y: 0 }, { x: 100, y: 100 }]
+        ];
+        const userStrokes = [
+            [{ x: 200, y: 200 }, { x: 400, y: 400 }] // 2倍のスケールで移動
+        ];
+
+        const result = compareStrokes(sampleStrokes, userStrokes);
+        expect(result.strokeResults[0].score).toBeGreaterThan(0.9);
+    });
+
+    it('複数ストロークの比較が正しく機能すること', () => {
+        const sampleStrokes = [
+            [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+            [{ x: 100, y: 0 }, { x: 0, y: 100 }]
+        ];
+        const userStrokes = [
+            [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+            [{ x: 100, y: 0 }, { x: 0, y: 100 }]
+        ];
+
+        const result = compareStrokes(sampleStrokes, userStrokes);
+        expect(result.strokeResults).toHaveLength(2);
+        result.strokeResults.forEach(strokeResult => {
+            expect(strokeResult.score).toBeGreaterThan(0.9);
+        });
     });
 });
