@@ -4,7 +4,6 @@ import {
   drawSampleStrokes,
   getSVGStrokes,
   showEvaluationOverlay,
-  type StrokeResult,
 } from "./functions";
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./useDrawingManager";
@@ -73,39 +72,42 @@ function App() {
     const answerCtx = answerCanvasRef.current?.getContext("2d");
     if (!answerCtx) return;
     const strokesSvg = getSVGStrokes(svg);
-    let score = 0;
-    let displayPercent = "0";
-    let strokeResults: StrokeResult[] = [];
-    let normParamsUser: { centerX: number; centerY: number; scale: number } = {
-      centerX: 0,
-      centerY: 0,
-      scale: 1,
-    };
-
     if (strokesSvg.length !== userStrokes.length) {
       setResult(
         `かくすうがちがうよ！（おてほん: ${strokesSvg.length}、あなた: ${userStrokes.length}）`,
       );
       setShowSVG(true);
+      manager.recordResult(false);
     } else {
-      const result = compareStrokes(strokesSvg, userStrokes);
-      score = result.avgScore;
-      displayPercent = result.percent;
-      strokeResults = result.strokeResults;
-      normParamsUser = result.normParamsUser;
+      const {
+        strokeResults,
+        normParamsUser,
+      } = compareStrokes(strokesSvg, userStrokes);
+      const scores = strokeResults.map((result) => result.score);
+      const isCorrect = manager.isCorrect(scores);
+      const scoreText = manager.getScoreText(scores);
+      const resultText = isCorrect
+        ? "せいかい！よくかけました！"
+        : "ざんねん！おてほんをよくみよう！";
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      showEvaluationOverlay(ctx, strokeResults, normParamsUser);
-      drawSampleStrokes(answerCtx, strokeResults, normParamsUser);
+      showEvaluationOverlay(
+        ctx,
+        strokeResults,
+        normParamsUser,
+        KanjiQuestionManager.SCORE_THRESHOLD,
+      );
+      drawSampleStrokes(
+        answerCtx,
+        strokeResults,
+        normParamsUser,
+        KanjiQuestionManager.SCORE_THRESHOLD,
+      );
       setShowAnswer(true);
       setResult(
-        `スコア: ${displayPercent}%\n${
-          score >= 0.7 ? "じょうず に かけました！" : "おてほん を よくみてね！"
-        }`,
+        `${resultText}（${scoreText}）`,
       );
+      manager.recordResult(isCorrect, strokeResults);
     }
-
-    manager.recordResult(score);
-
     setShowNext(true);
   };
 

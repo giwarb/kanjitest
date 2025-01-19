@@ -352,9 +352,10 @@ function dist(a: Point, b: Point): number {
  * @param {CanvasRenderingContext2D} canvasContext
  * @param {StrokeResult[]} strokeResults
  * @param {{centerX: number, centerY: number, scale: number}} normParams
+ * @param {number} boldThreasholdScore
  * @returns {void}
  */
-export function showEvaluationOverlay(canvasContext: CanvasRenderingContext2D, strokeResults: StrokeResult[], normParams: { centerX: number, centerY: number, scale: number }): void {
+export function showEvaluationOverlay(canvasContext: CanvasRenderingContext2D, strokeResults: StrokeResult[], normParams: { centerX: number, centerY: number, scale: number }, boldThreasholdScore: number): void {
     const origAlpha = canvasContext.globalAlpha;
     const origStyle = canvasContext.strokeStyle;
 
@@ -364,7 +365,7 @@ export function showEvaluationOverlay(canvasContext: CanvasRenderingContext2D, s
     canvasContext.font = '16px sans-serif';
 
     strokeResults.forEach((res, i) => {
-        canvasContext.lineWidth = (res.score < 0.7) ? 4 : 1;
+        canvasContext.lineWidth = (res.score < boldThreasholdScore) ? 4 : 1;
         canvasContext.strokeStyle = 'blue';
         canvasContext.beginPath();
         res.userResampled.forEach((p, idx) => {
@@ -423,16 +424,13 @@ function computeDTWDistance(s: Point[], t: Point[]): number {
  * ユーザーのストロークとサンプルを比較します。
  * @param {Array<Array<Point>>} sampleStrokes
  * @param {Array<Array<Point>>} userStrokes
- * @returns {{error?: string, avgScore?: number, percent?: string, strokeResults?: StrokeResult[], scores?: number[], normParamsUser?: {centerX: number, centerY: number, scale: number}}}
+ * @returns {{strokeResults: StrokeResult[], normParamsUser: {centerX: number, centerY: number, scale: number}}}
  */
 export function compareStrokes(
     sampleStrokes: Point[][],
     userStrokes: Point[][]
 ): {
-    avgScore: number;
-    percent: string;
     strokeResults: StrokeResult[];
-    scores: number[];
     normParamsUser: { centerX: number; centerY: number; scale: number };
 } {
     if (userStrokes.length !== sampleStrokes.length) {
@@ -446,9 +444,7 @@ export function compareStrokes(
     userStrokes.forEach(stroke => userAllPoints.push(...stroke));
     const normParamsUser = computeNormalizationParameters(userAllPoints);
 
-    let totalScore = 0;
     const strokeResults = [];
-    const scores = [];
 
     // 各ストロークを評価
     for (let i = 0; i < sampleStrokes.length; i++) {
@@ -464,14 +460,10 @@ export function compareStrokes(
         const maxDist = Math.max(sampRes.length, userRes.length);
         const score = Math.max(0, 1 - distance / maxDist);
 
-        totalScore += score;
-        scores.push(score);
         strokeResults.push({ score, sampleResampled: sampRes, userResampled: userRes });
     }
 
-    const avgScore = totalScore / sampleStrokes.length;
-    const percent = (avgScore * 100).toFixed(2);
-    return { scores, avgScore, percent, strokeResults, normParamsUser };
+    return { strokeResults, normParamsUser };
 }
 
 /**
@@ -479,15 +471,16 @@ export function compareStrokes(
  * @param {CanvasRenderingContext2D} canvasContext
  * @param {StrokeResult[]} strokeResults
  * @param {{centerX: number, centerY: number, scale: number}} normParams
+ * @param {number} boldThreasholdScore
  * @returns {void}
  */
-export function drawSampleStrokes(canvasContext: CanvasRenderingContext2D, strokeResults: StrokeResult[], normParams: { centerX: number, centerY: number, scale: number }): void {
+export function drawSampleStrokes(canvasContext: CanvasRenderingContext2D, strokeResults: StrokeResult[], normParams: { centerX: number, centerY: number, scale: number }, boldThreasholdScore: number): void {
     canvasContext.clearRect(0, 0, canvasContext.canvas.width, canvasContext.canvas.height);
     canvasContext.globalAlpha = 0.4;
     canvasContext.font = '16px sans-serif';
 
     strokeResults.forEach((res, i) => {
-        canvasContext.lineWidth = (res.score < 0.7) ? 4 : 1;
+        canvasContext.lineWidth = (res.score < boldThreasholdScore) ? 4 : 1;
         canvasContext.beginPath();
         canvasContext.strokeStyle = 'red';
         res.sampleResampled.forEach((p, idx) => {

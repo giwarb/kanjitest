@@ -1,3 +1,5 @@
+import { StrokeResult } from "./functions";
+
 interface Question {
     sentence: string;
     target: string;
@@ -7,7 +9,16 @@ interface Question {
 interface QuestionResult {
     questionIndex: number;
     isCorrect: boolean;
-    score: number;
+    strokeResults: StrokeResult[] | undefined;
+}
+
+interface KanjiQuestionManagerState {
+    questions: Question[];
+    targetQuestionIdices: number[];
+    currentIndex: number;
+    results: QuestionResult[];
+    totalResults: QuestionResult[];
+    isReviewMode: boolean;
 }
 
 export class KanjiQuestionManager {
@@ -17,40 +28,85 @@ export class KanjiQuestionManager {
     private results: QuestionResult[];
     private totalResults: QuestionResult[];
     private isReviewMode: boolean;
-
+    private static readonly STORAGE_KEY = 'kanjiQuestionManagerState';
+    public static readonly SCORE_THRESHOLD = 0.6;
 
     constructor(questions: Question[]) {
-        this.questions = questions;
-        this.targetQuestionIdices = [...Array(questions.length).keys()];
-        this.currentIndex = 0;
-        this.results = [];
-        this.totalResults = [];
-        this.isReviewMode = false;
+        const savedState = this.loadState();
+        if (savedState) {
+            this.questions = savedState.questions;
+            this.targetQuestionIdices = savedState.targetQuestionIdices;
+            this.currentIndex = savedState.currentIndex;
+            this.results = savedState.results;
+            this.totalResults = savedState.totalResults;
+            this.isReviewMode = savedState.isReviewMode;
+        } else {
+            this.questions = questions;
+            this.targetQuestionIdices = [...Array(questions.length).keys()];
+            this.currentIndex = 0;
+            this.results = [];
+            this.totalResults = [];
+            this.isReviewMode = false;
+        }
+    }
+
+    private saveState(): void {
+        const state = {
+            questions: this.questions,
+            targetQuestionIdices: this.targetQuestionIdices,
+            currentIndex: this.currentIndex,
+            results: this.results,
+            totalResults: this.totalResults,
+            isReviewMode: this.isReviewMode
+        };
+        localStorage.setItem(KanjiQuestionManager.STORAGE_KEY, JSON.stringify(state));
+    }
+
+    private loadState(): KanjiQuestionManagerState | null {
+        const savedState = localStorage.getItem(KanjiQuestionManager.STORAGE_KEY);
+        return savedState ? JSON.parse(savedState) : null;
     }
 
     getCurrentQuestion(): Question | undefined {
         return this.questions[this.targetQuestionIdices[this.currentIndex]];
     }
 
-    recordResult(score: number): void {
+    isCorrect(scores: number[]): boolean {
+        return scores.every(s => s >= KanjiQuestionManager.SCORE_THRESHOLD);
+    }
+
+    getScoreText(scores: number[]): string {
+        const averageScore = scores.reduce((acc, score) => acc + score, 0) / scores.length;
+        const minScore = Math.min(...scores);
+        const averageScorePercentage = Math.round(averageScore * 100);
+        const minScorePercentage = Math.round(minScore * 100);
+
+        return `スコア: ${minScorePercentage}% (平均: ${averageScorePercentage}%)`;
+    }
+
+    recordResult(isCorrect: boolean, strokeResults?: StrokeResult[]): void {
         const questionIndex = this.targetQuestionIdices[this.currentIndex];
 
-        const isCorrect = score >= 0.7;
         this.results.push({
             questionIndex,
             isCorrect,
-            score
+            strokeResults,
         });
+
         this.totalResults.push({
             questionIndex,
             isCorrect,
-            score
+            strokeResults,
         });
+
+        this.saveState();
     }
 
     moveToNext(): boolean {
         this.currentIndex++;
-        return this.currentIndex < this.targetQuestionIdices.length;
+        const hasNext = this.currentIndex < this.targetQuestionIdices.length;
+        this.saveState();
+        return hasNext;
     }
 
     hasIncorrectQuestions(): boolean {
@@ -62,6 +118,7 @@ export class KanjiQuestionManager {
         this.currentIndex = 0;
         this.targetQuestionIdices = this.results.filter(r => !r.isCorrect).map(r => r.questionIndex);
         this.results = [];
+        this.saveState();
     }
 
     getResultsScore(): {
@@ -117,5 +174,6 @@ export class KanjiQuestionManager {
         this.results = [];
         this.totalResults = [];
         this.isReviewMode = false;
+        localStorage.removeItem(KanjiQuestionManager.STORAGE_KEY);
     }
 }

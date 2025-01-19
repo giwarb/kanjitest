@@ -1,5 +1,23 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { KanjiQuestionManager } from '../KanjiQuestionManager';
+
+// localStorageのモック
+const mockLocalStorage = (() => {
+    let store: { [key: string]: string } = {};
+    return {
+        getItem: (key: string) => store[key] || null,
+        setItem: (key: string, value: string) => { store[key] = value; },
+        removeItem: (key: string) => { delete store[key]; },
+        clear: () => { store = {}; }
+    };
+})();
+
+// グローバルのlocalStorageをモックに置き換え
+Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
+
+beforeEach(() => {
+    mockLocalStorage.clear();
+});
 
 const mockQuestions = [
     {
@@ -34,25 +52,48 @@ describe('KanjiQuestionManager', () => {
         expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
     });
 
-    it('should record results correctly', () => {
-        const manager = new KanjiQuestionManager(mockQuestions);
+    describe('result recording', () => {
+        it('should record results correctly with average score only', () => {
+            const manager = new KanjiQuestionManager(mockQuestions);
 
-        // 正解として記録
-        manager.recordResult(0.8);
-        manager.moveToNext();
+            // 正解として記録
+            manager.recordResult(0.8);
+            manager.moveToNext();
 
-        // 不正解として記録
-        manager.recordResult(0.5);
-        manager.moveToNext();
+            // 不正解として記録
+            manager.recordResult(0.5);
+            manager.moveToNext();
 
-        // 正解として記録
-        manager.recordResult(0.9);
+            // 正解として記録
+            manager.recordResult(0.9);
 
-        const results = manager.getResultsScore();
-        expect(results.total).toBe(3);
-        expect(results.correct).toBe(2);
-        expect(results.incorrectCount).toBe(1);
-        expect(results.percentage).toBe(2 / 3 * 100);
+            const results = manager.getResultsScore();
+            expect(results.total).toBe(3);
+            expect(results.correct).toBe(2);
+            expect(results.incorrectCount).toBe(1);
+            expect(results.percentage).toBe(2 / 3 * 100);
+        });
+
+        it('should handle individual stroke scores correctly', () => {
+            const manager = new KanjiQuestionManager(mockQuestions);
+
+            // 全ストロークが0.5以上なので正解
+            manager.recordResult(0.8, [0.7, 0.8, 0.9]);
+            manager.moveToNext();
+
+            // 1つのストロークが0.5未満なので不正解
+            manager.recordResult(0.7, [0.8, 0.4, 0.9]);
+            manager.moveToNext();
+
+            // 全ストロークが0.5以上なので正解
+            manager.recordResult(0.7, [0.5, 0.5, 0.5]);
+
+            const results = manager.getResultsScore();
+            expect(results.total).toBe(3);
+            expect(results.correct).toBe(2);
+            expect(results.incorrectCount).toBe(1);
+            expect(results.percentage).toBe(2 / 3 * 100);
+        });
     });
 
     it('should handle review mode correctly', () => {
@@ -190,6 +231,67 @@ describe('KanjiQuestionManager', () => {
             questionIndex: 2,
             incorrectCount: 1,
             sentence: mockQuestions[2].sentence
+        });
+
+        describe('localStorage functionality', () => {
+            it('should save state to localStorage after recording result', () => {
+                const manager = new KanjiQuestionManager(mockQuestions);
+                manager.recordResult(0.8);
+
+                const savedState = JSON.parse(mockLocalStorage.getItem('kanjiQuestionManagerState')!);
+                expect(savedState.results).toHaveLength(1);
+                expect(savedState.results[0].score).toBe(0.8);
+            });
+
+            it('should restore state from localStorage on initialization', () => {
+                // 最初のインスタンスで状態を保存
+                const manager1 = new KanjiQuestionManager(mockQuestions);
+                manager1.recordResult(0.8);
+                manager1.moveToNext();
+
+                // 新しいインスタンスを作成して状態が復元されることを確認
+                const manager2 = new KanjiQuestionManager(mockQuestions);
+                expect(manager2.getCurrentQuestion()).toEqual(mockQuestions[1]); // 2問目から開始
+                expect(manager2.getResultsScore().total).toBe(1); // 1問回答済み
+            });
+
+            it('should clear localStorage when reset is called', () => {
+                const manager = new KanjiQuestionManager(mockQuestions);
+                manager.recordResult(0.8);
+                manager.reset();
+
+                expect(mockLocalStorage.getItem('kanjiQuestionManagerState')).toBeNull();
+            });
+
+            it('should save state after moving to next question', () => {
+                const manager = new KanjiQuestionManager(mockQuestions);
+                manager.moveToNext();
+
+                const savedState = JSON.parse(mockLocalStorage.getItem('kanjiQuestionManagerState')!);
+                expect(savedState.currentIndex).toBe(1);
+            });
+
+            it('should save state when entering review mode', () => {
+                const manager = new KanjiQuestionManager(mockQuestions);
+                manager.recordResult(0.5); // 不正解
+                manager.startReviewMode();
+
+                const savedState = JSON.parse(mockLocalStorage.getItem('kanjiQuestionManagerState')!);
+                expect(savedState.isReviewMode).toBe(true);
+                expect(savedState.targetQuestionIdices).toHaveLength(1); // 不正解の問題1つ
+            });
+
+            it('should maintain total results across instances', () => {
+                // 最初のインスタンスで結果を記録
+                const manager1 = new KanjiQuestionManager(mockQuestions);
+                manager1.recordResult(0.5); // 不正解
+
+                // 新しいインスタンスを作成
+                const manager2 = new KanjiQuestionManager(mockQuestions);
+                const incorrectCounts = manager2.getIncorrectCounts();
+                expect(incorrectCounts).toHaveLength(1);
+                expect(incorrectCounts[0].incorrectCount).toBe(1);
+            });
         });
     });
 
