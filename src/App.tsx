@@ -200,17 +200,24 @@ function App() {
           ふくしゅうちゅう！
         </div>
       )}
-      <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 10,
+          flexWrap: "wrap", // 画面幅が小さい場合に縦並びになるよう追加
+        }}
+      >
         <canvas
           ref={canvasRef}
-          width="280"
-          height="280"
+          width="320"
+          height="320"
           style={{ border: "1px solid #000" }}
         />
         <canvas
           ref={answerCanvasRef}
-          width="280"
-          height="280"
+          width="320"
+          height="320"
           style={{
             border: "1px solid #000",
             display: showAnswer ? "block" : "none",
@@ -220,14 +227,14 @@ function App() {
           dangerouslySetInnerHTML={{
             __html: svgContent.replace(
               /(width|height)="[^"]+"/g,
-              '$1="280"',
+              '$1="320"',
             ),
           }}
           style={{
             border: "1px solid #000",
             display: showSVG ? "block" : "none",
-            width: "500px",
-            height: "500px",
+            width: "320",
+            height: "320",
           }}
           ref={answerRef}
         />
