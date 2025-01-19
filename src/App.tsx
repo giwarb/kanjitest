@@ -8,6 +8,7 @@ import {
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./useDrawingManager";
 import { data } from "./data";
+import { ConfirmDialog } from "./components/ConfirmDialog";
 import "./App.css";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
       }[];
     } | null
   >(null);
+  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
 
   const loadQuestion = useCallback(() => {
     const currentQuestion = manager.getCurrentQuestion();
@@ -128,6 +130,17 @@ function App() {
     manager.startReviewMode();
     loadQuestion();
     setResults(null);
+  };
+
+  const handleReset = () => {
+    setIsConfirmResetOpen(true);
+  };
+
+  const handleConfirmReset = () => {
+    manager.reset();
+    loadQuestion();
+    setResults(null);
+    setIsConfirmResetOpen(false);
   };
 
   const hasStrokes = userStrokes.length > 0;
@@ -260,7 +273,14 @@ function App() {
         {showNext && (
           <button onClick={handleNextQuestion}>つぎの もんだいへ</button>
         )}
+        <button onClick={handleReset}>さいしょから</button>
       </div>
+      <ConfirmDialog
+        isOpen={isConfirmResetOpen}
+        message="最初からやりなおしますか？"
+        onConfirm={handleConfirmReset}
+        onCancel={() => setIsConfirmResetOpen(false)}
+      />
     </div>
   );
 }
