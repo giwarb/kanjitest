@@ -8,6 +8,7 @@ interface ControlButtonsProps {
   onDontKnow: () => void;
   onNextQuestion: () => void;
   onReset: () => void;
+  onBackToStart: () => void;
 }
 
 export const ControlButtons: FC<ControlButtonsProps> = ({
@@ -18,6 +19,7 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
   onDontKnow,
   onNextQuestion,
   onReset,
+  onBackToStart,
 }) => {
   return (
     <div className="button-container">
@@ -38,6 +40,7 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
         </button>
       )}
       <button type="button" onClick={onReset}>さいしょから</button>
+      <button type="button" onClick={onBackToStart}>スタートがめんへ</button>
     </div>
   );
 };

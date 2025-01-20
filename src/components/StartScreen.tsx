@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { data } from "../data";
+import "./StartScreen.css";
 
 type StartScreenProps = {
     onStartPractice: (questions: typeof data) => void;
@@ -23,23 +24,23 @@ export function StartScreen({ onStartPractice }: StartScreenProps) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-            <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold text-center mb-8">
-                    漢字練習
+        <div className="start-screen-container">
+            <div className="start-screen-content">
+                <h1 className="start-screen-title">
+                    かんじれんしゅう
                 </h1>
-                <div className="mb-8">
-                    <p className="text-center mb-4">問題数を選んでください：</p>
-                    <div className="flex flex-wrap justify-center gap-4">
+                <div className="question-count-section">
+                    <p className="question-count-text">
+                        もんだいすうをえらんでください：
+                    </p>
+                    <div className="question-count-buttons">
                         {questionCounts.map((count) => (
                             <button
                                 type="button"
                                 key={count}
                                 onClick={() => setSelectedCount(count)}
-                                className={`px-4 py-2 rounded-full ${
-                                    selectedCount === count
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                className={`count-button ${
+                                    selectedCount === count ? "selected" : ""
                                 }`}
                             >
                                 {count}問
@@ -47,11 +48,11 @@ export function StartScreen({ onStartPractice }: StartScreenProps) {
                         ))}
                     </div>
                 </div>
-                <div className="text-center">
+                <div className="start-button-container">
                     <button
                         type="button"
                         onClick={handleStart}
-                        className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                        className="start-button"
                     >
                         スタート
                     </button>
