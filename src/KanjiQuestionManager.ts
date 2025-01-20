@@ -32,22 +32,12 @@ export class KanjiQuestionManager {
   public static readonly SCORE_THRESHOLD = 0.6;
 
   constructor(questions: Question[]) {
-    const savedState = this.loadState();
-    if (savedState) {
-      this.questions = savedState.questions;
-      this.targetQuestionIdices = savedState.targetQuestionIdices;
-      this.currentIndex = savedState.currentIndex;
-      this.results = savedState.results;
-      this.totalResults = savedState.totalResults;
-      this.isReviewMode = savedState.isReviewMode;
-    } else {
-      this.questions = questions;
-      this.targetQuestionIdices = [...Array(questions.length).keys()];
-      this.currentIndex = 0;
-      this.results = [];
-      this.totalResults = [];
-      this.isReviewMode = false;
-    }
+    this.questions = questions;
+    this.targetQuestionIdices = [...Array(questions.length).keys()];
+    this.currentIndex = 0;
+    this.results = [];
+    this.totalResults = [];
+    this.isReviewMode = false;
   }
 
   private saveState(): void {
@@ -65,9 +55,19 @@ export class KanjiQuestionManager {
     );
   }
 
-  private loadState(): KanjiQuestionManagerState | null {
+  static restoreFromStorage(): KanjiQuestionManager | null {
     const savedState = localStorage.getItem(KanjiQuestionManager.STORAGE_KEY);
-    return savedState ? JSON.parse(savedState) : null;
+    if (!savedState) {
+      return null;
+    }
+    const state = JSON.parse(savedState) as KanjiQuestionManagerState;
+    const manager = new KanjiQuestionManager(state.questions);
+    manager.targetQuestionIdices = state.targetQuestionIdices;
+    manager.currentIndex = state.currentIndex;
+    manager.results = state.results;
+    manager.totalResults = state.totalResults;
+    manager.isReviewMode = state.isReviewMode;
+    return manager;
   }
 
   getCurrentQuestion(): Question | undefined {

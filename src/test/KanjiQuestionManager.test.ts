@@ -234,16 +234,16 @@ describe('KanjiQuestionManager', () => {
       expect(savedState.results[0].isCorrect).toBe(true);
     });
 
-    it('should restore state from localStorage on initialization', () => {
+    it('should not restore state from localStorage on initialization', () => {
       // 最初のインスタンスで状態を保存
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
       manager1.moveToNext();
 
-      // 新しいインスタンスを作成して状態が復元されることを確認
+      // 新しいインスタンスを作成。状態は復元されないことを確認
       const manager2 = new KanjiQuestionManager(mockQuestions);
-      expect(manager2.getCurrentQuestion()).toEqual(mockQuestions[1]); // 2問目から開始
-      expect(manager2.getResultsScore().total).toBe(1); // 1問回答済み
+      expect(manager2.getCurrentQuestion()).toEqual(mockQuestions[0]); // 1問目から開始
+      expect(manager2.getResultsScore().total).toBe(0); // 回答なし
     });
 
     it('should clear localStorage when reset is called', () => {
@@ -276,16 +276,38 @@ describe('KanjiQuestionManager', () => {
       expect(savedState.targetQuestionIdices).toHaveLength(1); // 不正解の問題1つ
     });
 
-    it('should maintain total results across instances', () => {
+    it('should maintain total results across instances using restoreFromStorage', () => {
       // 最初のインスタンスで結果を記録
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(false); // 不正解
 
-      // 新しいインスタンスを作成
-      const manager2 = new KanjiQuestionManager(mockQuestions);
-      const incorrectCounts = manager2.getIncorrectCounts();
-      expect(incorrectCounts).toHaveLength(1);
-      expect(incorrectCounts[0].incorrectCount).toBe(1);
+      // restoreFromStorageを使用して状態を復元
+      const manager2 = KanjiQuestionManager.restoreFromStorage();
+      expect(manager2).not.toBeNull();
+      if (manager2) {
+        const incorrectCounts = manager2.getIncorrectCounts();
+        expect(incorrectCounts).toHaveLength(1);
+        expect(incorrectCounts[0].incorrectCount).toBe(1);
+      }
+    });
+
+    it('should restore from storage using static method when state exists', () => {
+      // 状態を保存
+      const manager1 = new KanjiQuestionManager(mockQuestions);
+      manager1.recordResult(true);
+      manager1.moveToNext();
+
+      // static methodで復元
+      const restoredManager = KanjiQuestionManager.restoreFromStorage();
+      expect(restoredManager).not.toBeNull();
+      expect(restoredManager?.getCurrentQuestion()).toEqual(mockQuestions[1]); // 2問目から開始
+      expect(restoredManager?.getResultsScore().total).toBe(1); // 1問回答済み
+    });
+
+    it('should return null from static restore method when no state exists', () => {
+      // localStorageが空の状態で実行
+      const restoredManager = KanjiQuestionManager.restoreFromStorage();
+      expect(restoredManager).toBeNull();
     });
   });
 
