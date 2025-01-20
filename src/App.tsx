@@ -9,6 +9,10 @@ import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./useDrawingManager";
 import { data } from "./data";
 import { ConfirmDialog } from "./components/ConfirmDialog";
+import { ResultsView } from "./components/ResultsView";
+import { PracticeCanvas } from "./components/PracticeCanvas";
+import { QuestionHeader } from "./components/QuestionHeader";
+import { ControlButtons } from "./components/ControlButtons";
 import "./App.css";
 
 function App() {
@@ -16,7 +20,7 @@ function App() {
   const answerCanvasRef = useRef<HTMLCanvasElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
-  const [manager] = useState(() => new KanjiQuestionManager(data));
+  const [manager] = useState(() => new KanjiQuestionManager(data.slice(0, 20)));
   const [question, setQuestion] = useState("");
   const [svgContent, setSvgContent] = useState("");
   const [showNext, setShowNext] = useState(false);
@@ -105,9 +109,7 @@ function App() {
         KanjiQuestionManager.SCORE_THRESHOLD,
       );
       setShowAnswer(true);
-      setResult(
-        `${resultText}（${scoreText}）`,
-      );
+      setResult(`${resultText}（${scoreText}）`);
       manager.recordResult(isCorrect, strokeResults);
     }
     setShowNext(true);
@@ -143,141 +145,53 @@ function App() {
     setIsConfirmResetOpen(false);
   };
 
+  const handleDontKnow = () => {
+    setShowSVG(true);
+    setResult("むずかしいですね。おてほんを みてみましょう！");
+    manager.recordResult(false);
+    setShowNext(true);
+  };
+
   const hasStrokes = userStrokes.length > 0;
 
   if (results) {
     return (
-      <div className="app">
-        <h2>けっか</h2>
-        <div>
-          ぜん{results.total}もんちゅう、{results.correct}もん せいかい！
-        </div>
-        <div>せいかいりつ: {results.percentage.toFixed(1)}%</div>
-        {results.incorrectCount > 0
-          ? (
-            <div>
-              <p style={{ textAlign: "center" }}>
-                {results.incorrectCount}もん まちがいました。
-              </p>
-              <button onClick={handleRestartReview}>
-                まちがった もんだい を もういちど
-              </button>
-            </div>
-          )
-          : (
-            <>
-              <div>
-                すべての もんだいを せいかいしました！
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <h3
-                  style={{
-                    color: "green",
-                    marginBottom: "10px",
-                  }}
-                >
-                  まちがえた もんだい
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                  }}
-                >
-                  {results.incorrectDetails.map((detail) => (
-                    <div
-                      key={detail.questionIndex}
-                    >
-                      <div
-                        dangerouslySetInnerHTML={{ __html: detail.sentence }}
-                      >
-                      </div>
-                      <div>{detail.incorrectCount}かい まちがえました</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-      </div>
+      <ResultsView
+        results={results}
+        onRestartReview={handleRestartReview}
+      />
     );
   }
 
   return (
     <div className="app">
-      <div
-        className="question"
-        dangerouslySetInnerHTML={{ __html: question }}
+      <QuestionHeader
+        currentQuestionNumber={manager.getCurrentQuestionNumber()}
+        totalQuestions={manager.getTotalQuestions()}
+        question={question}
+        isReviewMode={manager.isInReviewMode()}
       />
-      {manager.isInReviewMode() && (
-        <div className="review-mode">
-          ふくしゅうちゅう！
-        </div>
-      )}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 10,
-          flexWrap: "wrap", // 画面幅が小さい場合に縦並びになるよう追加
-        }}
-      >
-        <canvas
-          ref={canvasRef}
-          width="320"
-          height="320"
-          style={{ border: "1px solid #000" }}
-        />
-        <canvas
-          ref={answerCanvasRef}
-          width="320"
-          height="320"
-          style={{
-            border: "1px solid #000",
-            display: showAnswer ? "block" : "none",
-          }}
-        />
-        <div
-          dangerouslySetInnerHTML={{
-            __html: svgContent.replace(
-              /(width|height)="[^"]+"/g,
-              '$1="320"',
-            ),
-          }}
-          style={{
-            border: "1px solid #000",
-            display: showSVG ? "block" : "none",
-            width: "320",
-            height: "320",
-          }}
-          ref={answerRef}
-        />
-      </div>
-      <div>{result}</div>
-      <div className="button-container">
-        <button
-          onClick={handleEvaluate}
-          disabled={!hasStrokes}
-          style={{ display: showNext ? "none" : "block" }}
-        >
-          ひょうか
-        </button>
-        <button
-          onClick={handleClear}
-          disabled={!hasStrokes}
-          style={{ display: showNext ? "none" : "block" }}
-        >
-          クリア
-        </button>
-        {showNext && (
-          <button onClick={handleNextQuestion}>つぎの もんだいへ</button>
-        )}
-        <button onClick={handleReset}>さいしょから</button>
-      </div>
+      <PracticeCanvas
+        canvasRef={canvasRef}
+        answerCanvasRef={answerCanvasRef}
+        answerRef={answerRef}
+        showAnswer={showAnswer}
+        showSVG={showSVG}
+        svgContent={svgContent}
+        result={result}
+      />
+      <ControlButtons
+        showNext={showNext}
+        hasStrokes={hasStrokes}
+        onEvaluate={handleEvaluate}
+        onClear={handleClear}
+        onDontKnow={handleDontKnow}
+        onNextQuestion={handleNextQuestion}
+        onReset={handleReset}
+      />
       <ConfirmDialog
         isOpen={isConfirmResetOpen}
-        message="最初からやりなおしますか？"
+        message="さいしょからやりなおしますか？"
         onConfirm={handleConfirmReset}
         onCancel={() => setIsConfirmResetOpen(false)}
       />

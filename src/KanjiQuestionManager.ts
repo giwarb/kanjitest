@@ -168,6 +168,14 @@ export class KanjiQuestionManager {
         return this.results.length === this.targetQuestionIdices.length;
     }
 
+    getCurrentQuestionNumber(): number {
+        return this.currentIndex + 1;
+    }
+
+    getTotalQuestions(): number {
+        return this.targetQuestionIdices.length;
+    }
+
     reset(): void {
         this.targetQuestionIdices = [...Array(this.questions.length).keys()];
         this.currentIndex = 0;
