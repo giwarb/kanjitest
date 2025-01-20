@@ -152,8 +152,8 @@ describe('ストローク比較のテスト', () => {
 
     const result = compareStrokes(sampleStrokes, userStrokes);
     expect(result.strokeResults).toHaveLength(2);
-    result.strokeResults.forEach(strokeResult => {
+    for (const strokeResult of result.strokeResults) {
       expect(strokeResult.score).toBeGreaterThan(0.9);
-    });
+    }
   });
 });

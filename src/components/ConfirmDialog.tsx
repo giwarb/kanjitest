@@ -1,4 +1,4 @@
-import './ConfirmDialog.css';
+import "./ConfirmDialog.css";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -20,8 +20,8 @@ export function ConfirmDialog({
       <div className="dialog-content">
         <p>{message}</p>
         <div className="dialog-buttons">
-          <button onClick={onCancel}>いいえ</button>
-          <button onClick={onConfirm}>はい</button>
+          <button type="button" onClick={onCancel}>いいえ</button>
+          <button type="button" onClick={onConfirm}>はい</button>
         </div>
       </div>
     </div>

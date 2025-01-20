@@ -1,4 +1,4 @@
-import { StrokeResult } from './functions';
+import type { StrokeResult } from './functions';
 
 interface Question {
   sentence: string;
@@ -75,7 +75,7 @@ export class KanjiQuestionManager {
   }
 
   isCorrect(scores: number[]): boolean {
-    return scores.every(s => s >= KanjiQuestionManager.SCORE_THRESHOLD);
+    return scores.every((s) => s >= KanjiQuestionManager.SCORE_THRESHOLD);
   }
 
   getScoreText(scores: number[]): string {
@@ -114,15 +114,15 @@ export class KanjiQuestionManager {
   }
 
   hasIncorrectQuestions(): boolean {
-    return this.results.some(r => !r.isCorrect);
+    return this.results.some((r) => !r.isCorrect);
   }
 
   startReviewMode(): void {
     this.isReviewMode = true;
     this.currentIndex = 0;
     this.targetQuestionIdices = this.results
-      .filter(r => !r.isCorrect)
-      .map(r => r.questionIndex);
+      .filter((r) => !r.isCorrect)
+      .map((r) => r.questionIndex);
     this.results = [];
     this.saveState();
   }
@@ -134,7 +134,7 @@ export class KanjiQuestionManager {
     percentage: number;
   } {
     const total = this.results.length;
-    const correct = this.results.filter(r => r.isCorrect).length;
+    const correct = this.results.filter((r) => r.isCorrect).length;
     const incorrectCount = total - correct;
     const percentage = (correct / total) * 100;
 
@@ -153,12 +153,12 @@ export class KanjiQuestionManager {
   }[] {
     const incorrectCounts = new Map<number, number>();
 
-    this.totalResults.forEach(result => {
+    for (const result of this.totalResults) {
       if (!result.isCorrect) {
         const count = incorrectCounts.get(result.questionIndex) || 0;
         incorrectCounts.set(result.questionIndex, count + 1);
       }
-    });
+    }
 
     return Array.from(incorrectCounts.entries())
       .map(([questionIndex, incorrectCount]) => ({
@@ -166,7 +166,7 @@ export class KanjiQuestionManager {
         incorrectCount,
         sentence: this.questions[questionIndex].sentence,
       }))
-      .filter(item => item.incorrectCount > 0)
+      .filter((item) => item.incorrectCount > 0)
       .sort((a, b) => b.incorrectCount - a.incorrectCount);
   }
 

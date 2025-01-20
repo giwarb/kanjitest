@@ -87,7 +87,7 @@ function App() {
         strokesSvg,
         userStrokes
       );
-      const scores = strokeResults.map(result => result.score);
+      const scores = strokeResults.map((result) => result.score);
       const isCorrect = manager.isCorrect(scores);
       const scoreText = manager.getScoreText(scores);
       const resultText = isCorrect

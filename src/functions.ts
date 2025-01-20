@@ -15,7 +15,7 @@ export interface StrokeResult {
  * @returns {Array<Array<Point>>}
  */
 export function getSVGStrokes(element: SVGSVGElement): Point[][] {
-  return Array.from(element.querySelectorAll('path'), path =>
+  return Array.from(element.querySelectorAll('path'), (path) =>
     segmentsToPoints(parseSVGPath(path.getAttribute('d') || ''))
   );
 }
@@ -153,7 +153,7 @@ function parseSVGPath(
       case 'Z':
         if (segments.length > 0) {
           // 最初のMoveToコマンドを探す
-          const firstMove = segments.find(seg => seg.type === 'M') as
+          const firstMove = segments.find((seg) => seg.type === 'M') as
             | { type: string; points: Point[] }
             | undefined;
           if (firstMove) {
@@ -295,12 +295,12 @@ function computeNormalizationParameters(points: Point[]): {
   scale: number;
 } {
   // バウンディングボックスから中心とスケールを求める
-  const xs = points.map(p => p.x);
-  const ys = points.map(p => p.y);
-  const minX = Math.min(...xs),
-    maxX = Math.max(...xs);
-  const minY = Math.min(...ys),
-    maxY = Math.max(...ys);
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
   const scale = Math.max(maxX - minX, maxY - minY) || 1;
@@ -317,7 +317,7 @@ function normalizePoints(
   points: Point[],
   params: { centerX: number; centerY: number; scale: number }
 ): Point[] {
-  return points.map(p => ({
+  return points.map((p) => ({
     x: (p.x - params.centerX) / params.scale,
     y: (p.y - params.centerY) / params.scale,
   }));
@@ -445,7 +445,7 @@ function normalizedPointToCanvasUserScale(
 function computeDTWDistance(s: Point[], t: Point[]): number {
   const n = s.length;
   const m = t.length;
-  const dtw = Array.from({ length: n + 1 }, () => Array(m + 1).fill(Infinity));
+  const dtw = Array.from({ length: n + 1 }, () => Array(m + 1).fill(Number.POSITIVE_INFINITY));
   dtw[0][0] = 0;
 
   for (let i = 1; i <= n; i++) {
@@ -476,11 +476,15 @@ export function compareStrokes(
     throw new Error('The number of strokes does not match');
   }
   const sampleAllPoints: Point[] = [];
-  sampleStrokes.forEach(stroke => sampleAllPoints.push(...stroke));
+  for (const stroke of sampleStrokes) {
+    sampleAllPoints.push(...stroke);
+  }
   const normParamsSample = computeNormalizationParameters(sampleAllPoints);
 
   const userAllPoints: Point[] = [];
-  userStrokes.forEach(stroke => userAllPoints.push(...stroke));
+  for (const stroke of userStrokes) {
+    userAllPoints.push(...stroke);
+  }
   const normParamsUser = computeNormalizationParameters(userAllPoints);
 
   const strokeResults = [];

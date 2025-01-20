@@ -21,6 +21,7 @@ const mockLocalStorage = (() => {
 // グローバルのlocalStorageをモックに置き換え
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
 
+
 beforeEach(() => {
   mockLocalStorage.clear();
 });
@@ -226,10 +227,9 @@ describe('KanjiQuestionManager', () => {
     it('should save state to localStorage after recording result', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
-
-      const savedState = JSON.parse(
-        mockLocalStorage.getItem('kanjiQuestionManagerState')!
-      );
+      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      expect(savedStateStr).not.toBeNull();
+      const savedState = JSON.parse(savedStateStr || '');
       expect(savedState.results).toHaveLength(1);
       expect(savedState.results[0].isCorrect).toBe(true);
     });
@@ -258,9 +258,9 @@ describe('KanjiQuestionManager', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.moveToNext();
 
-      const savedState = JSON.parse(
-        mockLocalStorage.getItem('kanjiQuestionManagerState')!
-      );
+      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      expect(savedStateStr).not.toBeNull();
+      const savedState = JSON.parse(savedStateStr || '');
       expect(savedState.currentIndex).toBe(1);
     });
 
@@ -269,9 +269,9 @@ describe('KanjiQuestionManager', () => {
       manager.recordResult(false); // 不正解
       manager.startReviewMode();
 
-      const savedState = JSON.parse(
-        mockLocalStorage.getItem('kanjiQuestionManagerState')!
-      );
+      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      expect(savedStateStr).not.toBeNull();
+      const savedState = JSON.parse(savedStateStr || '');
       expect(savedState.isReviewMode).toBe(true);
       expect(savedState.targetQuestionIdices).toHaveLength(1); // 不正解の問題1つ
     });

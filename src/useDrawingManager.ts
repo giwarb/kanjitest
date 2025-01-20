@@ -56,7 +56,7 @@ export const useDrawingManager = (canvas: HTMLCanvasElement | null) => {
       isDrawingRef.current = false;
       context.closePath();
       if (currentStrokeRef.current.length > 2) {
-        setUserStrokes(prev => [...prev, [...currentStrokeRef.current]]);
+        setUserStrokes((prev) => [...prev, [...currentStrokeRef.current]]);
       }
     };
 

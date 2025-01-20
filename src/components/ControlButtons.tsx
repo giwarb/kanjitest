@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import type { FC } from "react";
 
 interface ControlButtonsProps {
   showNext: boolean;
@@ -23,17 +23,21 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
     <div className="button-container">
       {!showNext && (
         <>
-          <button onClick={onEvaluate} disabled={!hasStrokes}>
+          <button type="button" onClick={onEvaluate} disabled={!hasStrokes}>
             ひょうか
           </button>
-          <button onClick={onClear} disabled={!hasStrokes}>
+          <button type="button" onClick={onClear} disabled={!hasStrokes}>
             クリア
           </button>
-          <button onClick={onDontKnow}>わからない</button>
+          <button type="button" onClick={onDontKnow}>わからない</button>
         </>
       )}
-      {showNext && <button onClick={onNextQuestion}>つぎの もんだいへ</button>}
-      <button onClick={onReset}>さいしょから</button>
+      {showNext && (
+        <button type="button" onClick={onNextQuestion}>
+          つぎの もんだいへ
+        </button>
+      )}
+      <button type="button" onClick={onReset}>さいしょから</button>
     </div>
   );
 };

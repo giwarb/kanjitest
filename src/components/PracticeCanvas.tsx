@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react';
+import type { FC, RefObject } from "react";
 
 interface PracticeCanvasProps {
   canvasRef: RefObject<HTMLCanvasElement>;
@@ -23,35 +23,37 @@ export const PracticeCanvas: FC<PracticeCanvasProps> = ({
     <>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
+          display: "flex",
+          justifyContent: "center",
           gap: 10,
-          flexWrap: 'wrap',
+          flexWrap: "wrap",
         }}
       >
         <canvas
           ref={canvasRef}
           width="320"
           height="320"
-          style={{ border: '1px solid #000' }}
+          style={{ border: "1px solid #000" }}
         />
         <canvas
           ref={answerCanvasRef}
           width="320"
           height="320"
           style={{
-            border: '1px solid #000',
-            display: showAnswer ? 'block' : 'none',
+            border: "1px solid #000",
+            display: showAnswer ? "block" : "none",
           }}
         />
+        {/* SVGコンテンツは漢字の書き順を表示するための信頼できるソースからのデータです */}
         <div
           data-testid="svg-container"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: SVGコンテンツは漢字の書き順を表示するための静的データです
           dangerouslySetInnerHTML={{
             __html: svgContent.replace(/(width|height)="[^"]+"/g, '$1="320"'),
           }}
           style={{
-            border: '1px solid #000',
-            display: showSVG ? 'block' : 'none',
+            border: "1px solid #000",
+            display: showSVG ? "block" : "none",
             width: 320,
             height: 320,
           }}
