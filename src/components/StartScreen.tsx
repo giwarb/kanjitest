@@ -43,7 +43,7 @@ export function StartScreen({ onStartPractice }: StartScreenProps) {
                                     selectedCount === count ? "selected" : ""
                                 }`}
                             >
-                                {count}問
+                                {count}もん
                             </button>
                         ))}
                     </div>

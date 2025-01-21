@@ -10,37 +10,36 @@ describe("StartScreen", () => {
         mockOnStartPractice.mockClear();
     });
 
-    test("renders with correct initial state", () => {
+    test("はじめの状態が正しく表示される", () => {
         render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
         // タイトルの確認
-        expect(screen.getByText("漢字練習")).toBeInTheDocument();
-        expect(screen.getByText("問題数を選んでください："))
+        expect(screen.getByText("かんじれんしゅう")).toBeInTheDocument();
+        expect(screen.getByText("もんだいすうをえらんでください："))
             .toBeInTheDocument();
 
         // デフォルトで10問が選択されていることを確認
-        const button10 = screen.getByText("10問");
-        expect(button10.className).toContain("bg-blue-600");
+        const button10 = screen.getByText("10もん");
+        expect(button10.className).toContain("selected");
     });
 
-    test("allows selecting different question counts", () => {
+    test("問題数を選択できる", () => {
         render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
         // 20問を選択
-        fireEvent.click(screen.getByText("20問"));
-        const button20 = screen.getByText("20問");
-        expect(button20.className).toContain("bg-blue-600");
+        fireEvent.click(screen.getByText("20もん"));
+        const button20 = screen.getByText("20もん");
+        expect(button20.className).toContain("selected");
 
         // 他のボタンは選択されていない
-        const button10 = screen.getByText("10問");
-        expect(button10.className).not.toContain("bg-blue-600");
+        const button10 = screen.getByText("10もん");
+        expect(button10.className).not.toContain("selected");
     });
-
-    test("starts practice with selected number of questions", () => {
+    test("選択した問題数で練習を開始できる", () => {
         render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
         // 30問を選択
-        fireEvent.click(screen.getByText("30問"));
+        fireEvent.click(screen.getByText("30もん"));
 
         // スタートボタンをクリック
         fireEvent.click(screen.getByText("スタート"));
@@ -51,18 +50,18 @@ describe("StartScreen", () => {
         expect(selectedQuestions).toHaveLength(30);
     });
 
-    test("selects random questions without duplicates", () => {
+    test("重複のないランダムな問題が選択される", () => {
         render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
-        // スタートボタンを複数回クリック
+        // スタートボタンを2回クリック
         fireEvent.click(screen.getByText("スタート"));
         fireEvent.click(screen.getByText("スタート"));
 
-        // 2回のコールで異なる問題セットが選ばれることを確認
+        // それぞれの問題セットを取得
         const firstSet = mockOnStartPractice.mock.calls[0][0];
         const secondSet = mockOnStartPractice.mock.calls[1][0];
 
-        // 同じ長さだが内容は異なることを確認
+        // 問題数が同じで内容が異なることを確認
         expect(firstSet).toHaveLength(10);
         expect(secondSet).toHaveLength(10);
         expect(firstSet).not.toEqual(secondSet);

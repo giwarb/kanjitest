@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { KanjiQuestionManager } from '../KanjiQuestionManager';
 
-// localStorageのモック
+// localStorage のモック実装
 const mockLocalStorage = (() => {
   let store: { [key: string]: string } = {};
   return {
@@ -44,23 +44,23 @@ const mockQuestions = [
   },
 ];
 
-describe('KanjiQuestionManager', () => {
-  it('should initialize correctly', () => {
+describe('漢字問題管理クラス', () => {
+  it('正しく初期化されること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
     expect(manager.isComplete()).toBe(false);
     expect(manager.isInReviewMode()).toBe(false);
   });
 
-  it('should move to next question correctly', () => {
+  it('次の問題に正しく移動できること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
     expect(manager.moveToNext()).toBe(true);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
-  describe('result recording', () => {
-    it('should record results correctly with boolean only', () => {
+  describe('結果の記録', () => {
+    it('真偽値のみで結果を正しく記録できること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
 
       // 正解として記録
@@ -81,10 +81,10 @@ describe('KanjiQuestionManager', () => {
       expect(results.percentage).toBe((2 / 3) * 100);
     });
 
-    it('should handle individual stroke results correctly', () => {
+    it('個々の筆画の結果を正しく処理できること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
 
-      // 全ストロークが閾値以上なので正解
+      // すべての筆画が閾値以上で正解
       const strokeResults1 = [
         { score: 0.7, sampleResampled: [], userResampled: [] },
         { score: 0.8, sampleResampled: [], userResampled: [] },
@@ -93,7 +93,7 @@ describe('KanjiQuestionManager', () => {
       manager.recordResult(true, strokeResults1);
       manager.moveToNext();
 
-      // 1つのストロークが閾値未満なので不正解
+      // 1つの筆画が閾値未満のため不正解
       const strokeResults2 = [
         { score: 0.8, sampleResampled: [], userResampled: [] },
         { score: 0.4, sampleResampled: [], userResampled: [] },
@@ -118,18 +118,18 @@ describe('KanjiQuestionManager', () => {
     });
   });
 
-  it('should handle review mode correctly', () => {
+  it('復習モードを正しく処理できること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
-    // 1問目: 正解
+    // 第1問: 正解
     manager.recordResult(true);
     manager.moveToNext();
 
-    // 2問目: 不正解
+    // 第2問: 不正解
     manager.recordResult(false);
     manager.moveToNext();
 
-    // 3問目: 不正解
+    // 第3問: 不正解
     manager.recordResult(false);
 
     expect(manager.hasIncorrectQuestions()).toBe(true);
@@ -140,7 +140,7 @@ describe('KanjiQuestionManager', () => {
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
-  it('should reset correctly', () => {
+  it('正しくリセットできること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
@@ -153,7 +153,7 @@ describe('KanjiQuestionManager', () => {
     expect(manager.getResultsScore().total).toBe(0);
   });
 
-  it('should complete when all questions are answered', () => {
+  it('すべての問題が回答されたとき完了状態になること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
@@ -165,16 +165,16 @@ describe('KanjiQuestionManager', () => {
     expect(manager.isComplete()).toBe(true);
   });
 
-  it('should count total questions correctly with two questions', () => {
-    // 2問のみのテストケース
+  it('2問のみの場合、合計問題数を正しく計算できること', () => {
+    // 2問だけのテストケース作成
     const shortQuestions = mockQuestions.slice(0, 2);
     const manager = new KanjiQuestionManager(shortQuestions);
 
-    // 1問目: 不正解
+    // 第1問: 不正解
     manager.recordResult(false);
     manager.moveToNext();
 
-    // 2問目: 正解
+    // 第2問: 正解
     manager.recordResult(true);
 
     const results = manager.getResultsScore();
@@ -184,15 +184,15 @@ describe('KanjiQuestionManager', () => {
     expect(results.percentage).toBe(50); // 正答率50%
   });
 
-  it('should handle review mode results correctly', () => {
+  it('復習モードの結果を正しく処理できること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
-    // 通常モード：3問中1問正解
-    manager.recordResult(true); // 正解
+    // 通常モード：全3問中1問正解
+    manager.recordResult(true); // 第1問：正解
     manager.moveToNext();
-    manager.recordResult(false); // 不正解
+    manager.recordResult(false); // 第2問：不正解
     manager.moveToNext();
-    manager.recordResult(false); // 不正解
+    manager.recordResult(false); // 第3問：不正解
 
     let results = manager.getResultsScore();
     expect(results.total).toBe(3);
@@ -223,8 +223,8 @@ describe('KanjiQuestionManager', () => {
     expect(results.incorrectCount).toBe(0);
   });
 
-  describe('localStorage functionality', () => {
-    it('should save state to localStorage after recording result', () => {
+  describe('LocalStorage機能', () => {
+    it('結果を記録した後にLocalStorageに状態が保存されること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
       const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
@@ -234,8 +234,8 @@ describe('KanjiQuestionManager', () => {
       expect(savedState.results[0].isCorrect).toBe(true);
     });
 
-    it('should not restore state from localStorage on initialization', () => {
-      // 最初のインスタンスで状態を保存
+    it('初期化時にLocalStorageから状態を復元しないこと', () => {
+      // 最初のインスタンスで状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
       manager1.moveToNext();
@@ -246,7 +246,7 @@ describe('KanjiQuestionManager', () => {
       expect(manager2.getResultsScore().total).toBe(0); // 回答なし
     });
 
-    it('should clear localStorage when reset is called', () => {
+    it('リセット時にLocalStorageがクリアされること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
       manager.reset();
@@ -254,7 +254,7 @@ describe('KanjiQuestionManager', () => {
       expect(mockLocalStorage.getItem('kanjiQuestionManagerState')).toBeNull();
     });
 
-    it('should save state after moving to next question', () => {
+    it('次の問題に移動後に状態が保存されること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.moveToNext();
 
@@ -264,7 +264,7 @@ describe('KanjiQuestionManager', () => {
       expect(savedState.currentIndex).toBe(1);
     });
 
-    it('should save state when entering review mode', () => {
+    it('復習モード開始時に状態が保存されること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(false); // 不正解
       manager.startReviewMode();
@@ -276,8 +276,8 @@ describe('KanjiQuestionManager', () => {
       expect(savedState.targetQuestionIdices).toHaveLength(1); // 不正解の問題1つ
     });
 
-    it('should maintain total results across instances using restoreFromStorage', () => {
-      // 最初のインスタンスで結果を記録
+    it('restoreFromStorageを使用してインスタンス間で合計結果が維持されること', () => {
+      // 最初のインスタンスで結果を記録する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(false); // 不正解
 
@@ -291,8 +291,8 @@ describe('KanjiQuestionManager', () => {
       }
     });
 
-    it('should restore from storage using static method when state exists', () => {
-      // 状態を保存
+    it('状態が存在する場合、静的メソッドでストレージから復元できること', () => {
+      // 状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
       manager1.moveToNext();
@@ -304,26 +304,26 @@ describe('KanjiQuestionManager', () => {
       expect(restoredManager?.getResultsScore().total).toBe(1); // 1問回答済み
     });
 
-    it('should return null from static restore method when no state exists', () => {
-      // localStorageが空の状態で実行
+    it('状態が存在しない場合、静的復元メソッドがnullを返すこと', () => {
+      // LocalStorageが空の状態で実行する
       const restoredManager = KanjiQuestionManager.restoreFromStorage();
       expect(restoredManager).toBeNull();
     });
   });
 
-  it('should count incorrect attempts correctly', () => {
+  it('不正解の試行回数を正しくカウントできること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
-    // 1問目: 2回間違える
-    manager.recordResult(false); // 不正解
+    // 第1問: 2回不正解
+    manager.recordResult(false); // 1回目の不正解
     manager.moveToNext();
     manager.recordResult(true); // 正解
     manager.moveToNext();
-    manager.recordResult(false); // 不正解
+    manager.recordResult(false); // 2回目の不正解
 
     manager.startReviewMode();
 
-    // 復習モードで1問目をもう一度間違える
+    // 復習モードで第1問をさらに1回不正解
     manager.recordResult(false); // 不正解
     manager.moveToNext();
     manager.recordResult(true); // 正解
@@ -344,10 +344,10 @@ describe('KanjiQuestionManager', () => {
     });
   });
 
-  it('should return empty array when no incorrect answers', () => {
+  it('不正解がない場合、空の配列を返すこと', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
-    // すべて正解
+    // すべての問題で正解
     manager.recordResult(true);
     manager.moveToNext();
     manager.recordResult(true);
