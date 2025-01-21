@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PracticeCanvas } from "../components/PracticeCanvas";
+import { PracticeCanvas } from "./PracticeCanvas";
 
 describe("PracticeCanvas", () => {
   const mockCanvasRef = { current: document.createElement("canvas") };

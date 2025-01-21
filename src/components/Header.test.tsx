@@ -42,7 +42,7 @@ describe("Header", () => {
   it("opens menu dialog when menu button is clicked", () => {
     render(<Header onReset={mockOnReset} onBackToStart={mockOnBackToStart} />);
 
-    fireEvent.click(screen.getByLabelText("メニュー"));
+    fireEvent.click(screen.getByRole("button", { name: "メニュー" }));
     expect(screen.getByText("さいしょから")).toBeInTheDocument();
     expect(screen.getByText("スタートがめんへ")).toBeInTheDocument();
   });

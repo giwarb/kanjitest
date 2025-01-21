@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { KanjiQuestionManager } from "../KanjiQuestionManager";
+import { KanjiQuestionManager } from "./KanjiQuestionManager";
 
 // localStorage のモック実装
 const mockLocalStorage = (() => {

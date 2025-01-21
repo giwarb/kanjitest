@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import "@testing-library/jest-dom";
-import { StartScreen } from "../components/StartScreen";
+import { StartScreen } from "./StartScreen";
 
 describe("StartScreen", () => {
   const mockOnStartPractice = vi.fn();

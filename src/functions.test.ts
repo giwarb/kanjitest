@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getSVGStrokes, compareStrokes } from "../functions";
+import { getSVGStrokes, compareStrokes } from "./functions";
 
 describe("SVG Path関連のテスト", () => {
   it("getSVGStrokesが空のSVG要素から空の配列を返すこと", () => {

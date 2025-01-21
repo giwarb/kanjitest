@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, renderHook } from "@testing-library/react";
-import { useDrawingManager } from "../useDrawingManager";
+import { useDrawingManager } from "./useDrawingManager";
 
 describe("useDrawingManager", () => {
   let canvas: HTMLCanvasElement;

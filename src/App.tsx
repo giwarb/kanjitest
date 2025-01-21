@@ -6,7 +6,7 @@ import {
   showEvaluationOverlay,
 } from "./functions";
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
-import { useDrawingManager } from "./useDrawingManager";
+import { useDrawingManager } from "./hooks/useDrawingManager";
 import type { data } from "./data";
 import { ResultsView } from "./components/ResultsView";
 import { PracticeCanvas } from "./components/PracticeCanvas";

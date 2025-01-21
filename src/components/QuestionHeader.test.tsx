@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { QuestionHeader } from "../components/QuestionHeader";
+import { QuestionHeader } from "./QuestionHeader";
 
 describe("QuestionHeader", () => {
   const defaultProps = {

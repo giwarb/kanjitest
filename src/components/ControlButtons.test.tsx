@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ControlButtons } from "../components/ControlButtons";
+import { ControlButtons } from "./ControlButtons";
 
 describe("ControlButtons", () => {
   const mockHandlers = {
@@ -51,14 +51,6 @@ describe("ControlButtons", () => {
     ).not.toBeDisabled();
   });
 
-  it("さいしょからボタンは常に表示される", () => {
-    const { rerender } = render(<ControlButtons {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "さいしょから" })).toBeDefined();
-
-    rerender(<ControlButtons {...defaultProps} showNext={true} />);
-    expect(screen.getByRole("button", { name: "さいしょから" })).toBeDefined();
-  });
-
   it("各ボタンのクリックで対応するハンドラーが呼ばれる", () => {
     const { rerender } = render(<ControlButtons {...defaultProps} />);
 
@@ -76,9 +68,5 @@ describe("ControlButtons", () => {
     rerender(<ControlButtons {...defaultProps} showNext={true} />);
     fireEvent.click(screen.getByRole("button", { name: "つぎの もんだいへ" }));
     expect(mockHandlers.onNextQuestion).toHaveBeenCalledTimes(1);
-
-    // さいしょからボタン
-    fireEvent.click(screen.getByRole("button", { name: "さいしょから" }));
-    expect(mockHandlers.onReset).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ResultsView } from "../components/ResultsView";
+import { ResultsView } from "./ResultsView";
 
 describe("ResultsView", () => {
   const mockResults = {
