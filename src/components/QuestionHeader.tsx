@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import "./QuestionHeader.css";
 
 interface QuestionHeaderProps {
   currentQuestionNumber: number;

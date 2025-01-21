@@ -1,34 +1,19 @@
 import type { FC } from "react";
 import { useState } from "react";
 import { MenuDialog } from "./MenuDialog";
+import "./Header.css";
 
 interface HeaderProps {
-  currentQuestionNumber?: number;
-  totalQuestions?: number;
-  isReviewMode?: boolean;
   onReset: () => void;
   onBackToStart: () => void;
 }
 
-export const Header: FC<HeaderProps> = ({
-  currentQuestionNumber,
-  totalQuestions,
-  isReviewMode,
-  onReset,
-  onBackToStart,
-}) => {
+export const Header: FC<HeaderProps> = ({ onReset, onBackToStart }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="header">
-      <div className="header-content">
-        {currentQuestionNumber !== undefined && (
-          <div className="question-counter">
-            {currentQuestionNumber} / {totalQuestions}
-          </div>
-        )}
-        {isReviewMode && <div className="review-mode">ふくしゅうモード</div>}
-      </div>
+      <div className="header-content">かんじれんしゅう アプリ</div>
       <button
         type="button"
         className="menu-button"
