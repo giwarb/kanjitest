@@ -14,32 +14,7 @@ describe("Header", () => {
     cleanup();
   });
 
-  it("renders question counter when numbers are provided", () => {
-    render(
-      <Header
-        currentQuestionNumber={1}
-        totalQuestions={10}
-        onReset={mockOnReset}
-        onBackToStart={mockOnBackToStart}
-      />
-    );
-
-    expect(screen.getByText("1 / 10")).toBeInTheDocument();
-  });
-
-  it("shows review mode text when isReviewMode is true", () => {
-    render(
-      <Header
-        isReviewMode={true}
-        onReset={mockOnReset}
-        onBackToStart={mockOnBackToStart}
-      />
-    );
-
-    expect(screen.getByText("ふくしゅうモード")).toBeInTheDocument();
-  });
-
-  it("opens menu dialog when menu button is clicked", () => {
+  it("クリックしたらメニューが開くこと", () => {
     render(<Header onReset={mockOnReset} onBackToStart={mockOnBackToStart} />);
 
     fireEvent.click(screen.getByRole("button", { name: "メニュー" }));

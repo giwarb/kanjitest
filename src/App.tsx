@@ -150,6 +150,7 @@ function App() {
   };
 
   const handleBackToStart = () => {
+    manager?.unloadFromStorage();
     setManager(null);
     setResults(null);
   };

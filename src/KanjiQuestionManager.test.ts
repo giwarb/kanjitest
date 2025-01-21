@@ -233,10 +233,13 @@ describe("漢字問題管理クラス", () => {
       expect(manager2.getResultsScore().total).toBe(0); // 回答なし
     });
 
-    it("リセット時にLocalStorageがクリアされること", () => {
+    it("アンロード時にLocalStorageがクリアされること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
-      manager.reset();
+      expect(
+        mockLocalStorage.getItem("kanjiQuestionManagerState")
+      ).not.toBeNull();
+      manager.unloadFromStorage();
 
       expect(mockLocalStorage.getItem("kanjiQuestionManagerState")).toBeNull();
     });
