@@ -85,7 +85,7 @@ export class KanjiQuestionManager {
     const averageScorePercentage = Math.round(averageScore * 100);
     const minScorePercentage = Math.round(minScore * 100);
 
-    return `スコア: ${minScorePercentage}% (平均: ${averageScorePercentage}%)`;
+    return `スコア: ${minScorePercentage}%、へいきん: ${averageScorePercentage}%`;
   }
 
   recordResult(isCorrect: boolean, strokeResults?: StrokeResult[]): void {
