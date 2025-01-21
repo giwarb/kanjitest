@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { ResultsView } from '../components/ResultsView';
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { ResultsView } from "../components/ResultsView";
 
-describe('ResultsView', () => {
+describe("ResultsView", () => {
   const mockResults = {
     total: 10,
     correct: 8,
@@ -19,7 +19,7 @@ describe('ResultsView', () => {
 
   const mockOnRestartReview = vi.fn();
 
-  it('間違いがある場合、正しく結果を表示する', () => {
+  it("間違いがある場合、正しく結果を表示する", () => {
     render(
       <ResultsView
         results={mockResults}
@@ -28,18 +28,18 @@ describe('ResultsView', () => {
     );
 
     expect(
-      screen.getByText('ぜん10もんちゅう、8もん せいかい！')
+      screen.getByText("ぜん10もんちゅう、8もん せいかい！")
     ).toBeDefined();
-    expect(screen.getByText('せいかいりつ: 80.0%')).toBeDefined();
-    expect(screen.getByText('2もん まちがいました。')).toBeDefined();
+    expect(screen.getByText("せいかいりつ: 80.0%")).toBeDefined();
+    expect(screen.getByText("2もん まちがいました。")).toBeDefined();
     expect(
-      screen.getByRole('button', {
-        name: 'まちがった もんだい を もういちど',
+      screen.getByRole("button", {
+        name: "まちがった もんだい を もういちど",
       })
     ).toBeDefined();
   });
 
-  it('すべて正解の場合、適切なメッセージを表示する', () => {
+  it("すべて正解の場合、適切なメッセージを表示する", () => {
     const perfectResults = {
       ...mockResults,
       correct: 10,
@@ -55,12 +55,12 @@ describe('ResultsView', () => {
     );
 
     expect(
-      screen.getByText('すべての もんだいを せいかいしました！')
+      screen.getByText("すべての もんだいを せいかいしました！")
     ).toBeDefined();
-    expect(screen.queryByText('まちがった もんだい を もういちど')).toBeNull();
+    expect(screen.queryByText("まちがった もんだい を もういちど")).toBeNull();
   });
 
-  it('復習ボタンをクリックすると onRestartReview が呼ばれる', () => {
+  it("復習ボタンをクリックすると onRestartReview が呼ばれる", () => {
     render(
       <ResultsView
         results={mockResults}
@@ -69,8 +69,8 @@ describe('ResultsView', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', {
-        name: 'まちがった もんだい を もういちど',
+      screen.getByRole("button", {
+        name: "まちがった もんだい を もういちど",
       })
     );
     expect(mockOnRestartReview).toHaveBeenCalledTimes(1);

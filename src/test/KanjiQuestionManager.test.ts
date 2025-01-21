@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { KanjiQuestionManager } from '../KanjiQuestionManager';
+import { describe, it, expect, beforeEach } from "vitest";
+import { KanjiQuestionManager } from "../KanjiQuestionManager";
 
 // localStorage のモック実装
 const mockLocalStorage = (() => {
@@ -19,8 +19,7 @@ const mockLocalStorage = (() => {
 })();
 
 // グローバルのlocalStorageをモックに置き換え
-Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
-
+Object.defineProperty(window, "localStorage", { value: mockLocalStorage });
 
 beforeEach(() => {
   mockLocalStorage.clear();
@@ -28,39 +27,39 @@ beforeEach(() => {
 
 const mockQuestions = [
   {
-    sentence: '問題1',
-    target: '一',
-    svg: '<svg>...</svg>',
+    sentence: "問題1",
+    target: "一",
+    svg: "<svg>...</svg>",
   },
   {
-    sentence: '問題2',
-    target: '二',
-    svg: '<svg>...</svg>',
+    sentence: "問題2",
+    target: "二",
+    svg: "<svg>...</svg>",
   },
   {
-    sentence: '問題3',
-    target: '三',
-    svg: '<svg>...</svg>',
+    sentence: "問題3",
+    target: "三",
+    svg: "<svg>...</svg>",
   },
 ];
 
-describe('漢字問題管理クラス', () => {
-  it('正しく初期化されること', () => {
+describe("漢字問題管理クラス", () => {
+  it("正しく初期化されること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
     expect(manager.isComplete()).toBe(false);
     expect(manager.isInReviewMode()).toBe(false);
   });
 
-  it('次の問題に正しく移動できること', () => {
+  it("次の問題に正しく移動できること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
     manager.recordResult(true);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
-  describe('結果の記録', () => {
-    it('真偽値のみで結果を正しく記録できること', () => {
+  describe("結果の記録", () => {
+    it("真偽値のみで結果を正しく記録できること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
 
       // 正解として記録
@@ -79,7 +78,7 @@ describe('漢字問題管理クラス', () => {
       expect(results.percentage).toBe((2 / 3) * 100);
     });
 
-    it('個々の筆画の結果を正しく処理できること', () => {
+    it("個々の筆画の結果を正しく処理できること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
 
       // すべての筆画が閾値以上で正解
@@ -114,7 +113,7 @@ describe('漢字問題管理クラス', () => {
     });
   });
 
-  it('復習モードを正しく処理できること', () => {
+  it("復習モードを正しく処理できること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     // 第1問: 正解
@@ -134,7 +133,7 @@ describe('漢字問題管理クラス', () => {
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
-  it('正しくリセットできること', () => {
+  it("正しくリセットできること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
@@ -146,7 +145,7 @@ describe('漢字問題管理クラス', () => {
     expect(manager.getResultsScore().total).toBe(0);
   });
 
-  it('すべての問題が回答されたとき完了状態になること', () => {
+  it("すべての問題が回答されたとき完了状態になること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
@@ -156,7 +155,7 @@ describe('漢字問題管理クラス', () => {
     expect(manager.isComplete()).toBe(true);
   });
 
-  it('2問のみの場合、合計問題数を正しく計算できること', () => {
+  it("2問のみの場合、合計問題数を正しく計算できること", () => {
     // 2問だけのテストケース作成
     const shortQuestions = mockQuestions.slice(0, 2);
     const manager = new KanjiQuestionManager(shortQuestions);
@@ -174,7 +173,7 @@ describe('漢字問題管理クラス', () => {
     expect(results.percentage).toBe(50); // 正答率50%
   });
 
-  it('復習モードの結果を正しく処理できること', () => {
+  it("復習モードの結果を正しく処理できること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     // 通常モード：全3問中1問正解
@@ -210,18 +209,20 @@ describe('漢字問題管理クラス', () => {
     expect(results.incorrectCount).toBe(0);
   });
 
-  describe('LocalStorage機能', () => {
-    it('結果を記録した後にLocalStorageに状態が保存されること', () => {
+  describe("LocalStorage機能", () => {
+    it("結果を記録した後にLocalStorageに状態が保存されること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
-      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      const savedStateStr = mockLocalStorage.getItem(
+        "kanjiQuestionManagerState"
+      );
       expect(savedStateStr).not.toBeNull();
-      const savedState = JSON.parse(savedStateStr || '');
+      const savedState = JSON.parse(savedStateStr || "");
       expect(savedState.results).toHaveLength(1);
       expect(savedState.results[0].isCorrect).toBe(true);
     });
 
-    it('初期化時にLocalStorageから状態を復元しないこと', () => {
+    it("初期化時にLocalStorageから状態を復元しないこと", () => {
       // 最初のインスタンスで状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
@@ -232,37 +233,41 @@ describe('漢字問題管理クラス', () => {
       expect(manager2.getResultsScore().total).toBe(0); // 回答なし
     });
 
-    it('リセット時にLocalStorageがクリアされること', () => {
+    it("リセット時にLocalStorageがクリアされること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
       manager.reset();
 
-      expect(mockLocalStorage.getItem('kanjiQuestionManagerState')).toBeNull();
+      expect(mockLocalStorage.getItem("kanjiQuestionManagerState")).toBeNull();
     });
 
-    it('次の問題に移動後に状態が保存されること', () => {
+    it("次の問題に移動後に状態が保存されること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(true);
 
-      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      const savedStateStr = mockLocalStorage.getItem(
+        "kanjiQuestionManagerState"
+      );
       expect(savedStateStr).not.toBeNull();
-      const savedState = JSON.parse(savedStateStr || '');
+      const savedState = JSON.parse(savedStateStr || "");
       expect(savedState.currentIndex).toBe(1);
     });
 
-    it('復習モード開始時に状態が保存されること', () => {
+    it("復習モード開始時に状態が保存されること", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
       manager.recordResult(false); // 不正解
       manager.startReviewMode();
 
-      const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
+      const savedStateStr = mockLocalStorage.getItem(
+        "kanjiQuestionManagerState"
+      );
       expect(savedStateStr).not.toBeNull();
-      const savedState = JSON.parse(savedStateStr || '');
+      const savedState = JSON.parse(savedStateStr || "");
       expect(savedState.isReviewMode).toBe(true);
       expect(savedState.targetQuestionIdices).toHaveLength(1); // 不正解の問題1つ
     });
 
-    it('restoreFromStorageを使用してインスタンス間で合計結果が維持されること', () => {
+    it("restoreFromStorageを使用してインスタンス間で合計結果が維持されること", () => {
       // 最初のインスタンスで結果を記録する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(false); // 不正解
@@ -277,7 +282,7 @@ describe('漢字問題管理クラス', () => {
       }
     });
 
-    it('状態が存在する場合、静的メソッドでストレージから復元できること', () => {
+    it("状態が存在する場合、静的メソッドでストレージから復元できること", () => {
       // 状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
@@ -289,14 +294,14 @@ describe('漢字問題管理クラス', () => {
       expect(restoredManager?.getResultsScore().total).toBe(1); // 1問回答済み
     });
 
-    it('状態が存在しない場合、静的復元メソッドがnullを返すこと', () => {
+    it("状態が存在しない場合、静的復元メソッドがnullを返すこと", () => {
       // LocalStorageが空の状態で実行する
       const restoredManager = KanjiQuestionManager.restoreFromStorage();
       expect(restoredManager).toBeNull();
     });
   });
 
-  it('不正解の試行回数を正しくカウントできること', () => {
+  it("不正解の試行回数を正しくカウントできること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     // 第1問: 2回不正解
@@ -326,7 +331,7 @@ describe('漢字問題管理クラス', () => {
     });
   });
 
-  it('不正解がない場合、空の配列を返すこと', () => {
+  it("不正解がない場合、空の配列を返すこと", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     // すべての問題で正解

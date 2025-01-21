@@ -20,58 +20,58 @@ export const ResultsView: FC<ResultsViewProps> = ({
   onRestartReview,
 }) => {
   return (
-    <div className="app">
+    <>
       <h2>けっか</h2>
       <div>
         ぜん{results.total}もんちゅう、{results.correct}もん せいかい！
       </div>
       <div>せいかいりつ: {results.percentage.toFixed(1)}%</div>
-      {results.incorrectCount > 0
-        ? (
+      {results.incorrectCount > 0 ? (
+        <>
+          <p style={{ textAlign: "center" }}>
+            {results.incorrectCount}もん まちがいました。
+          </p>
           <div>
-            <p style={{ textAlign: "center" }}>
-              {results.incorrectCount}もん まちがいました。
-            </p>
             <button type="button" onClick={onRestartReview}>
               まちがった もんだい を もういちど
             </button>
           </div>
-        )
-        : (
-          <>
-            <div>すべての もんだいを せいかいしました！</div>
-            <div style={{ marginBottom: "20px" }}>
-              <h3
-                style={{
-                  color: "green",
-                  marginBottom: "10px",
-                }}
-              >
-                まちがえた もんだい
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
-                {results.incorrectDetails.map((detail) => (
-                  <div key={detail.questionIndex}>
-                    {/* 問題文は漢字の表示のための静的なHTMLコンテンツです */}
-                    <div
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: 問題文は漢字の表示のための静的なHTMLコンテンツです
-                      dangerouslySetInnerHTML={{
-                        __html: detail.sentence,
-                      }}
-                    />
-                    <div>{detail.incorrectCount}かい まちがえました</div>
-                  </div>
-                ))}
-              </div>
+        </>
+      ) : (
+        <>
+          <div>すべての もんだいを せいかいしました！</div>
+          <div style={{ marginBottom: "20px" }}>
+            <h3
+              style={{
+                color: "green",
+                marginBottom: "10px",
+              }}
+            >
+              まちがえた もんだい
+            </h3>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              {results.incorrectDetails.map((detail) => (
+                <div key={detail.questionIndex}>
+                  {/* 問題文は漢字の表示のための静的なHTMLコンテンツです */}
+                  <div
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: 問題文は漢字の表示のための静的なHTMLコンテンツです
+                    dangerouslySetInnerHTML={{
+                      __html: detail.sentence,
+                    }}
+                  />
+                  <div>{detail.incorrectCount}かい まちがえました</div>
+                </div>
+              ))}
             </div>
-          </>
-        )}
-    </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };

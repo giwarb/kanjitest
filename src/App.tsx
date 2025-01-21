@@ -8,13 +8,13 @@ import {
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./useDrawingManager";
 import type { data } from "./data";
-import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ResultsView } from "./components/ResultsView";
 import { PracticeCanvas } from "./components/PracticeCanvas";
-import { QuestionHeader } from "./components/QuestionHeader";
 import { ControlButtons } from "./components/ControlButtons";
 import { StartScreen } from "./components/StartScreen";
+import { Header } from "./components/Header";
 import "./App.css";
+import { QuestionHeader } from "./components/QuestionHeader";
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,23 +28,17 @@ function App() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showSVG, setShowSVG] = useState(false);
   const [result, setResult] = useState("");
-  const [results, setResults] = useState<
-    {
-      total: number;
-      correct: number;
+  const [results, setResults] = useState<{
+    total: number;
+    correct: number;
+    incorrectCount: number;
+    percentage: number;
+    incorrectDetails: {
+      questionIndex: number;
       incorrectCount: number;
-      percentage: number;
-      incorrectDetails: {
-        questionIndex: number;
-        incorrectCount: number;
-        sentence: string;
-      }[];
-    } | null
-  >(null);
-  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
-  const [isConfirmBackToStartOpen, setIsConfirmBackToStartOpen] = useState(
-    false,
-  );
+      sentence: string;
+    }[];
+  } | null>(null);
 
   const loadQuestion = useCallback(() => {
     if (!manager) return;
@@ -62,7 +56,7 @@ function App() {
       }
       const masked = currentQuestion.sentence.replace(
         new RegExp(currentQuestion.target, "g"),
-        "＿＿",
+        "＿＿"
       );
       setQuestion(masked);
       setSvgContent(currentQuestion.svg);
@@ -109,14 +103,14 @@ function App() {
     const strokesSvg = getSVGStrokes(svg);
     if (strokesSvg.length !== userStrokes.length) {
       setResult(
-        `かくすうがちがうよ！（おてほん: ${strokesSvg.length}、あなた: ${userStrokes.length}）`,
+        `かくすうがちがうよ！（おてほん: ${strokesSvg.length}、あなた: ${userStrokes.length}）`
       );
       setShowSVG(true);
       manager.recordResult(false);
     } else {
       const { strokeResults, normParamsUser } = compareStrokes(
         strokesSvg,
-        userStrokes,
+        userStrokes
       );
       const scores = strokeResults.map((result) => result.score);
       const isCorrect = manager.isCorrect(scores);
@@ -129,13 +123,13 @@ function App() {
         ctx,
         strokeResults,
         normParamsUser,
-        KanjiQuestionManager.SCORE_THRESHOLD,
+        KanjiQuestionManager.SCORE_THRESHOLD
       );
       drawSampleStrokes(
         answerCtx,
         strokeResults,
         normParamsUser,
-        KanjiQuestionManager.SCORE_THRESHOLD,
+        KanjiQuestionManager.SCORE_THRESHOLD
       );
       setShowAnswer(true);
       setResult(`${resultText}（${scoreText}）`);
@@ -156,24 +150,15 @@ function App() {
   };
 
   const handleBackToStart = () => {
-    setIsConfirmBackToStartOpen(true);
-  };
-
-  const handleConfirmBackToStart = () => {
     setManager(null);
-    setIsConfirmBackToStartOpen(false);
+    setResults(null);
   };
 
   const handleReset = () => {
-    setIsConfirmResetOpen(true);
-  };
-
-  const handleConfirmReset = () => {
     if (!manager) return;
     manager.reset();
     loadQuestion();
     setResults(null);
-    setIsConfirmResetOpen(false);
   };
 
   const handleDontKnow = () => {
@@ -192,7 +177,10 @@ function App() {
 
   if (results) {
     return (
-      <ResultsView results={results} onRestartReview={handleRestartReview} />
+      <div className="app">
+        <Header onReset={handleReset} onBackToStart={handleBackToStart} />
+        <ResultsView results={results} onRestartReview={handleRestartReview} />
+      </div>
     );
   }
 
@@ -202,6 +190,7 @@ function App() {
 
   return (
     <div className="app">
+      <Header onReset={handleReset} onBackToStart={handleBackToStart} />
       <QuestionHeader
         currentQuestionNumber={currentQuestionNumber}
         totalQuestions={manager.getTotalQuestions()}
@@ -224,20 +213,6 @@ function App() {
         onClear={handleClear}
         onDontKnow={handleDontKnow}
         onNextQuestion={handleNextQuestion}
-        onReset={handleReset}
-        onBackToStart={handleBackToStart}
-      />
-      <ConfirmDialog
-        isOpen={isConfirmResetOpen}
-        message="さいしょからやりなおしますか？"
-        onConfirm={handleConfirmReset}
-        onCancel={() => setIsConfirmResetOpen(false)}
-      />
-      <ConfirmDialog
-        isOpen={isConfirmBackToStartOpen}
-        message="スタートがめんにもどりますか？"
-        onConfirm={handleConfirmBackToStart}
-        onCancel={() => setIsConfirmBackToStartOpen(false)}
       />
     </div>
   );

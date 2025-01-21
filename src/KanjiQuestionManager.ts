@@ -1,4 +1,4 @@
-import type { StrokeResult } from './functions';
+import type { StrokeResult } from "./functions";
 
 interface Question {
   sentence: string;
@@ -28,7 +28,7 @@ export class KanjiQuestionManager {
   private results: QuestionResult[];
   private totalResults: QuestionResult[];
   private isReviewMode: boolean;
-  private static readonly STORAGE_KEY = 'kanjiQuestionManagerState';
+  private static readonly STORAGE_KEY = "kanjiQuestionManagerState";
   public static readonly SCORE_THRESHOLD = 0.6;
 
   constructor(questions: Question[]) {
@@ -90,7 +90,7 @@ export class KanjiQuestionManager {
 
   recordResult(isCorrect: boolean, strokeResults?: StrokeResult[]): void {
     if (this.isComplete()) {
-      throw new Error('All questions have been answered');
+      throw new Error("All questions have been answered");
     }
 
     const questionIndex = this.targetQuestionIdices[this.currentIndex];

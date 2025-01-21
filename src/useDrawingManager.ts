@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 interface Point {
   x: number;
@@ -13,9 +13,9 @@ export const useDrawingManager = (canvas: HTMLCanvasElement | null) => {
 
   useEffect(() => {
     if (!canvas) return;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     if (!context) {
-      throw new Error('Failed to get 2D context');
+      throw new Error("Failed to get 2D context");
     }
 
     ctxRef.current = context;
@@ -74,7 +74,7 @@ export const useDrawingManager = (canvas: HTMLCanvasElement | null) => {
     const handleTouchStart = (e: TouchEvent) => {
       e.preventDefault();
       const t = e.touches[0];
-      const mouseEvent = new MouseEvent('mousedown', {
+      const mouseEvent = new MouseEvent("mousedown", {
         clientX: t.clientX,
         clientY: t.clientY,
         bubbles: true,
@@ -88,7 +88,7 @@ export const useDrawingManager = (canvas: HTMLCanvasElement | null) => {
       e.preventDefault();
       if (isDrawingRef.current) {
         const t = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
+        const mouseEvent = new MouseEvent("mousemove", {
           clientX: t.clientX,
           clientY: t.clientY,
           bubbles: true,
@@ -101,22 +101,22 @@ export const useDrawingManager = (canvas: HTMLCanvasElement | null) => {
 
     const handleTouchEnd = () => endStroke();
 
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('touchstart', handleTouchStart);
-    canvas.addEventListener('touchmove', handleTouchMove);
-    canvas.addEventListener('touchend', handleTouchEnd);
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+    canvas.addEventListener("touchstart", handleTouchStart);
+    canvas.addEventListener("touchmove", handleTouchMove);
+    canvas.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseUp);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
     };
   }, [canvas]);
 

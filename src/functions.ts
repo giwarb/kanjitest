@@ -15,8 +15,8 @@ export interface StrokeResult {
  * @returns {Array<Array<Point>>}
  */
 export function getSVGStrokes(element: SVGSVGElement): Point[][] {
-  return Array.from(element.querySelectorAll('path'), (path) =>
-    segmentsToPoints(parseSVGPath(path.getAttribute('d') || ''))
+  return Array.from(element.querySelectorAll("path"), (path) =>
+    segmentsToPoints(parseSVGPath(path.getAttribute("d") || ""))
   );
 }
 
@@ -47,7 +47,7 @@ function parseSVGPath(
     const args = floatMatches.map(Number);
 
     switch (absType) {
-      case 'M':
+      case "M":
         // ...（以下、M,L,C,Z の処理はこれまで通り）
         // 省略例:
         if (args.length < 2) break;
@@ -55,7 +55,7 @@ function parseSVGPath(
           let x = isRelative ? currentPoint.x + args[0] : args[0];
           let y = isRelative ? currentPoint.y + args[1] : args[1];
           currentPoint = { x, y };
-          segments.push({ type: 'M', points: [{ x, y }] });
+          segments.push({ type: "M", points: [{ x, y }] });
 
           // Mコマンドにさらに座標が続く場合は L 扱い
           for (let i = 2; i < args.length; i += 2) {
@@ -63,7 +63,7 @@ function parseSVGPath(
             x = isRelative ? currentPoint.x + args[i] : args[i];
             y = isRelative ? currentPoint.y + args[i + 1] : args[i + 1];
             segments.push({
-              type: 'L',
+              type: "L",
               points: [
                 { x: currentPoint.x, y: currentPoint.y },
                 { x, y },
@@ -74,7 +74,7 @@ function parseSVGPath(
         }
         break;
 
-      case 'C':
+      case "C":
         // 6 個単位で cp1,cp2, end
         for (let i = 0; i < args.length; i += 6) {
           if (i + 5 >= args.length) break;
@@ -85,7 +85,7 @@ function parseSVGPath(
           const endx = isRelative ? currentPoint.x + args[i + 4] : args[i + 4];
           const endy = isRelative ? currentPoint.y + args[i + 5] : args[i + 5];
           segments.push({
-            type: 'C',
+            type: "C",
             points: [
               { x: currentPoint.x, y: currentPoint.y },
               { x: cp1x, y: cp1y },
@@ -97,14 +97,14 @@ function parseSVGPath(
         }
         break;
 
-      case 'L':
+      case "L":
         // 2個単位で処理
         for (let i = 0; i < args.length; i += 2) {
           if (i + 1 >= args.length) break;
           const x = isRelative ? currentPoint.x + args[i] : args[i];
           const y = isRelative ? currentPoint.y + args[i + 1] : args[i + 1];
           segments.push({
-            type: 'L',
+            type: "L",
             points: [
               { x: currentPoint.x, y: currentPoint.y },
               { x, y },
@@ -114,7 +114,7 @@ function parseSVGPath(
         }
         break;
 
-      case 'S':
+      case "S":
         // 2個単位で処理: cp2, end
         for (let i = 0; i < args.length; i += 4) {
           if (i + 3 >= args.length) break;
@@ -124,7 +124,7 @@ function parseSVGPath(
           let cp1y = currentPoint.y;
           if (segments.length > 0) {
             const prevSeg = segments[segments.length - 1];
-            if (prevSeg.type === 'C' || prevSeg.type === 'S') {
+            if (prevSeg.type === "C" || prevSeg.type === "S") {
               const prevEnd = prevSeg.points[prevSeg.points.length - 1];
               const prevCP = prevSeg.points[prevSeg.points.length - 2];
               cp1x = 2 * prevEnd.x - prevCP.x;
@@ -138,7 +138,7 @@ function parseSVGPath(
           const endy = isRelative ? currentPoint.y + args[i + 3] : args[i + 3];
 
           segments.push({
-            type: 'C',
+            type: "C",
             points: [
               { x: currentPoint.x, y: currentPoint.y },
               { x: cp1x, y: cp1y },
@@ -150,15 +150,15 @@ function parseSVGPath(
         }
         break;
 
-      case 'Z':
+      case "Z":
         if (segments.length > 0) {
           // 最初のMoveToコマンドを探す
-          const firstMove = segments.find((seg) => seg.type === 'M') as
+          const firstMove = segments.find((seg) => seg.type === "M") as
             | { type: string; points: Point[] }
             | undefined;
           if (firstMove) {
             segments.push({
-              type: 'Z',
+              type: "Z",
               points: [currentPoint, firstMove.points[0]],
             });
             currentPoint = firstMove.points[0];
@@ -167,7 +167,7 @@ function parseSVGPath(
         break;
 
       default:
-        console.warn('Unsupported:', type);
+        console.warn("Unsupported:", type);
         break;
     }
   }
@@ -190,13 +190,13 @@ function segmentsToPoints(
 
   for (const seg of segments) {
     switch (seg.type) {
-      case 'M': {
+      case "M": {
         // MoveTo した点をひとまず加える
         points.push(seg.points[0]);
         started = true;
         break;
       }
-      case 'L': {
+      case "L": {
         // L: [start, end] で2点ある
         if (!started) {
           // まだ始点がないなら start(0)も加える
@@ -206,7 +206,7 @@ function segmentsToPoints(
         points.push(seg.points[1]);
         break;
       }
-      case 'C': {
+      case "C": {
         // C: [start, cp1, cp2, end]
         const p0 = seg.points[0];
         const p1 = seg.points[1];
@@ -222,7 +222,7 @@ function segmentsToPoints(
         points.push(...sampled.slice(1));
         break;
       }
-      case 'Z': {
+      case "Z": {
         // Z: 終点→始点
         points.push(seg.points[1]);
         break;
@@ -395,11 +395,11 @@ export function showEvaluationOverlay(
     canvasContext.canvas.height
   );
   canvasContext.globalAlpha = 0.4;
-  canvasContext.font = '16px sans-serif';
+  canvasContext.font = "16px sans-serif";
 
   strokeResults.forEach((res, i) => {
     canvasContext.lineWidth = res.score < boldThreasholdScore ? 4 : 1;
-    canvasContext.strokeStyle = 'blue';
+    canvasContext.strokeStyle = "blue";
     canvasContext.beginPath();
     res.userResampled.forEach((p, idx) => {
       const { cx, cy } = normalizedPointToCanvasUserScale(p, normParams);
@@ -413,7 +413,7 @@ export function showEvaluationOverlay(
       userStart,
       normParams
     );
-    canvasContext.fillStyle = 'blue';
+    canvasContext.fillStyle = "blue";
     canvasContext.fillText(`${i + 1}`, uX + 5, uY - 5);
   });
 
@@ -447,7 +447,9 @@ function normalizedPointToCanvasUserScale(
 function computeDTWDistance(s: Point[], t: Point[]): number {
   const n = s.length;
   const m = t.length;
-  const dtw = Array.from({ length: n + 1 }, () => Array(m + 1).fill(Number.POSITIVE_INFINITY));
+  const dtw = Array.from({ length: n + 1 }, () =>
+    Array(m + 1).fill(Number.POSITIVE_INFINITY)
+  );
   dtw[0][0] = 0;
 
   for (let i = 1; i <= n; i++) {
@@ -475,7 +477,7 @@ export function compareStrokes(
   normParamsUser: { centerX: number; centerY: number; scale: number };
 } {
   if (userStrokes.length !== sampleStrokes.length) {
-    throw new Error('The number of strokes does not match');
+    throw new Error("The number of strokes does not match");
   }
   const sampleAllPoints: Point[] = [];
   for (const stroke of sampleStrokes) {
@@ -537,12 +539,12 @@ export function drawSampleStrokes(
     canvasContext.canvas.height
   );
   canvasContext.globalAlpha = 0.4;
-  canvasContext.font = '16px sans-serif';
+  canvasContext.font = "16px sans-serif";
 
   strokeResults.forEach((res, i) => {
     canvasContext.lineWidth = res.score < boldThreasholdScore ? 4 : 1;
     canvasContext.beginPath();
-    canvasContext.strokeStyle = 'red';
+    canvasContext.strokeStyle = "red";
     res.sampleResampled.forEach((p, idx) => {
       const { cx, cy } = normalizedPointToCanvasUserScale(p, normParams);
       if (idx === 0) canvasContext.moveTo(cx, cy);
@@ -552,7 +554,7 @@ export function drawSampleStrokes(
 
     const start = res.sampleResampled[0];
     const { cx, cy } = normalizedPointToCanvasUserScale(start, normParams);
-    canvasContext.fillStyle = 'red';
+    canvasContext.fillStyle = "red";
     canvasContext.fillText(`${i + 1}`, cx + 5, cy - 5);
   });
   canvasContext.globalAlpha = 1;

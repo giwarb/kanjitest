@@ -7,8 +7,6 @@ interface ControlButtonsProps {
   onClear: () => void;
   onDontKnow: () => void;
   onNextQuestion: () => void;
-  onReset: () => void;
-  onBackToStart: () => void;
 }
 
 export const ControlButtons: FC<ControlButtonsProps> = ({
@@ -18,8 +16,6 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
   onClear,
   onDontKnow,
   onNextQuestion,
-  onReset,
-  onBackToStart,
 }) => {
   return (
     <div className="button-container">
@@ -31,7 +27,9 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
           <button type="button" onClick={onClear} disabled={!hasStrokes}>
             クリア
           </button>
-          <button type="button" onClick={onDontKnow}>わからない</button>
+          <button type="button" onClick={onDontKnow}>
+            わからない
+          </button>
         </>
       )}
       {showNext && (
@@ -39,8 +37,6 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
           つぎの もんだいへ
         </button>
       )}
-      <button type="button" onClick={onReset}>さいしょから</button>
-      <button type="button" onClick={onBackToStart}>スタートがめんへ</button>
     </div>
   );
 };
