@@ -385,6 +385,7 @@ export function showEvaluationOverlay(
 ): void {
   const origAlpha = canvasContext.globalAlpha;
   const origStyle = canvasContext.strokeStyle;
+  const origLineWidth = canvasContext.lineWidth;
 
   // キャンバスを一度クリアし、ユーザストロークを描画のみ
   canvasContext.clearRect(
@@ -418,6 +419,7 @@ export function showEvaluationOverlay(
 
   canvasContext.globalAlpha = origAlpha;
   canvasContext.strokeStyle = origStyle;
+  canvasContext.lineWidth = origLineWidth;
 }
 
 /**
@@ -527,6 +529,7 @@ export function drawSampleStrokes(
   normParams: { centerX: number; centerY: number; scale: number },
   boldThreasholdScore: number
 ): void {
+  const origLineWidth = canvasContext.lineWidth;
   canvasContext.clearRect(
     0,
     0,
@@ -553,4 +556,5 @@ export function drawSampleStrokes(
     canvasContext.fillText(`${i + 1}`, cx + 5, cy - 5);
   });
   canvasContext.globalAlpha = 1;
+  canvasContext.lineWidth = origLineWidth;
 }
