@@ -55,7 +55,7 @@ describe('漢字問題管理クラス', () => {
   it('次の問題に正しく移動できること', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
-    expect(manager.moveToNext()).toBe(true);
+    manager.recordResult(true);
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
@@ -65,11 +65,9 @@ describe('漢字問題管理クラス', () => {
 
       // 正解として記録
       manager.recordResult(true);
-      manager.moveToNext();
 
       // 不正解として記録
       manager.recordResult(false);
-      manager.moveToNext();
 
       // 正解として記録
       manager.recordResult(true);
@@ -91,7 +89,6 @@ describe('漢字問題管理クラス', () => {
         { score: 0.9, sampleResampled: [], userResampled: [] },
       ];
       manager.recordResult(true, strokeResults1);
-      manager.moveToNext();
 
       // 1つの筆画が閾値未満のため不正解
       const strokeResults2 = [
@@ -100,7 +97,6 @@ describe('漢字問題管理クラス', () => {
         { score: 0.9, sampleResampled: [], userResampled: [] },
       ];
       manager.recordResult(false, strokeResults2);
-      manager.moveToNext();
 
       // 全ストロークが閾値以上なので正解
       const strokeResults3 = [
@@ -123,11 +119,9 @@ describe('漢字問題管理クラス', () => {
 
     // 第1問: 正解
     manager.recordResult(true);
-    manager.moveToNext();
 
     // 第2問: 不正解
     manager.recordResult(false);
-    manager.moveToNext();
 
     // 第3問: 不正解
     manager.recordResult(false);
@@ -144,7 +138,6 @@ describe('漢字問題管理クラス', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
-    manager.moveToNext();
     manager.recordResult(false);
 
     manager.reset();
@@ -157,9 +150,7 @@ describe('漢字問題管理クラス', () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     manager.recordResult(true);
-    manager.moveToNext();
     manager.recordResult(true);
-    manager.moveToNext();
     manager.recordResult(true);
 
     expect(manager.isComplete()).toBe(true);
@@ -172,7 +163,6 @@ describe('漢字問題管理クラス', () => {
 
     // 第1問: 不正解
     manager.recordResult(false);
-    manager.moveToNext();
 
     // 第2問: 正解
     manager.recordResult(true);
@@ -189,9 +179,7 @@ describe('漢字問題管理クラス', () => {
 
     // 通常モード：全3問中1問正解
     manager.recordResult(true); // 第1問：正解
-    manager.moveToNext();
     manager.recordResult(false); // 第2問：不正解
-    manager.moveToNext();
     manager.recordResult(false); // 第3問：不正解
 
     let results = manager.getResultsScore();
@@ -205,7 +193,6 @@ describe('漢字問題管理クラス', () => {
 
     // 復習1回目：2問中1問正解
     manager.recordResult(true); // 正解
-    manager.moveToNext();
     manager.recordResult(false); // 不正解
 
     results = manager.getResultsScore();
@@ -238,7 +225,6 @@ describe('漢字問題管理クラス', () => {
       // 最初のインスタンスで状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
-      manager1.moveToNext();
 
       // 新しいインスタンスを作成。状態は復元されないことを確認
       const manager2 = new KanjiQuestionManager(mockQuestions);
@@ -256,7 +242,7 @@ describe('漢字問題管理クラス', () => {
 
     it('次の問題に移動後に状態が保存されること', () => {
       const manager = new KanjiQuestionManager(mockQuestions);
-      manager.moveToNext();
+      manager.recordResult(true);
 
       const savedStateStr = mockLocalStorage.getItem('kanjiQuestionManagerState');
       expect(savedStateStr).not.toBeNull();
@@ -295,7 +281,6 @@ describe('漢字問題管理クラス', () => {
       // 状態を保存する
       const manager1 = new KanjiQuestionManager(mockQuestions);
       manager1.recordResult(true);
-      manager1.moveToNext();
 
       // static methodで復元
       const restoredManager = KanjiQuestionManager.restoreFromStorage();
@@ -316,16 +301,13 @@ describe('漢字問題管理クラス', () => {
 
     // 第1問: 2回不正解
     manager.recordResult(false); // 1回目の不正解
-    manager.moveToNext();
     manager.recordResult(true); // 正解
-    manager.moveToNext();
     manager.recordResult(false); // 2回目の不正解
 
     manager.startReviewMode();
 
     // 復習モードで第1問をさらに1回不正解
     manager.recordResult(false); // 不正解
-    manager.moveToNext();
     manager.recordResult(true); // 正解
 
     const incorrectCounts = manager.getIncorrectCounts();
@@ -349,9 +331,7 @@ describe('漢字問題管理クラス', () => {
 
     // すべての問題で正解
     manager.recordResult(true);
-    manager.moveToNext();
     manager.recordResult(true);
-    manager.moveToNext();
     manager.recordResult(true);
 
     const incorrectCounts = manager.getIncorrectCounts();

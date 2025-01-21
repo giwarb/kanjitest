@@ -48,20 +48,30 @@ function App() {
 
   const loadQuestion = useCallback(() => {
     if (!manager) return;
-    const currentQuestion = manager.getCurrentQuestion();
-    if (currentQuestion) {
+    if (manager.isComplete()) {
+      const scores = manager.getResultsScore();
+      const incorrectDetails = manager.getIncorrectCounts();
+      setResults({
+        ...scores,
+        incorrectDetails,
+      });
+    } else {
+      const currentQuestion = manager.getCurrentQuestion();
+      if (!currentQuestion) {
+        return;
+      }
       const masked = currentQuestion.sentence.replace(
         new RegExp(currentQuestion.target, "g"),
         "＿＿",
       );
       setQuestion(masked);
       setSvgContent(currentQuestion.svg);
+      setShowNext(false);
+      setShowAnswer(false);
+      setShowSVG(false);
+      setResult("");
+      clearStrokes();
     }
-    setShowNext(false);
-    setShowAnswer(false);
-    setShowSVG(false);
-    setResult("");
-    clearStrokes();
   }, [manager, clearStrokes]);
 
   useEffect(() => {
@@ -135,17 +145,7 @@ function App() {
   };
 
   const handleNextQuestion = () => {
-    if (!manager) return;
-    if (manager.moveToNext()) {
-      loadQuestion();
-    } else {
-      const scores = manager.getResultsScore();
-      const incorrectDetails = manager.getIncorrectCounts();
-      setResults({
-        ...scores,
-        incorrectDetails,
-      });
-    }
+    loadQuestion();
   };
 
   const handleRestartReview = () => {
@@ -196,10 +196,14 @@ function App() {
     );
   }
 
+  const currentQuestionNumber = showNext
+    ? manager.getCurrentQuestionNumber() - 1
+    : manager.getCurrentQuestionNumber();
+
   return (
     <div className="app">
       <QuestionHeader
-        currentQuestionNumber={manager.getCurrentQuestionNumber()}
+        currentQuestionNumber={currentQuestionNumber}
         totalQuestions={manager.getTotalQuestions()}
         question={question}
         isReviewMode={manager.isInReviewMode()}

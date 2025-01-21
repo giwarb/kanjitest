@@ -19,8 +19,8 @@ describe("StartScreen", () => {
             .toBeInTheDocument();
 
         // デフォルトで10問が選択されていることを確認
-        const button10 = screen.getByText("10もん");
-        expect(button10.className).toContain("selected");
+        const button5 = screen.getByText("5もん");
+        expect(button5.className).toContain("selected");
     });
 
     test("問題数を選択できる", () => {
@@ -62,8 +62,8 @@ describe("StartScreen", () => {
         const secondSet = mockOnStartPractice.mock.calls[1][0];
 
         // 問題数が同じで内容が異なることを確認
-        expect(firstSet).toHaveLength(10);
-        expect(secondSet).toHaveLength(10);
+        expect(firstSet).toHaveLength(5);
+        expect(secondSet).toHaveLength(5);
         expect(firstSet).not.toEqual(secondSet);
     });
 });

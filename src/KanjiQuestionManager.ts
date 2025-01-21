@@ -89,6 +89,10 @@ export class KanjiQuestionManager {
   }
 
   recordResult(isCorrect: boolean, strokeResults?: StrokeResult[]): void {
+    if (this.isComplete()) {
+      throw new Error('All questions have been answered');
+    }
+
     const questionIndex = this.targetQuestionIdices[this.currentIndex];
 
     this.results.push({
@@ -103,14 +107,9 @@ export class KanjiQuestionManager {
       strokeResults,
     });
 
-    this.saveState();
-  }
-
-  moveToNext(): boolean {
     this.currentIndex++;
-    const hasNext = this.currentIndex < this.targetQuestionIdices.length;
+
     this.saveState();
-    return hasNext;
   }
 
   hasIncorrectQuestions(): boolean {
