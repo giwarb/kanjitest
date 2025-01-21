@@ -7,12 +7,12 @@ type StartScreenProps = {
 };
 
 export function StartScreen({ onStartPractice }: StartScreenProps) {
-    const [selectedCount, setSelectedCount] = useState<number>(10);
+    const [selectedCount, setSelectedCount] = useState<number>(5);
     const totalQuestions = data.length;
     const questionCounts = [];
 
-    // 10問刻みの選択肢を生成
-    for (let i = 10; i <= totalQuestions; i += 10) {
+    // 5問刻みの選択肢を生成
+    for (let i = 5; i <= totalQuestions; i += 5) {
         questionCounts.push(i);
     }
 
