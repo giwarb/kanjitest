@@ -38,6 +38,7 @@ export class KanjiQuestionManager {
     this.results = [];
     this.totalResults = [];
     this.isReviewMode = false;
+    this.saveState();
   }
 
   private saveState(): void {
