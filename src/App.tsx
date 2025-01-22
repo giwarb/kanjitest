@@ -15,6 +15,7 @@ import { StartScreen } from "./components/StartScreen";
 import { Header } from "./components/Header";
 import "./App.css";
 import { QuestionHeader } from "./components/QuestionHeader";
+import { MemoryManager } from "./MemoryManager";
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -22,6 +23,7 @@ function App() {
   const answerRef = useRef<HTMLDivElement>(null);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
   const [manager, setManager] = useState<KanjiQuestionManager | null>(null);
+  const memoryManagerRef = useRef<MemoryManager>(new MemoryManager());
   const [question, setQuestion] = useState("");
   const [svgContent, setSvgContent] = useState("");
   const [showNext, setShowNext] = useState(false);
@@ -90,6 +92,8 @@ function App() {
     if (!ctx) return;
     const answerCtx = answerCanvasRef.current?.getContext("2d");
     if (!answerCtx) return;
+    const currentQuestion = manager.getCurrentQuestion();
+    if (!currentQuestion) return;
     const strokesSvg = getSVGStrokes(svg);
     if (strokesSvg.length !== userStrokes.length) {
       setResult(
@@ -97,6 +101,11 @@ function App() {
       );
       setShowSVG(true);
       manager.recordResult(false);
+      memoryManagerRef.current.saveResult(
+        currentQuestion.id,
+        new Date().toISOString(),
+        false
+      );
     } else {
       const { strokeResults, normParamsUser } = compareStrokes(
         strokesSvg,
@@ -124,6 +133,11 @@ function App() {
       setShowAnswer(true);
       setResult(`${resultText}（${scoreText}）`);
       manager.recordResult(isCorrect, strokeResults);
+      memoryManagerRef.current.saveResult(
+        currentQuestion.id,
+        new Date().toISOString(),
+        isCorrect
+      );
     }
     setShowNext(true);
   };
@@ -154,16 +168,28 @@ function App() {
 
   const handleDontKnow = () => {
     if (!manager) return;
+    const currentQuestion = manager.getCurrentQuestion();
+    if (!currentQuestion) return;
     setShowSVG(true);
     setResult("むずかしいですね。おてほんを みてみましょう！");
     manager.recordResult(false);
+    memoryManagerRef.current.saveResult(
+      currentQuestion.id,
+      new Date().toISOString(),
+      false
+    );
     setShowNext(true);
   };
 
   const hasStrokes = userStrokes.length > 0;
 
   if (!manager) {
-    return <StartScreen onStartPractice={handleStartPractice} />;
+    return (
+      <StartScreen
+        onStartPractice={handleStartPractice}
+        memoryManager={memoryManagerRef.current}
+      />
+    );
   }
 
   if (scoreAndResults) {
