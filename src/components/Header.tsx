@@ -4,10 +4,11 @@ import "./Header.css";
 
 interface HeaderProps {
   onReset: () => void;
-  onBackToStart: () => void;
+  onBackToStart?: () => void;
+  resetLabel?: string;
 }
 
-export function Header({ onReset, onBackToStart }: HeaderProps) {
+export function Header({ onReset, onBackToStart, resetLabel }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -38,6 +39,7 @@ export function Header({ onReset, onBackToStart }: HeaderProps) {
         onClose={() => setIsMenuOpen(false)}
         onReset={onReset}
         onBackToStart={onBackToStart}
+        resetLabel={resetLabel}
       />
     </div>
   );

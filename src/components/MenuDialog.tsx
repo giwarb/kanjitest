@@ -5,7 +5,8 @@ interface MenuDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onReset: () => void;
-  onBackToStart: () => void;
+  onBackToStart?: () => void;
+  resetLabel?: string;
 }
 
 export function MenuDialog({
@@ -13,6 +14,7 @@ export function MenuDialog({
   onClose,
   onReset,
   onBackToStart,
+  resetLabel = "さいしょから",
 }: MenuDialogProps) {
   const [confirmType, setConfirmType] = useState<
     "reset" | "backToStart" | null
@@ -21,7 +23,7 @@ export function MenuDialog({
   const handleConfirm = () => {
     if (confirmType === "reset") {
       onReset();
-    } else if (confirmType === "backToStart") {
+    } else if (confirmType === "backToStart" && onBackToStart) {
       onBackToStart();
     }
     setConfirmType(null);
@@ -44,11 +46,13 @@ export function MenuDialog({
           onKeyDown={(e) => e.key === "Enter" && e.stopPropagation()}
         >
           <button type="button" onClick={() => setConfirmType("reset")}>
-            さいしょから
+            {resetLabel}
           </button>
-          <button type="button" onClick={() => setConfirmType("backToStart")}>
-            スタートがめんへ
-          </button>
+          {onBackToStart && (
+            <button type="button" onClick={() => setConfirmType("backToStart")}>
+              スタートがめんへ
+            </button>
+          )}
           <button type="button" onClick={onClose}>
             とじる
           </button>
@@ -59,7 +63,9 @@ export function MenuDialog({
           isOpen={true}
           message={
             confirmType === "reset"
-              ? "さいしょからやりなおしますか？"
+              ? resetLabel === "さいしょから"
+                ? "さいしょからやりなおしますか？"
+                : "がくしゅうりれきをリセットしますか？"
               : "スタートがめんにもどりますか？"
           }
           onConfirm={handleConfirm}

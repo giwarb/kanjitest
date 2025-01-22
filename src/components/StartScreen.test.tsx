@@ -45,6 +45,7 @@ describe("StartScreen", () => {
     mockOnStartPractice.mockClear();
     vi.mocked(mockMemoryManager.getStatistics).mockClear();
     vi.mocked(mockMemoryManager.getQuestionsByMode).mockClear();
+    vi.mocked(mockMemoryManager.clearHistory).mockClear();
   });
 
   it("はじめの状態が正しく表示される", () => {
@@ -55,8 +56,7 @@ describe("StartScreen", () => {
       />
     );
 
-    expect(screen.getByText("かんじれんしゅう")).toBeInTheDocument();
-    expect(screen.getByText(/ぜんぶで 20もん/)).toBeInTheDocument();
+    expect(screen.getByText(/ぜんぶ：20もん/)).toBeInTheDocument();
     expect(screen.getByText(/まだといていない：10もん/)).toBeInTheDocument();
     expect(screen.getByText(/せいかいした：5もん/)).toBeInTheDocument();
 
@@ -94,26 +94,26 @@ describe("StartScreen", () => {
     );
 
     // すべての問題モード（デフォルト）
-    const allButton = screen.getByRole("button", { name: /すべてのもんだい/ });
+    const allButton = screen.getByRole("button", { name: /すべての もんだい/ });
     expect(allButton).toHaveTextContent("（12もん）");
 
     // まだといたことない問題モード
     const newButton = screen.getByRole("button", {
-      name: /まだといたことないもんだい/,
+      name: /まだ といたことない もんだい/,
     });
     fireEvent.click(newButton);
     expect(newButton).toHaveTextContent("（10もん）");
 
     // まだ正解していない問題モード
     const unsolvedButton = screen.getByRole("button", {
-      name: /まだせいかいしていないもんだい/,
+      name: /まだ せいかい していない もんだい/,
     });
     fireEvent.click(unsolvedButton);
     expect(unsolvedButton).toHaveTextContent("（8もん）");
 
     // この一週間で間違えた問題モード
     const recentMistakesButton = screen.getByRole("button", {
-      name: /このいっしゅうかんでまちがえたもんだい/,
+      name: /この いっしゅうかんで まちがえた もんだい/,
     });
     fireEvent.click(recentMistakesButton);
     expect(recentMistakesButton).toHaveTextContent("（3もん）");
@@ -147,7 +147,7 @@ describe("StartScreen", () => {
 
     // モードを切り替えるとスタートボタンが再び無効になる
     const newButton = screen.getByRole("button", {
-      name: /まだといたことないもんだい/,
+      name: /まだ といたことない もんだい/,
     });
     fireEvent.click(newButton);
     expect(startButton).toBeDisabled();
@@ -164,8 +164,31 @@ describe("StartScreen", () => {
     );
 
     expect(
-      screen.getByText("このモードでときれるもんだいがありません")
+      screen.getByText("このモードで とける もんだいが ありません")
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
+  });
+
+  it("学習履歴をリセットできる", () => {
+    render(
+      <StartScreen
+        onStartPractice={mockOnStartPractice}
+        memoryManager={mockMemoryManager}
+      />
+    );
+
+    // メニューを開く
+    fireEvent.click(screen.getByRole("button", { name: "メニュー" }));
+
+    // 履歴リセットボタンをクリック
+    fireEvent.click(
+      screen.getByRole("button", { name: "がくしゅうりれきをリセット" })
+    );
+
+    // 確認ダイアログで「はい」をクリック
+    fireEvent.click(screen.getByRole("button", { name: "はい" }));
+
+    // clearHistoryが呼ばれたことを確認
+    expect(mockMemoryManager.clearHistory).toHaveBeenCalled();
   });
 });

@@ -199,6 +199,7 @@ function App() {
         <ResultsView
           scoreAndResults={scoreAndResults}
           onRestartReview={handleRestartReview}
+          onBackToStart={handleBackToStart}
         />
       </div>
     );

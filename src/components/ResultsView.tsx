@@ -6,11 +6,13 @@ interface ResultsViewProps {
     results: ReturnType<KanjiQuestionManager["getResults"]>;
   };
   onRestartReview: () => void;
+  onBackToStart: () => void;
 }
 
 export function ResultsView({
   scoreAndResults,
   onRestartReview,
+  onBackToStart,
 }: ResultsViewProps) {
   return (
     <>
@@ -34,6 +36,11 @@ export function ResultsView({
       ) : (
         <>
           <div>すべての もんだいに せいかいしました！</div>
+          <div>
+            <button type="button" onClick={onBackToStart}>
+              スタートがめんへ
+            </button>
+          </div>
           <div style={{ marginBottom: "20px" }}>
             <h3
               style={{

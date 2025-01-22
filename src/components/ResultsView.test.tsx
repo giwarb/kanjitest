@@ -69,6 +69,7 @@ describe("ResultsView", () => {
       <ResultsView
         scoreAndResults={mockScoreAndResults}
         onRestartReview={mockOnRestartReview}
+        onBackToStart={vi.fn()}
       />
     );
 
@@ -99,6 +100,7 @@ describe("ResultsView", () => {
       <ResultsView
         scoreAndResults={perfectResults}
         onRestartReview={mockOnRestartReview}
+        onBackToStart={vi.fn()}
       />
     );
 
@@ -113,6 +115,7 @@ describe("ResultsView", () => {
       <ResultsView
         scoreAndResults={mockScoreAndResults}
         onRestartReview={mockOnRestartReview}
+        onBackToStart={vi.fn()}
       />
     );
 

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { data } from "../data";
 import type { MemoryManager, PracticeMode } from "../MemoryManager";
+import { Header } from "./Header";
 import "./StartScreen.css";
 
 type StartScreenProps = {
@@ -12,6 +13,7 @@ export function StartScreen({
   onStartPractice,
   memoryManager,
 }: StartScreenProps) {
+  const [_resetTrigger, setResetTrigger] = useState(0);
   const [selectedCount, setSelectedCount] = useState<number | null>(null);
   const [selectedMode, setSelectedMode] = useState<PracticeMode>("all");
   const totalQuestions = data.length;
@@ -56,13 +58,22 @@ export function StartScreen({
     onStartPractice(selected);
   };
 
+  const handleResetHistory = useCallback(() => {
+    memoryManager.clearHistory();
+    // 履歴クリア後は問題数の選択をリセット
+    setSelectedCount(null);
+    // モードをすべての問題に戻す
+    setSelectedMode("all");
+    setResetTrigger((prev) => prev + 1);
+  }, [memoryManager]);
+
   const modes: { value: PracticeMode; label: string }[] = [
-    { value: "all", label: "すべてのもんだい" },
-    { value: "new", label: "まだといたことないもんだい" },
-    { value: "unsolved", label: "まだせいかいしていないもんだい" },
+    { value: "all", label: "すべての もんだい" },
+    { value: "new", label: "まだ といたことない もんだい" },
+    { value: "unsolved", label: "まだ せいかい していない もんだい" },
     {
       value: "recent-mistakes",
-      label: "このいっしゅうかんでまちがえたもんだい",
+      label: "この いっしゅうかんで まちがえた もんだい",
     },
   ];
 
@@ -74,67 +85,73 @@ export function StartScreen({
   };
 
   return (
-    <div className="start-screen-container">
-      <div className="start-screen-content">
-        <h1 className="start-screen-title">かんじれんしゅう</h1>
-        <div className="statistics">
-          <p>ぜんぶで {stats.total}もん</p>
-          <p>まだといていない：{stats.unattempted}もん</p>
-          <p>せいかいした：{stats.correct}もん</p>
-        </div>
-        <div className="mode-section">
-          <p className="mode-text">モードをえらんでください：</p>
-          <div className="mode-buttons">
-            {modes.map((mode) => (
-              <button
-                type="button"
-                key={mode.value}
-                onClick={() => {
-                  setSelectedMode(mode.value);
-                  setSelectedCount(null); // モード変更時に選択をリセット
-                }}
-                className={`mode-button ${selectedMode === mode.value ? "selected" : ""}`}
-              >
-                {mode.label}（{getModeQuestionCount(mode.value)}もん）
-              </button>
-            ))}
+    <div className="app">
+      <Header
+        onBackToStart={undefined}
+        onReset={handleResetHistory}
+        resetLabel="がくしゅうりれきをリセット"
+      />
+      <div className="start-screen-container">
+        <div className="start-screen-content">
+          <div className="statistics">
+            <p>ぜんぶ：{stats.total}もん</p>
+            <p>まだといていない：{stats.unattempted}もん</p>
+            <p>せいかいした：{stats.correct}もん</p>
           </div>
-        </div>
-        {questionCounts.length > 0 ? (
-          <div className="question-count-section">
-            <p className="question-count-text">
-              もんだいすうをえらんでください：
-            </p>
-            <div className="question-count-buttons">
-              {questionCounts.map((count) => (
+          <div className="mode-section">
+            <p className="mode-text">モードをえらんでください：</p>
+            <div className="mode-buttons">
+              {modes.map((mode) => (
                 <button
                   type="button"
-                  key={count}
-                  onClick={() => setSelectedCount(count)}
-                  className={`count-button ${
-                    selectedCount === count ? "selected" : ""
-                  }`}
+                  key={mode.value}
+                  onClick={() => {
+                    setSelectedMode(mode.value);
+                    setSelectedCount(null); // モード変更時に選択をリセット
+                  }}
+                  className={`mode-button ${selectedMode === mode.value ? "selected" : ""}`}
                 >
-                  {count}もん
-                  {count === availableQuestions.length ? "（ぜんぶ）" : ""}
+                  {mode.label}（{getModeQuestionCount(mode.value)}もん）
                 </button>
               ))}
             </div>
           </div>
-        ) : (
-          <p className="no-questions-message">
-            このモードでときれるもんだいがありません
-          </p>
-        )}
-        <div className="start-button-container">
-          <button
-            type="button"
-            onClick={handleStart}
-            className="start-button"
-            disabled={!selectedCount || questionCounts.length === 0}
-          >
-            スタート
-          </button>
+          {questionCounts.length > 0 ? (
+            <div className="question-count-section">
+              <p className="question-count-text">
+                もんだいすうをえらんでください：
+              </p>
+              <div className="question-count-buttons">
+                {questionCounts.map((count) => (
+                  <button
+                    type="button"
+                    key={count}
+                    onClick={() => setSelectedCount(count)}
+                    className={`count-button ${
+                      selectedCount === count ? "selected" : ""
+                    }`}
+                  >
+                    {count}もん
+                    {count === availableQuestions.length ? "（ぜんぶ）" : ""}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="no-questions-message">
+              このモードで とける もんだいが ありません
+            </p>
+          )}
+          <div className="start-button-container">
+            <button
+              type="button"
+              onClick={handleStart}
+              className="start-button"
+              disabled={!selectedCount || questionCounts.length === 0}
+            >
+              スタート
+            </button>
+          </div>
         </div>
       </div>
     </div>
