@@ -1,6 +1,7 @@
 import type { StrokeResult } from "./functions";
 
 interface Question {
+  id: string;
   sentence: string;
   target: string;
   svg: string;
@@ -11,7 +12,6 @@ interface QuestionResult {
   isCorrect: boolean;
   strokeResults: StrokeResult[] | undefined;
 }
-
 interface KanjiQuestionManagerState {
   questions: Question[];
   targetQuestionIdices: number[];
@@ -22,7 +22,7 @@ interface KanjiQuestionManagerState {
 }
 
 export class KanjiQuestionManager {
-  private questions: Question[];
+  private questions: Readonly<Question[]>;
   private targetQuestionIdices: number[];
   private currentIndex: number;
   private results: QuestionResult[];
@@ -31,7 +31,7 @@ export class KanjiQuestionManager {
   private static readonly STORAGE_KEY = "kanjiQuestionManagerState";
   public static readonly SCORE_THRESHOLD = 0.6;
 
-  constructor(questions: Question[]) {
+  constructor(questions: Readonly<Question[]>) {
     this.questions = questions;
     this.targetQuestionIdices = [...Array(questions.length).keys()];
     this.currentIndex = 0;
@@ -126,7 +126,7 @@ export class KanjiQuestionManager {
     this.saveState();
   }
 
-  getResultsScore(): {
+  getScore(): {
     total: number;
     correct: number;
     incorrectCount: number;
@@ -145,28 +145,35 @@ export class KanjiQuestionManager {
     };
   }
 
-  getIncorrectCounts(): {
-    questionIndex: number;
+  getResults(): {
+    question: Question;
+    lastResult: QuestionResult;
     incorrectCount: number;
-    sentence: string;
   }[] {
+    const lastResults = new Map<number, QuestionResult>();
     const incorrectCounts = new Map<number, number>();
 
     for (const result of this.totalResults) {
+      lastResults.set(result.questionIndex, result);
       if (!result.isCorrect) {
         const count = incorrectCounts.get(result.questionIndex) || 0;
         incorrectCounts.set(result.questionIndex, count + 1);
       }
     }
 
-    return Array.from(incorrectCounts.entries())
-      .map(([questionIndex, incorrectCount]) => ({
-        questionIndex,
+    return this.questions.map((question, index) => {
+      const lastResult = lastResults.get(index) ?? {
+        questionIndex: index,
+        isCorrect: false,
+        strokeResults: undefined,
+      };
+      const incorrectCount = incorrectCounts.get(index) || 0;
+      return {
+        question,
+        lastResult,
         incorrectCount,
-        sentence: this.questions[questionIndex].sentence,
-      }))
-      .filter((item) => item.incorrectCount > 0)
-      .sort((a, b) => b.incorrectCount - a.incorrectCount);
+      };
+    });
   }
 
   isInReviewMode(): boolean {

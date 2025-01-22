@@ -27,16 +27,19 @@ beforeEach(() => {
 
 const mockQuestions = [
   {
+    id: "1",
     sentence: "問題1",
     target: "一",
     svg: "<svg>...</svg>",
   },
   {
+    id: "2",
     sentence: "問題2",
     target: "二",
     svg: "<svg>...</svg>",
   },
   {
+    id: "3",
     sentence: "問題3",
     target: "三",
     svg: "<svg>...</svg>",
@@ -71,7 +74,7 @@ describe("漢字問題管理クラス", () => {
       // 正解として記録
       manager.recordResult(true);
 
-      const results = manager.getResultsScore();
+      const results = manager.getScore();
       expect(results.total).toBe(3);
       expect(results.correct).toBe(2);
       expect(results.incorrectCount).toBe(1);
@@ -105,7 +108,7 @@ describe("漢字問題管理クラス", () => {
       ];
       manager.recordResult(true, strokeResults3);
 
-      const results = manager.getResultsScore();
+      const results = manager.getScore();
       expect(results.total).toBe(3);
       expect(results.correct).toBe(2);
       expect(results.incorrectCount).toBe(1);
@@ -142,7 +145,7 @@ describe("漢字問題管理クラス", () => {
     manager.reset();
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[0]);
     expect(manager.isInReviewMode()).toBe(false);
-    expect(manager.getResultsScore().total).toBe(0);
+    expect(manager.getScore().total).toBe(0);
   });
 
   it("すべての問題が回答されたとき完了状態になること", () => {
@@ -166,7 +169,7 @@ describe("漢字問題管理クラス", () => {
     // 第2問: 正解
     manager.recordResult(true);
 
-    const results = manager.getResultsScore();
+    const results = manager.getScore();
     expect(results.total).toBe(2); // 全2問
     expect(results.correct).toBe(1); // 1問正解
     expect(results.incorrectCount).toBe(1); // 1問不正解
@@ -181,7 +184,7 @@ describe("漢字問題管理クラス", () => {
     manager.recordResult(false); // 第2問：不正解
     manager.recordResult(false); // 第3問：不正解
 
-    let results = manager.getResultsScore();
+    let results = manager.getScore();
     expect(results.total).toBe(3);
     expect(results.correct).toBe(1);
     expect(results.incorrectCount).toBe(2);
@@ -194,7 +197,7 @@ describe("漢字問題管理クラス", () => {
     manager.recordResult(true); // 正解
     manager.recordResult(false); // 不正解
 
-    results = manager.getResultsScore();
+    results = manager.getScore();
     expect(results.total).toBe(2); // 復習モードでは2問
     expect(results.correct).toBe(1);
     expect(results.incorrectCount).toBe(1);
@@ -203,7 +206,7 @@ describe("漢字問題管理クラス", () => {
     manager.startReviewMode();
     manager.recordResult(true); // 最後の1問を正解
 
-    results = manager.getResultsScore();
+    results = manager.getScore();
     expect(results.total).toBe(1); // 残り1問
     expect(results.correct).toBe(1);
     expect(results.incorrectCount).toBe(0);
@@ -230,7 +233,7 @@ describe("漢字問題管理クラス", () => {
       // 新しいインスタンスを作成。状態は復元されないことを確認
       const manager2 = new KanjiQuestionManager(mockQuestions);
       expect(manager2.getCurrentQuestion()).toEqual(mockQuestions[0]); // 1問目から開始
-      expect(manager2.getResultsScore().total).toBe(0); // 回答なし
+      expect(manager2.getScore().total).toBe(0); // 回答なし
     });
 
     it("アンロード時にLocalStorageがクリアされること", () => {
@@ -279,9 +282,11 @@ describe("漢字問題管理クラス", () => {
       const manager2 = KanjiQuestionManager.restoreFromStorage();
       expect(manager2).not.toBeNull();
       if (manager2) {
-        const incorrectCounts = manager2.getIncorrectCounts();
-        expect(incorrectCounts).toHaveLength(1);
+        const incorrectCounts = manager2.getResults();
+        expect(incorrectCounts).toHaveLength(3);
         expect(incorrectCounts[0].incorrectCount).toBe(1);
+        expect(incorrectCounts[1].incorrectCount).toBe(0);
+        expect(incorrectCounts[2].incorrectCount).toBe(0);
       }
     });
 
@@ -294,7 +299,7 @@ describe("漢字問題管理クラス", () => {
       const restoredManager = KanjiQuestionManager.restoreFromStorage();
       expect(restoredManager).not.toBeNull();
       expect(restoredManager?.getCurrentQuestion()).toEqual(mockQuestions[1]); // 2問目から開始
-      expect(restoredManager?.getResultsScore().total).toBe(1); // 1問回答済み
+      expect(restoredManager?.getScore().total).toBe(1); // 1問回答済み
     });
 
     it("状態が存在しない場合、静的復元メソッドがnullを返すこと", () => {
@@ -304,7 +309,7 @@ describe("漢字問題管理クラス", () => {
     });
   });
 
-  it("不正解の試行回数を正しくカウントできること", () => {
+  it("正解・不正解の回数を正しく返すこと", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
     // 第1問: 2回不正解
@@ -318,31 +323,31 @@ describe("漢字問題管理クラス", () => {
     manager.recordResult(false); // 不正解
     manager.recordResult(true); // 正解
 
-    const incorrectCounts = manager.getIncorrectCounts();
+    const results = manager.getResults();
 
-    // 間違いの多い順にソートされていることを確認
-    expect(incorrectCounts).toHaveLength(2);
-    expect(incorrectCounts[0]).toEqual({
-      questionIndex: 0,
+    expect(results).toHaveLength(3);
+    expect(results[0]).toEqual({
+      question: mockQuestions[0],
+      lastResult: { questionIndex: 0, isCorrect: false },
       incorrectCount: 2,
-      sentence: mockQuestions[0].sentence,
     });
-    expect(incorrectCounts[1]).toEqual({
-      questionIndex: 2,
+    expect(results[1]).toEqual({
+      question: mockQuestions[1],
+      lastResult: {
+        questionIndex: 1,
+        isCorrect: true,
+        strokeResults: undefined,
+      },
+      incorrectCount: 0,
+    });
+    expect(results[2]).toEqual({
+      question: mockQuestions[2],
+      lastResult: {
+        questionIndex: 2,
+        isCorrect: true,
+        strokeResults: undefined,
+      },
       incorrectCount: 1,
-      sentence: mockQuestions[2].sentence,
     });
-  });
-
-  it("不正解がない場合、空の配列を返すこと", () => {
-    const manager = new KanjiQuestionManager(mockQuestions);
-
-    // すべての問題で正解
-    manager.recordResult(true);
-    manager.recordResult(true);
-    manager.recordResult(true);
-
-    const incorrectCounts = manager.getIncorrectCounts();
-    expect(incorrectCounts).toHaveLength(0);
   });
 });

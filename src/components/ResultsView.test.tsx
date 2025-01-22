@@ -2,17 +2,62 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ResultsView } from "./ResultsView";
 
+const mockQuestions = [
+  {
+    id: "1",
+    sentence: "問題1",
+    target: "一",
+    svg: "<svg>...</svg>",
+  },
+  {
+    id: "2",
+    sentence: "問題2",
+    target: "二",
+    svg: "<svg>...</svg>",
+  },
+  {
+    id: "3",
+    sentence: "問題3",
+    target: "三",
+    svg: "<svg>...</svg>",
+  },
+];
+
 describe("ResultsView", () => {
-  const mockResults = {
-    total: 10,
-    correct: 8,
-    incorrectCount: 2,
-    percentage: 80,
-    incorrectDetails: [
+  const mockScoreAndResults = {
+    score: {
+      total: 10,
+      correct: 8,
+      percentage: 80,
+      incorrectCount: 2,
+    },
+    results: [
       {
-        questionIndex: 1,
+        question: mockQuestions[0],
+        lastResult: {
+          questionIndex: 0,
+          isCorrect: true,
+          strokeResults: undefined,
+        },
+        incorrectCount: 0,
+      },
+      {
+        question: mockQuestions[1],
+        lastResult: {
+          questionIndex: 1,
+          isCorrect: false,
+          strokeResults: undefined,
+        },
         incorrectCount: 1,
-        sentence: '漢字の<span class="target">問題</span>です',
+      },
+      {
+        question: mockQuestions[2],
+        lastResult: {
+          questionIndex: 2,
+          isCorrect: false,
+          strokeResults: undefined,
+        },
+        incorrectCount: 1,
       },
     ],
   };
@@ -22,7 +67,7 @@ describe("ResultsView", () => {
   it("間違いがある場合、正しく結果を表示する", () => {
     render(
       <ResultsView
-        results={mockResults}
+        scoreAndResults={mockScoreAndResults}
         onRestartReview={mockOnRestartReview}
       />
     );
@@ -41,21 +86,24 @@ describe("ResultsView", () => {
 
   it("すべて正解の場合、適切なメッセージを表示する", () => {
     const perfectResults = {
-      ...mockResults,
-      correct: 10,
-      incorrectCount: 0,
-      percentage: 100,
+      ...mockScoreAndResults,
+      score: {
+        total: 3,
+        correct: 3,
+        percentage: 100,
+        incorrectCount: 0,
+      },
     };
 
     render(
       <ResultsView
-        results={perfectResults}
+        scoreAndResults={perfectResults}
         onRestartReview={mockOnRestartReview}
       />
     );
 
     expect(
-      screen.getByText("すべての もんだいを せいかいしました！")
+      screen.getByText("すべての もんだいに せいかいしました！")
     ).toBeDefined();
     expect(screen.queryByText("まちがった もんだい を もういちど")).toBeNull();
   });
@@ -63,7 +111,7 @@ describe("ResultsView", () => {
   it("復習ボタンをクリックすると onRestartReview が呼ばれる", () => {
     render(
       <ResultsView
-        results={mockResults}
+        scoreAndResults={mockScoreAndResults}
         onRestartReview={mockOnRestartReview}
       />
     );

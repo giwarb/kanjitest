@@ -28,27 +28,17 @@ function App() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showSVG, setShowSVG] = useState(false);
   const [result, setResult] = useState("");
-  const [results, setResults] = useState<{
-    total: number;
-    correct: number;
-    incorrectCount: number;
-    percentage: number;
-    incorrectDetails: {
-      questionIndex: number;
-      incorrectCount: number;
-      sentence: string;
-    }[];
+  const [scoreAndResults, setScoreAndResults] = useState<{
+    score: ReturnType<KanjiQuestionManager["getScore"]>;
+    results: ReturnType<KanjiQuestionManager["getResults"]>;
   } | null>(null);
 
   const loadQuestion = useCallback(() => {
     if (!manager) return;
     if (manager.isComplete()) {
-      const scores = manager.getResultsScore();
-      const incorrectDetails = manager.getIncorrectCounts();
-      setResults({
-        ...scores,
-        incorrectDetails,
-      });
+      const score = manager.getScore();
+      const results = manager.getResults();
+      setScoreAndResults({ score, results });
     } else {
       const currentQuestion = manager.getCurrentQuestion();
       if (!currentQuestion) {
@@ -146,20 +136,20 @@ function App() {
     if (!manager) return;
     manager.startReviewMode();
     loadQuestion();
-    setResults(null);
+    setScoreAndResults(null);
   };
 
   const handleBackToStart = () => {
     manager?.unloadFromStorage();
     setManager(null);
-    setResults(null);
+    setScoreAndResults(null);
   };
 
   const handleReset = () => {
     if (!manager) return;
     manager.reset();
     loadQuestion();
-    setResults(null);
+    setScoreAndResults(null);
   };
 
   const handleDontKnow = () => {
@@ -176,11 +166,14 @@ function App() {
     return <StartScreen onStartPractice={handleStartPractice} />;
   }
 
-  if (results) {
+  if (scoreAndResults) {
     return (
       <div className="app">
         <Header onReset={handleReset} onBackToStart={handleBackToStart} />
-        <ResultsView results={results} onRestartReview={handleRestartReview} />
+        <ResultsView
+          scoreAndResults={scoreAndResults}
+          onRestartReview={handleRestartReview}
+        />
       </div>
     );
   }
