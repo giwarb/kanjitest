@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import type { KanjiQuestionManager } from "../KanjiQuestionManager";
 
 interface ResultsViewProps {
@@ -9,10 +8,10 @@ interface ResultsViewProps {
   onRestartReview: () => void;
 }
 
-export const ResultsView: FC<ResultsViewProps> = ({
+export function ResultsView({
   scoreAndResults,
   onRestartReview,
-}) => {
+}: ResultsViewProps) {
   return (
     <>
       <h2>けっか</h2>
@@ -71,4 +70,4 @@ export const ResultsView: FC<ResultsViewProps> = ({
       )}
     </>
   );
-};
+}

@@ -1,5 +1,3 @@
-import type { FC } from "react";
-
 interface ControlButtonsProps {
   showNext: boolean;
   hasStrokes: boolean;
@@ -9,14 +7,14 @@ interface ControlButtonsProps {
   onNextQuestion: () => void;
 }
 
-export const ControlButtons: FC<ControlButtonsProps> = ({
+export function ControlButtons({
   showNext,
   hasStrokes,
   onEvaluate,
   onClear,
   onDontKnow,
   onNextQuestion,
-}) => {
+}: ControlButtonsProps) {
   return (
     <div className="button-container">
       {!showNext && (
@@ -39,4 +37,4 @@ export const ControlButtons: FC<ControlButtonsProps> = ({
       )}
     </div>
   );
-};
+}

@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import "./QuestionHeader.css";
 
 interface QuestionHeaderProps {
@@ -8,12 +7,12 @@ interface QuestionHeaderProps {
   isReviewMode: boolean;
 }
 
-export const QuestionHeader: FC<QuestionHeaderProps> = ({
+export function QuestionHeader({
   currentQuestionNumber,
   totalQuestions,
   question,
   isReviewMode,
-}) => {
+}: QuestionHeaderProps) {
   return (
     <>
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
@@ -28,4 +27,4 @@ export const QuestionHeader: FC<QuestionHeaderProps> = ({
       {isReviewMode && <div className="review-mode">ふくしゅうちゅう！</div>}
     </>
   );
-};
+}

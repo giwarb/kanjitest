@@ -1,4 +1,4 @@
-import type { FC, RefObject } from "react";
+import type { RefObject } from "react";
 
 interface PracticeCanvasProps {
   canvasRef: RefObject<HTMLCanvasElement>;
@@ -10,7 +10,7 @@ interface PracticeCanvasProps {
   result: string;
 }
 
-export const PracticeCanvas: FC<PracticeCanvasProps> = ({
+export function PracticeCanvas({
   canvasRef,
   answerCanvasRef,
   answerRef,
@@ -18,7 +18,7 @@ export const PracticeCanvas: FC<PracticeCanvasProps> = ({
   showSVG,
   svgContent,
   result,
-}) => {
+}: PracticeCanvasProps) {
   return (
     <>
       <div
@@ -63,4 +63,4 @@ export const PracticeCanvas: FC<PracticeCanvasProps> = ({
       <div>{result}</div>
     </>
   );
-};
+}

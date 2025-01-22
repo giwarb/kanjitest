@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import { useState } from "react";
 import { ConfirmDialog } from "./ConfirmDialog";
 
@@ -9,12 +8,12 @@ interface MenuDialogProps {
   onBackToStart: () => void;
 }
 
-export const MenuDialog: FC<MenuDialogProps> = ({
+export function MenuDialog({
   isOpen,
   onClose,
   onReset,
   onBackToStart,
-}) => {
+}: MenuDialogProps) {
   const [confirmType, setConfirmType] = useState<
     "reset" | "backToStart" | null
   >(null);
@@ -69,4 +68,4 @@ export const MenuDialog: FC<MenuDialogProps> = ({
       )}
     </>
   );
-};
+}

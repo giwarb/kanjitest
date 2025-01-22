@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import { useState } from "react";
 import { MenuDialog } from "./MenuDialog";
 import "./Header.css";
@@ -8,7 +7,7 @@ interface HeaderProps {
   onBackToStart: () => void;
 }
 
-export const Header: FC<HeaderProps> = ({ onReset, onBackToStart }) => {
+export function Header({ onReset, onBackToStart }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -42,4 +41,4 @@ export const Header: FC<HeaderProps> = ({ onReset, onBackToStart }) => {
       />
     </div>
   );
-};
+}

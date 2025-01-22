@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
 import { StartScreen } from "./StartScreen";
 
@@ -10,7 +10,7 @@ describe("StartScreen", () => {
     mockOnStartPractice.mockClear();
   });
 
-  test("はじめの状態が正しく表示される", () => {
+  it("はじめの状態が正しく表示される", () => {
     render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
     // タイトルの確認
@@ -24,7 +24,7 @@ describe("StartScreen", () => {
     expect(button5.className).toContain("selected");
   });
 
-  test("問題数を選択できる", () => {
+  it("問題数を選択できる", () => {
     render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
     // 20問を選択
@@ -36,7 +36,7 @@ describe("StartScreen", () => {
     const button10 = screen.getByText("10もん");
     expect(button10.className).not.toContain("selected");
   });
-  test("選択した問題数で練習を開始できる", () => {
+  it("選択した問題数で練習を開始できる", () => {
     render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
     // 30問を選択
@@ -51,7 +51,7 @@ describe("StartScreen", () => {
     expect(selectedQuestions).toHaveLength(30);
   });
 
-  test("重複のないランダムな問題が選択される", () => {
+  it("重複のないランダムな問題が選択される", () => {
     render(<StartScreen onStartPractice={mockOnStartPractice} />);
 
     // スタートボタンを2回クリック
