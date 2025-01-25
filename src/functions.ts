@@ -9,6 +9,12 @@ export interface StrokeResult {
   userResampled: Point[];
 }
 
+export interface NormalizedResult {
+  strokeResults: StrokeResult[];
+  normParamsUser: { centerX: number; centerY: number; scale: number };
+  normParamsSample: { centerX: number; centerY: number; scale: number };
+}
+
 /**
  * SVG要素からストロークデータを抽出します。
  * @param {SVGSVGElement} element
@@ -370,59 +376,6 @@ function dist(a: Point, b: Point): number {
 }
 
 /**
- * canvasにストローク結果を描画します。
- * @param {CanvasRenderingContext2D} canvasContext
- * @param {StrokeResult[]} strokeResults
- * @param {{centerX: number, centerY: number, scale: number}} normParams
- * @param {number} boldThreasholdScore
- * @returns {void}
- */
-export function drawStrokeResults(
-  canvasContext: CanvasRenderingContext2D,
-  strokeResults: StrokeResult[],
-  normParams: { centerX: number; centerY: number; scale: number },
-  boldThreasholdScore: number
-): void {
-  const origAlpha = canvasContext.globalAlpha;
-  const origStyle = canvasContext.strokeStyle;
-  const origLineWidth = canvasContext.lineWidth;
-
-  // キャンバスを一度クリアし、ユーザストロークを描画のみ
-  canvasContext.clearRect(
-    0,
-    0,
-    canvasContext.canvas.width,
-    canvasContext.canvas.height
-  );
-  canvasContext.globalAlpha = 0.4;
-  canvasContext.font = "16px sans-serif";
-
-  strokeResults.forEach((res, i) => {
-    canvasContext.lineWidth = res.score < boldThreasholdScore ? 4 : 1;
-    canvasContext.strokeStyle = "blue";
-    canvasContext.beginPath();
-    res.userResampled.forEach((p, idx) => {
-      const { cx, cy } = normalizedPointToCanvasUserScale(p, normParams);
-      if (idx === 0) canvasContext.moveTo(cx, cy);
-      else canvasContext.lineTo(cx, cy);
-    });
-    canvasContext.stroke();
-
-    const userStart = res.userResampled[0];
-    const { cx: uX, cy: uY } = normalizedPointToCanvasUserScale(
-      userStart,
-      normParams
-    );
-    canvasContext.fillStyle = "blue";
-    canvasContext.fillText(`${i + 1}`, uX + 5, uY - 5);
-  });
-
-  canvasContext.globalAlpha = origAlpha;
-  canvasContext.strokeStyle = origStyle;
-  canvasContext.lineWidth = origLineWidth;
-}
-
-/**
  * 正規化済みの点をキャンバス座標に変換します。
  * @param {Point} p
  * @param {{centerX: number, centerY: number, scale: number}} normParams
@@ -467,15 +420,12 @@ function computeDTWDistance(s: Point[], t: Point[]): number {
  * ユーザの描画とサンプルの描画を正規化します。
  * @param {Array<Array<Point>>} sampleStrokes
  * @param {Array<Array<Point>>} userStrokes
- * @returns {{strokeResults: StrokeResult[], normParamsUser: {centerX: number, centerY: number, scale: number}}}
+ * @returns {NormalizedResult}
  */
 export function normalizeStrokes(
   sampleStrokes: Point[][],
   userStrokes: Point[][]
-): {
-  strokeResults: StrokeResult[];
-  normParamsUser: { centerX: number; centerY: number; scale: number };
-} {
+): NormalizedResult {
   if (userStrokes.length !== sampleStrokes.length) {
     throw new Error("The number of strokes does not match");
   }
@@ -514,21 +464,75 @@ export function normalizeStrokes(
     });
   }
 
-  return { strokeResults, normParamsUser };
+  return { strokeResults, normParamsUser, normParamsSample };
 }
 
 /**
- * サンプルストロークを描画します。
+ * canvasにストローク結果を描画します。
  * @param {CanvasRenderingContext2D} canvasContext
  * @param {StrokeResult[]} strokeResults
  * @param {{centerX: number, centerY: number, scale: number}} normParams
  * @param {number} boldThreasholdScore
  * @returns {void}
  */
+export function drawStrokeResults(
+  canvasContext: CanvasRenderingContext2D,
+  normalizedResult: NormalizedResult,
+  boldThreasholdScore: number
+): void {
+  const origAlpha = canvasContext.globalAlpha;
+  const origStyle = canvasContext.strokeStyle;
+  const origLineWidth = canvasContext.lineWidth;
+
+  // キャンバスを一度クリアし、ユーザストロークを描画のみ
+  canvasContext.clearRect(
+    0,
+    0,
+    canvasContext.canvas.width,
+    canvasContext.canvas.height
+  );
+  canvasContext.globalAlpha = 0.4;
+  canvasContext.font = "16px sans-serif";
+
+  normalizedResult.strokeResults.forEach((res, i) => {
+    canvasContext.lineWidth = res.score < boldThreasholdScore ? 4 : 1;
+    canvasContext.strokeStyle = "blue";
+    canvasContext.beginPath();
+    res.userResampled.forEach((p, idx) => {
+      const { cx, cy } = normalizedPointToCanvasUserScale(
+        p,
+        normalizedResult.normParamsUser
+      );
+      if (idx === 0) canvasContext.moveTo(cx, cy);
+      else canvasContext.lineTo(cx, cy);
+    });
+    canvasContext.stroke();
+
+    const userStart = res.userResampled[0];
+    const { cx: uX, cy: uY } = normalizedPointToCanvasUserScale(
+      userStart,
+      normalizedResult.normParamsUser
+    );
+    canvasContext.fillStyle = "blue";
+    canvasContext.fillText(`${i + 1}`, uX + 5, uY - 5);
+  });
+
+  canvasContext.globalAlpha = origAlpha;
+  canvasContext.strokeStyle = origStyle;
+  canvasContext.lineWidth = origLineWidth;
+}
+
+/**
+ * サンプルストロークを描画します。
+ * @param {CanvasRenderingContext2D} canvasContext
+ * @param {StrokeResult[]} strokeResults
+ * @param {{centerX: number, centerY: number, scale: number}} normParamsUser
+ * @param {number} boldThreasholdScore
+ * @returns {void}
+ */
 export function drawSampleStrokes(
   canvasContext: CanvasRenderingContext2D,
-  strokeResults: StrokeResult[],
-  normParams: { centerX: number; centerY: number; scale: number },
+  normalizedResult: NormalizedResult,
   boldThreasholdScore: number
 ): void {
   const origLineWidth = canvasContext.lineWidth;
@@ -541,19 +545,25 @@ export function drawSampleStrokes(
   canvasContext.globalAlpha = 0.4;
   canvasContext.font = "16px sans-serif";
 
-  strokeResults.forEach((res, i) => {
+  normalizedResult.strokeResults.forEach((res, i) => {
     canvasContext.lineWidth = res.score < boldThreasholdScore ? 4 : 1;
     canvasContext.beginPath();
     canvasContext.strokeStyle = "red";
     res.sampleResampled.forEach((p, idx) => {
-      const { cx, cy } = normalizedPointToCanvasUserScale(p, normParams);
+      const { cx, cy } = normalizedPointToCanvasUserScale(
+        p,
+        normalizedResult.normParamsUser
+      );
       if (idx === 0) canvasContext.moveTo(cx, cy);
       else canvasContext.lineTo(cx, cy);
     });
     canvasContext.stroke();
 
     const start = res.sampleResampled[0];
-    const { cx, cy } = normalizedPointToCanvasUserScale(start, normParams);
+    const { cx, cy } = normalizedPointToCanvasUserScale(
+      start,
+      normalizedResult.normParamsUser
+    );
     canvasContext.fillStyle = "red";
     canvasContext.fillText(`${i + 1}`, cx + 5, cy - 5);
   });

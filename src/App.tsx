@@ -107,32 +107,23 @@ function App() {
         false
       );
     } else {
-      const { strokeResults, normParamsUser } = normalizeStrokes(
-        strokesSvg,
-        userStrokes
-      );
-      const scores = strokeResults.map((result) => result.score);
+      const normalized = normalizeStrokes(strokesSvg, userStrokes);
+      const scores = normalized.strokeResults.map((result) => result.score);
       const isCorrect = manager.isCorrect(scores);
       const scoreText = manager.getScoreText(scores);
       const resultText = isCorrect
         ? "せいかい！よくかけました！"
         : "ざんねん！おてほんをよくみよう！";
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      drawStrokeResults(
-        ctx,
-        strokeResults,
-        normParamsUser,
-        KanjiQuestionManager.SCORE_THRESHOLD
-      );
+      drawStrokeResults(ctx, normalized, KanjiQuestionManager.SCORE_THRESHOLD);
       drawSampleStrokes(
         answerCtx,
-        strokeResults,
-        normParamsUser,
+        normalized,
         KanjiQuestionManager.SCORE_THRESHOLD
       );
       setShowAnswer(true);
       setResult(`${resultText}（${scoreText}）`);
-      manager.recordResult(isCorrect, strokeResults);
+      manager.recordResult(isCorrect, normalized);
       memoryManagerRef.current.saveResult(
         currentQuestion.id,
         new Date().toISOString(),

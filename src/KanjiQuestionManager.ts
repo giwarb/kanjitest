@@ -1,4 +1,4 @@
-import type { StrokeResult } from "./functions";
+import type { NormalizedResult } from "./functions";
 
 interface Question {
   id: string;
@@ -10,8 +10,9 @@ interface Question {
 interface QuestionResult {
   questionIndex: number;
   isCorrect: boolean;
-  strokeResults: StrokeResult[] | undefined;
+  normalizedResult?: NormalizedResult;
 }
+
 interface KanjiQuestionManagerState {
   questions: Question[];
   targetQuestionIdices: number[];
@@ -89,7 +90,7 @@ export class KanjiQuestionManager {
     return `スコア: ${minScorePercentage}%、へいきん: ${averageScorePercentage}%`;
   }
 
-  recordResult(isCorrect: boolean, strokeResults?: StrokeResult[]): void {
+  recordResult(isCorrect: boolean, normalizedResult?: NormalizedResult): void {
     if (this.isComplete()) {
       throw new Error("All questions have been answered");
     }
@@ -99,13 +100,13 @@ export class KanjiQuestionManager {
     this.results.push({
       questionIndex,
       isCorrect,
-      strokeResults,
+      normalizedResult,
     });
 
     this.totalResults.push({
       questionIndex,
       isCorrect,
-      strokeResults,
+      normalizedResult,
     });
 
     this.currentIndex++;
@@ -166,7 +167,6 @@ export class KanjiQuestionManager {
       const lastResult = lastResults.get(index) ?? {
         questionIndex: index,
         isCorrect: false,
-        strokeResults: undefined,
       };
       const incorrectCount = incorrectCounts.get(index) || 0;
       return {
