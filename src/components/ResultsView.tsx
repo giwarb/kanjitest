@@ -14,6 +14,9 @@ export function ResultsView({
   onRestartReview,
   onBackToStart,
 }: ResultsViewProps) {
+  const incorrects = scoreAndResults.results.filter(
+    (result) => result.incorrectCount
+  );
   return (
     <>
       <h2>けっか</h2>
@@ -41,38 +44,40 @@ export function ResultsView({
               スタートがめんへ
             </button>
           </div>
-          <div style={{ marginBottom: "20px" }}>
-            <h3
-              style={{
-                color: "green",
-                marginBottom: "10px",
-              }}
-            >
-              まちがえた もんだい
-            </h3>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-              {scoreAndResults.results
-                .filter((result) => result.incorrectCount)
-                .map((result) => (
-                  <div key={result.question.id}>
-                    <div
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: 問題文は漢字の表示のための静的なHTMLコンテンツです
-                      dangerouslySetInnerHTML={{
-                        __html: result.question.sentence,
-                      }}
-                      style={{ fontSize: "1.6rem" }}
-                    />
-                    <div>{result.incorrectCount}かい まちがえました</div>
-                  </div>
-                ))}
+          {incorrects.length > 0 && (
+            <div style={{ marginBottom: "20px" }}>
+              <h3
+                style={{
+                  color: "green",
+                  marginBottom: "10px",
+                }}
+              >
+                まちがえた もんだい
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                {scoreAndResults.results
+                  .filter((result) => result.incorrectCount)
+                  .map((result) => (
+                    <div key={result.question.id}>
+                      <div
+                        // biome-ignore lint/security/noDangerouslySetInnerHtml: 問題文は漢字の表示のための静的なHTMLコンテンツです
+                        dangerouslySetInnerHTML={{
+                          __html: result.question.sentence,
+                        }}
+                        style={{ fontSize: "1.6rem" }}
+                      />
+                      <div>{result.incorrectCount}かい まちがえました</div>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </>
