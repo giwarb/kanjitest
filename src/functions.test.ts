@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getSVGStrokes, compareStrokes } from "./functions";
+import { getSVGStrokes, normalizeStrokes } from "./functions";
 
 describe("SVG Path関連のテスト", () => {
   it("getSVGStrokesが空のSVG要素から空の配列を返すこと", () => {
@@ -69,7 +69,7 @@ describe("ストローク比較のテスト", () => {
       ],
     ];
 
-    expect(() => compareStrokes(sampleStrokes, userStrokes)).toThrow(
+    expect(() => normalizeStrokes(sampleStrokes, userStrokes)).toThrow(
       "The number of strokes does not match"
     );
   });
@@ -88,7 +88,7 @@ describe("ストローク比較のテスト", () => {
       ],
     ];
 
-    const result = compareStrokes(sampleStrokes, userStrokes);
+    const result = normalizeStrokes(sampleStrokes, userStrokes);
     expect(result.strokeResults[0].score).toBeGreaterThan(0.9);
   });
 
@@ -106,7 +106,7 @@ describe("ストローク比較のテスト", () => {
       ], // 異なる方向のストローク
     ];
 
-    const result = compareStrokes(sampleStrokes, userStrokes);
+    const result = normalizeStrokes(sampleStrokes, userStrokes);
     expect(result.strokeResults[0].score).toBeLessThan(0.7);
   });
 
@@ -124,7 +124,7 @@ describe("ストローク比較のテスト", () => {
       ], // 2倍のスケールで移動
     ];
 
-    const result = compareStrokes(sampleStrokes, userStrokes);
+    const result = normalizeStrokes(sampleStrokes, userStrokes);
     expect(result.strokeResults[0].score).toBeGreaterThan(0.9);
   });
 
@@ -150,7 +150,7 @@ describe("ストローク比較のテスト", () => {
       ],
     ];
 
-    const result = compareStrokes(sampleStrokes, userStrokes);
+    const result = normalizeStrokes(sampleStrokes, userStrokes);
     expect(result.strokeResults).toHaveLength(2);
     for (const strokeResult of result.strokeResults) {
       expect(strokeResult.score).toBeGreaterThan(0.9);

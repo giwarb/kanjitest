@@ -370,14 +370,14 @@ function dist(a: Point, b: Point): number {
 }
 
 /**
- * 評価用のオーバーレイを描画します。
+ * canvasにストローク結果を描画します。
  * @param {CanvasRenderingContext2D} canvasContext
  * @param {StrokeResult[]} strokeResults
  * @param {{centerX: number, centerY: number, scale: number}} normParams
  * @param {number} boldThreasholdScore
  * @returns {void}
  */
-export function showEvaluationOverlay(
+export function drawStrokeResults(
   canvasContext: CanvasRenderingContext2D,
   strokeResults: StrokeResult[],
   normParams: { centerX: number; centerY: number; scale: number },
@@ -464,12 +464,12 @@ function computeDTWDistance(s: Point[], t: Point[]): number {
 }
 
 /**
- * ユーザーのストロークとサンプルを比較します。
+ * ユーザの描画とサンプルの描画を正規化します。
  * @param {Array<Array<Point>>} sampleStrokes
  * @param {Array<Array<Point>>} userStrokes
  * @returns {{strokeResults: StrokeResult[], normParamsUser: {centerX: number, centerY: number, scale: number}}}
  */
-export function compareStrokes(
+export function normalizeStrokes(
   sampleStrokes: Point[][],
   userStrokes: Point[][]
 ): {

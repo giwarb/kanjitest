@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  compareStrokes,
+  normalizeStrokes,
   drawSampleStrokes,
   getSVGStrokes,
-  showEvaluationOverlay,
+  drawStrokeResults,
 } from "./functions";
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./hooks/useDrawingManager";
@@ -107,7 +107,7 @@ function App() {
         false
       );
     } else {
-      const { strokeResults, normParamsUser } = compareStrokes(
+      const { strokeResults, normParamsUser } = normalizeStrokes(
         strokesSvg,
         userStrokes
       );
@@ -118,7 +118,7 @@ function App() {
         ? "せいかい！よくかけました！"
         : "ざんねん！おてほんをよくみよう！";
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      showEvaluationOverlay(
+      drawStrokeResults(
         ctx,
         strokeResults,
         normParamsUser,
