@@ -85,28 +85,40 @@ describe("漢字問題管理クラス", () => {
       const manager = new KanjiQuestionManager(mockQuestions);
 
       // すべての筆画が閾値以上で正解
-      const strokeResults1 = [
-        { score: 0.7, sampleResampled: [], userResampled: [] },
-        { score: 0.8, sampleResampled: [], userResampled: [] },
-        { score: 0.9, sampleResampled: [], userResampled: [] },
-      ];
-      manager.recordResult(true, strokeResults1);
+      const normalizedResult1 = {
+        strokeResults: [
+          { score: 0.7, sampleResampled: [], userResampled: [] },
+          { score: 0.8, sampleResampled: [], userResampled: [] },
+          { score: 0.9, sampleResampled: [], userResampled: [] },
+        ],
+        normParamsUser: { centerX: 0, centerY: 0, scale: 1 },
+        normParamsSample: { centerX: 0, centerY: 0, scale: 1 },
+      };
+      manager.recordResult(true, normalizedResult1);
 
       // 1つの筆画が閾値未満のため不正解
-      const strokeResults2 = [
-        { score: 0.8, sampleResampled: [], userResampled: [] },
-        { score: 0.4, sampleResampled: [], userResampled: [] },
-        { score: 0.9, sampleResampled: [], userResampled: [] },
-      ];
-      manager.recordResult(false, strokeResults2);
+      const normalizedResult2 = {
+        strokeResults: [
+          { score: 0.8, sampleResampled: [], userResampled: [] },
+          { score: 0.4, sampleResampled: [], userResampled: [] },
+          { score: 0.9, sampleResampled: [], userResampled: [] },
+        ],
+        normParamsUser: { centerX: 0, centerY: 0, scale: 1 },
+        normParamsSample: { centerX: 0, centerY: 0, scale: 1 },
+      };
+      manager.recordResult(false, normalizedResult2);
 
       // 全ストロークが閾値以上なので正解
-      const strokeResults3 = [
-        { score: 0.5, sampleResampled: [], userResampled: [] },
-        { score: 0.5, sampleResampled: [], userResampled: [] },
-        { score: 0.5, sampleResampled: [], userResampled: [] },
-      ];
-      manager.recordResult(true, strokeResults3);
+      const normalizedResult3 = {
+        strokeResults: [
+          { score: 0.5, sampleResampled: [], userResampled: [] },
+          { score: 0.5, sampleResampled: [], userResampled: [] },
+          { score: 0.5, sampleResampled: [], userResampled: [] },
+        ],
+        normParamsUser: { centerX: 0, centerY: 0, scale: 1 },
+        normParamsSample: { centerX: 0, centerY: 0, scale: 1 },
+      };
+      manager.recordResult(true, normalizedResult3);
 
       const results = manager.getScore();
       expect(results.total).toBe(3);
@@ -336,7 +348,7 @@ describe("漢字問題管理クラス", () => {
       lastResult: {
         questionIndex: 1,
         isCorrect: true,
-        strokeResults: undefined,
+        normalizedResult: undefined,
       },
       incorrectCount: 0,
     });
@@ -345,7 +357,7 @@ describe("漢字問題管理クラス", () => {
       lastResult: {
         questionIndex: 2,
         isCorrect: true,
-        strokeResults: undefined,
+        normalizedResult: undefined,
       },
       incorrectCount: 1,
     });

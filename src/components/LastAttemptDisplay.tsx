@@ -3,21 +3,25 @@ import { drawStrokeResults } from "../functions";
 import type { StrokeResult } from "../functions";
 
 interface LastAttemptDisplayProps {
-  results: {
-    question: { id: string; sentence: string };
+  results: Array<{
+    question: {
+      id: string;
+      sentence: string;
+    };
     lastResult: {
+      questionIndex: number;
+      isCorrect: boolean;
       normalizedResult?: {
         strokeResults: StrokeResult[];
         normParamsUser: { centerX: number; centerY: number; scale: number };
         normParamsSample: { centerX: number; centerY: number; scale: number };
       };
     };
-  }[];
+    incorrectCount: number;
+  }>;
 }
 
 export function LastAttemptDisplay({ results }: LastAttemptDisplayProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
   return (
     <div style={{ marginTop: "20px" }}>
       <h3 style={{ color: "green", marginBottom: "10px", textAlign: "center" }}>
