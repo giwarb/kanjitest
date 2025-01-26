@@ -1,4 +1,5 @@
 import type { KanjiQuestionManager } from "../KanjiQuestionManager";
+import { LastAttemptDisplay } from "./LastAttemptDisplay";
 
 interface ResultsViewProps {
   scoreAndResults: {
@@ -38,8 +39,13 @@ export function ResultsView({
         </>
       ) : (
         <>
-          <div>すべての もんだいに せいかいしました！</div>
-          <div>
+          <div style={{ marginBottom: "20px" }}>
+            すべての もんだいに せいかいしました！
+          </div>
+          {scoreAndResults.results.length > 0 && (
+            <LastAttemptDisplay results={scoreAndResults.results} />
+          )}
+          <div style={{ marginTop: "20px" }}>
             <button type="button" onClick={onBackToStart}>
               スタートがめんへ
             </button>
