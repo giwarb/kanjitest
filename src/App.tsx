@@ -17,6 +17,7 @@ import { Header } from "./components/Header";
 import "./App.css";
 import { QuestionHeader } from "./components/QuestionHeader";
 import { MemoryManager } from "./MemoryManager";
+import { Ruby } from "./components/Ruby";
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +31,7 @@ function App() {
   const [showNext, setShowNext] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showSVG, setShowSVG] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState<React.ReactNode>("");
   const [scoreAndResults, setScoreAndResults] = useState<{
     score: ReturnType<KanjiQuestionManager["getScore"]>;
     results: ReturnType<KanjiQuestionManager["getResults"]>;
@@ -98,7 +99,13 @@ function App() {
     const strokesSvg = getSVGStrokes(svg);
     if (strokesSvg.length !== userStrokes.length) {
       setResult(
-        `かくすうがちがうよ！（おてほん: ${strokesSvg.length}、あなた: ${userStrokes.length}）`
+        <>
+          <Ruby base="画数" reading="かくすう" />が
+          <Ruby base="違" reading="ちが" />
+          うよ！（お
+          <Ruby base="手本" reading="てほん" />: {strokesSvg.length}、あなた:{" "}
+          {userStrokes.length}）
+        </>
       );
       setShowSVG(true);
       manager.recordResult(false);
@@ -112,9 +119,23 @@ function App() {
       const scores = normalized.strokeResults.map((result) => result.score);
       const isCorrect = manager.isCorrect(scores);
       const scoreText = manager.getScoreText(scores);
-      const resultText = isCorrect
-        ? "せいかい！よくかけました！"
-        : "ざんねん！おてほんをよくみよう！";
+      const resultText = isCorrect ? (
+        <>
+          <Ruby base="正解" reading="せいかい" />
+          ！よく
+          <Ruby base="書" reading="か" />
+          けました！
+        </>
+      ) : (
+        <>
+          <Ruby base="残念" reading="ざんねん" />
+          ！お
+          <Ruby base="手本" reading="てほん" />
+          をよく
+          <Ruby base="見" reading="み" />
+          よう！
+        </>
+      );
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       drawStrokeResults(ctx, normalized, KanjiQuestionManager.SCORE_THRESHOLD);
       drawSampleStrokes(
@@ -123,7 +144,11 @@ function App() {
         KanjiQuestionManager.SCORE_THRESHOLD
       );
       setShowAnswer(true);
-      setResult(`${resultText}（${scoreText}）`);
+      setResult(
+        <>
+          {resultText}（{scoreText}）
+        </>
+      );
       manager.recordResult(isCorrect, normalized);
       memoryManagerRef.current.saveResult(
         currentQuestion.id,
@@ -163,7 +188,15 @@ function App() {
     const currentQuestion = manager.getCurrentQuestion();
     if (!currentQuestion) return;
     setShowSVG(true);
-    setResult("むずかしいですね。おてほんを みてみましょう！");
+    setResult(
+      <>
+        <Ruby base="難" reading="むずか" />
+        しいですね。お
+        <Ruby base="手本" reading="てほん" />を
+        <Ruby base="見" reading="み" />
+        てみましょう！
+      </>
+    );
     manager.recordResult(false);
     memoryManagerRef.current.saveResult(
       currentQuestion.id,

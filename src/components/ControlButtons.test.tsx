@@ -24,30 +24,28 @@ describe("ControlButtons", () => {
   it("通常時は評価・クリア・わからないボタンが表示される", () => {
     render(<ControlButtons {...defaultProps} />);
 
-    expect(screen.getByRole("button", { name: "ひょうか" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "評価" })).toBeDefined();
     expect(screen.getByRole("button", { name: "クリア" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "わからない" })).toBeDefined();
-    expect(screen.queryByText("つぎの もんだいへ")).toBeNull();
+    expect(screen.getByRole("button", { name: "分からない" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: "次の問題へ" })).toBeNull();
   });
 
   it("showNext が true の時は次の問題へボタンが表示される", () => {
     render(<ControlButtons {...defaultProps} showNext={true} />);
 
-    expect(screen.queryByText("ひょうか")).toBeNull();
-    expect(screen.queryByText("クリア")).toBeNull();
-    expect(screen.queryByText("わからない")).toBeNull();
-    expect(
-      screen.getByRole("button", { name: "つぎの もんだいへ" })
-    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: "評価" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "クリア" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "分からない" })).toBeNull();
+    expect(screen.getByRole("button", { name: "次の問題へ" })).toBeDefined();
   });
 
   it("ストロークがない時は評価・クリアボタンが無効になる", () => {
     render(<ControlButtons {...defaultProps} hasStrokes={false} />);
 
-    expect(screen.getByRole("button", { name: "ひょうか" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "評価" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "クリア" })).toBeDisabled();
     expect(
-      screen.getByRole("button", { name: "わからない" })
+      screen.getByRole("button", { name: "分からない" })
     ).not.toBeDisabled();
   });
 
@@ -55,18 +53,18 @@ describe("ControlButtons", () => {
     const { rerender } = render(<ControlButtons {...defaultProps} />);
 
     // 通常時のボタン
-    fireEvent.click(screen.getByRole("button", { name: "ひょうか" }));
+    fireEvent.click(screen.getByRole("button", { name: "評価" }));
     expect(mockHandlers.onEvaluate).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole("button", { name: "クリア" }));
     expect(mockHandlers.onClear).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole("button", { name: "わからない" }));
+    fireEvent.click(screen.getByRole("button", { name: "分からない" }));
     expect(mockHandlers.onDontKnow).toHaveBeenCalledTimes(1);
 
     // 次の問題へボタン
     rerender(<ControlButtons {...defaultProps} showNext={true} />);
-    fireEvent.click(screen.getByRole("button", { name: "つぎの もんだいへ" }));
+    fireEvent.click(screen.getByRole("button", { name: "次の問題へ" }));
     expect(mockHandlers.onNextQuestion).toHaveBeenCalledTimes(1);
   });
 });

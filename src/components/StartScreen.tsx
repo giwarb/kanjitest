@@ -4,6 +4,7 @@ import { datasets, defaultGrade, type GradeKey } from "../datasets";
 import type { MemoryManager, PracticeMode } from "../MemoryManager";
 import { Header } from "./Header";
 import { SelectionDialog } from "./SelectionDialog";
+import { Ruby } from "./Ruby";
 import "./StartScreen.css";
 
 type StartScreenProps = {
@@ -81,13 +82,50 @@ export function StartScreen({
     setResetTrigger((prev) => prev + 1);
   }, [memoryManager]);
 
-  const modes: { value: PracticeMode; label: string }[] = [
-    { value: "all", label: "すべての もんだい" },
-    { value: "new", label: "まだ といたことない もんだい" },
-    { value: "unsolved", label: "まだ せいかい していない もんだい" },
+  const modes: { value: PracticeMode; label: React.ReactNode }[] = [
+    {
+      value: "all",
+      label: (
+        <>
+          <Ruby base="全" reading="すべ" />
+          ての
+          <Ruby base="問題" reading="もんだい" />
+        </>
+      ),
+    },
+    {
+      value: "new",
+      label: (
+        <>
+          まだ
+          <Ruby base="解" reading="と" />
+          いたことがない
+          <Ruby base="問題" reading="もんだい" />
+        </>
+      ),
+    },
+    {
+      value: "unsolved",
+      label: (
+        <>
+          まだ
+          <Ruby base="正解" reading="せいかい" />
+          していない
+          <Ruby base="問題" reading="もんだい" />
+        </>
+      ),
+    },
     {
       value: "recent-mistakes",
-      label: "この いっしゅうかんで まちがえた もんだい",
+      label: (
+        <>
+          この1
+          <Ruby base="週間" reading="しゅうかん" />で
+          <Ruby base="間違" reading="まちが" />
+          えた
+          <Ruby base="問題" reading="もんだい" />
+        </>
+      ),
     },
   ];
 
@@ -102,36 +140,50 @@ export function StartScreen({
     return datasets[grade].label;
   };
 
-  const getModeLabel = (mode: PracticeMode): string => {
-    const modeObj = modes.find((m) => m.value === mode);
-    return modeObj ? modeObj.label : "";
-  };
-
   return (
     <div className="app">
       <Header
         onBackToStart={undefined}
         onReset={handleResetHistory}
-        resetLabel="がくしゅうりれきをリセット"
+        resetLabel="学習履歴をリセット"
       />
       <div className="start-screen-container">
         <div className="start-screen-content">
           <div className="statistics">
             <p className="statistics-title">
-              {label}（{stats.total}もん）
+              {label}（{stats.total}
+              <Ruby base="問" reading="もん" />）
             </p>
             <div className="statistics-grid">
               <div className="stat-item">
-                <div className="stat-label">ぜんぶ</div>
-                <div className="stat-value">{stats.total}もん</div>
+                <div className="stat-label">
+                  <Ruby base="全部" reading="ぜんぶ" />
+                </div>
+                <div className="stat-value">
+                  {stats.total}
+                  <Ruby base="問" reading="もん" />
+                </div>
               </div>
               <div className="stat-item">
-                <div className="stat-label">まだといていない</div>
-                <div className="stat-value">{stats.unattempted}もん</div>
+                <div className="stat-label">
+                  まだ
+                  <Ruby base="解" reading="と" />
+                  いていない
+                </div>
+                <div className="stat-value">
+                  {stats.unattempted}
+                  <Ruby base="問" reading="もん" />
+                </div>
               </div>
               <div className="stat-item">
-                <div className="stat-label">せいかいした</div>
-                <div className="stat-value">{stats.correct}もん</div>
+                <div className="stat-label">
+                  <Ruby base="正解" reading="せいかい" />
+                  した
+                </div>
+                <div className="stat-value">
+                  {stats.correct}
+                  <Ruby base="問" reading="もん" />
+                </div>
               </div>
             </div>
           </div>
@@ -142,7 +194,9 @@ export function StartScreen({
               className="selection-button"
               onClick={() => setOpenDialog("grade")}
             >
-              <span className="selection-button-label">がくねん</span>
+              <span className="selection-button-label">
+                <Ruby base="学年" reading="がくねん" />
+              </span>
               <span className="selection-button-value">
                 {getGradeLabel(selectedGrade)}
               </span>
@@ -155,7 +209,7 @@ export function StartScreen({
             >
               <span className="selection-button-label">モード</span>
               <span className="selection-button-value">
-                {getModeLabel(selectedMode)}
+                {modes.find((m) => m.value === selectedMode)?.label}
               </span>
             </button>
 
@@ -164,9 +218,21 @@ export function StartScreen({
               className="selection-button"
               onClick={() => setOpenDialog("count")}
             >
-              <span className="selection-button-label">もんだいすう</span>
+              <span className="selection-button-label">
+                <Ruby base="問題数" reading="もんだいすう" />
+              </span>
               <span className="selection-button-value">
-                {selectedCount ? `${selectedCount}もん` : "えらんでください"}
+                {selectedCount ? (
+                  <>
+                    {selectedCount}
+                    <Ruby base="問" reading="もん" />
+                  </>
+                ) : (
+                  <>
+                    <Ruby base="選" reading="えら" />
+                    んでください
+                  </>
+                )}
               </span>
             </button>
           </div>
@@ -187,7 +253,13 @@ export function StartScreen({
         isOpen={openDialog === "grade"}
         onClose={() => setOpenDialog(null)}
         onStart={() => setOpenDialog(null)}
-        title="がくねんをえらんでください"
+        title={
+          <>
+            <Ruby base="学年" reading="がくねん" />を
+            <Ruby base="選" reading="えら" />
+            んでください
+          </>
+        }
         canStart={true}
       >
         <div className="dialog-buttons">
@@ -202,7 +274,8 @@ export function StartScreen({
               }}
               className="dialog-button"
             >
-              {dataset.label}（{dataset.questions.length}もん）
+              {dataset.label}（{dataset.questions.length}
+              <Ruby base="問" reading="もん" />）
             </button>
           ))}
         </div>
@@ -213,7 +286,13 @@ export function StartScreen({
         isOpen={openDialog === "mode"}
         onClose={() => setOpenDialog(null)}
         onStart={() => setOpenDialog(null)}
-        title="モードをえらんでください"
+        title={
+          <>
+            モードを
+            <Ruby base="選" reading="えら" />
+            んでください
+          </>
+        }
         canStart={true}
       >
         <div className="dialog-buttons">
@@ -228,7 +307,8 @@ export function StartScreen({
               }}
               className="dialog-button"
             >
-              {mode.label}（{getModeQuestionCount(mode.value)}もん）
+              {mode.label}（{getModeQuestionCount(mode.value)}
+              <Ruby base="問" reading="もん" />）
             </button>
           ))}
         </div>
@@ -239,7 +319,13 @@ export function StartScreen({
         isOpen={openDialog === "count"}
         onClose={() => setOpenDialog(null)}
         onStart={() => setOpenDialog(null)}
-        title="もんだいすうをえらんでください"
+        title={
+          <>
+            <Ruby base="問題数" reading="もんだいすう" />を
+            <Ruby base="選" reading="えら" />
+            んでください
+          </>
+        }
         canStart={true}
       >
         {questionCounts.length > 0 ? (
@@ -254,14 +340,25 @@ export function StartScreen({
                 }}
                 className="dialog-count-button"
               >
-                {count}もん
-                {count === availableQuestions.length ? "（ぜんぶ）" : ""}
+                {count}
+                <Ruby base="問" reading="もん" />
+                {count === availableQuestions.length ? (
+                  <>
+                    （<Ruby base="全部" reading="ぜんぶ" />）
+                  </>
+                ) : (
+                  ""
+                )}
               </button>
             ))}
           </div>
         ) : (
           <div className="dialog-no-questions">
-            このモードで とける もんだいが ありません
+            このモードで
+            <Ruby base="解" reading="と" />
+            ける
+            <Ruby base="問題" reading="もんだい" />
+            がありません
           </div>
         )}
       </SelectionDialog>

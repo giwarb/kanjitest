@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { drawStrokeResults } from "../functions";
 import type { StrokeResult } from "../functions";
+import { Ruby } from "./Ruby";
 
 interface LastAttemptDisplayProps {
   results: Array<{
@@ -25,7 +26,9 @@ export function LastAttemptDisplay({ results }: LastAttemptDisplayProps) {
   return (
     <div style={{ marginTop: "20px" }}>
       <h3 style={{ color: "green", marginBottom: "10px", textAlign: "center" }}>
-        れんしゅうした もじ
+        <Ruby base="練習" reading="れんしゅう" />
+        した
+        <Ruby base="文字" reading="もじ" />
       </h3>
       <div
         style={{

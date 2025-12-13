@@ -38,10 +38,9 @@ describe("MenuDialog", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("さいしょから"));
-    expect(
-      screen.getByText("さいしょからやりなおしますか？")
-    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "最初から" }));
+    expect(screen.getByRole("button", { name: "はい" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "いいえ" })).toBeInTheDocument();
   });
 
   it("calls onClose when overlay is clicked", () => {
@@ -54,7 +53,7 @@ describe("MenuDialog", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("とじる"));
+    fireEvent.click(screen.getByRole("button", { name: "閉じる" }));
     expect(mockOnClose).toHaveBeenCalled();
   });
 });

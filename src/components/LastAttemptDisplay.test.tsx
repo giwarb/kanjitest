@@ -88,8 +88,16 @@ describe("LastAttemptDisplay", () => {
       render(<LastAttemptDisplay results={mockResults} />);
     });
 
-    // タイトルが表示される
-    expect(screen.getByText("れんしゅうした もじ")).toBeDefined();
+    // タイトルが表示される（rubyで分割されるため textContent で判定）
+    expect(
+      screen.getByText((_, element) =>
+        Boolean(
+          element?.tagName === "H3" &&
+            element.textContent?.includes("れんしゅう") &&
+            element.textContent.includes("もじ")
+        )
+      )
+    ).toBeDefined();
 
     // normalizedResultを持つ問題が表示される
     expect(screen.getByText("問題1")).toBeDefined();
@@ -136,7 +144,15 @@ describe("LastAttemptDisplay", () => {
   it("問題がない場合はタイトルのみ表示される", () => {
     const { container } = render(<LastAttemptDisplay results={[]} />);
 
-    expect(screen.getByText("れんしゅうした もじ")).toBeDefined();
+    expect(
+      screen.getByText((_, element) =>
+        Boolean(
+          element?.tagName === "H3" &&
+            element.textContent?.includes("れんしゅう") &&
+            element.textContent.includes("もじ")
+        )
+      )
+    ).toBeDefined();
     expect(container.querySelectorAll("canvas")).toHaveLength(0);
     expect(functions.drawStrokeResults).not.toHaveBeenCalled();
   });

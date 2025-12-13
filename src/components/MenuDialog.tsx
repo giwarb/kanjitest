@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { Ruby } from "./Ruby";
 
 interface MenuDialogProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ export function MenuDialog({
   onClose,
   onReset,
   onBackToStart,
-  resetLabel = "さいしょから",
+  resetLabel = "最初から",
 }: MenuDialogProps) {
   const [confirmType, setConfirmType] = useState<
     "reset" | "backToStart" | null
@@ -32,6 +33,58 @@ export function MenuDialog({
 
   if (!isOpen) return null;
 
+  const renderResetLabel = () => {
+    if (resetLabel === "最初から") {
+      return (
+        <>
+          <Ruby base="最初" reading="さいしょ" />
+          から
+        </>
+      );
+    }
+
+    if (resetLabel === "学習履歴をリセット") {
+      return (
+        <>
+          <Ruby base="学習履歴" reading="がくしゅうりれき" />
+          をリセット
+        </>
+      );
+    }
+
+    return resetLabel;
+  };
+
+  const confirmMessage = () => {
+    if (confirmType === "reset") {
+      if (resetLabel === "最初から") {
+        return (
+          <>
+            <Ruby base="最初" reading="さいしょ" />
+            からやり
+            <Ruby base="直" reading="なお" />
+            しますか？
+          </>
+        );
+      }
+
+      return (
+        <>
+          <Ruby base="学習履歴" reading="がくしゅうりれき" />
+          をリセットしますか？
+        </>
+      );
+    }
+
+    return (
+      <>
+        スタート
+        <Ruby base="画面" reading="がめん" />に<Ruby base="戻" reading="もど" />
+        りますか？
+      </>
+    );
+  };
+
   return (
     <>
       <div
@@ -45,29 +98,33 @@ export function MenuDialog({
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.key === "Enter" && e.stopPropagation()}
         >
-          <button type="button" onClick={() => setConfirmType("reset")}>
-            {resetLabel}
+          <button
+            type="button"
+            onClick={() => setConfirmType("reset")}
+            aria-label={resetLabel}
+          >
+            {renderResetLabel()}
           </button>
           {onBackToStart && (
-            <button type="button" onClick={() => setConfirmType("backToStart")}>
-              スタートがめんへ
+            <button
+              type="button"
+              onClick={() => setConfirmType("backToStart")}
+              aria-label="スタート画面へ"
+            >
+              スタート
+              <Ruby base="画面" reading="がめん" />へ
             </button>
           )}
-          <button type="button" onClick={onClose}>
-            とじる
+          <button type="button" onClick={onClose} aria-label="閉じる">
+            <Ruby base="閉" reading="と" />
+            じる
           </button>
         </div>
       </div>
       {confirmType && (
         <ConfirmDialog
           isOpen={true}
-          message={
-            confirmType === "reset"
-              ? resetLabel === "さいしょから"
-                ? "さいしょからやりなおしますか？"
-                : "がくしゅうりれきをリセットしますか？"
-              : "スタートがめんにもどりますか？"
-          }
+          message={confirmMessage()}
           onConfirm={handleConfirm}
           onCancel={() => setConfirmType(null)}
         />

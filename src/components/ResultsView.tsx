@@ -1,5 +1,6 @@
 import type { KanjiQuestionManager } from "../KanjiQuestionManager";
 import { LastAttemptDisplay } from "./LastAttemptDisplay";
+import { Ruby } from "./Ruby";
 
 interface ResultsViewProps {
   scoreAndResults: {
@@ -20,34 +21,63 @@ export function ResultsView({
   );
   return (
     <>
-      <h2>けっか</h2>
+      <h2>
+        <Ruby base="結果" reading="けっか" />
+      </h2>
       <div>
-        ぜん{scoreAndResults.score.total}もんちゅう、
-        {scoreAndResults.score.correct}もん せいかい！
+        <Ruby base="全" reading="ぜん" />
+        {scoreAndResults.score.total}
+        <Ruby base="問中" reading="もんちゅう" />、
+        {scoreAndResults.score.correct}
+        <Ruby base="問" reading="もん" />{" "}
+        <Ruby base="正解" reading="せいかい" />！
       </div>
-      <div>せいかいりつ: {scoreAndResults.score.percentage.toFixed(1)}%</div>
+      <div>
+        <Ruby base="正解率" reading="せいかいりつ" />:{" "}
+        {scoreAndResults.score.percentage.toFixed(1)}%
+      </div>
       {scoreAndResults.score.incorrectCount > 0 ? (
         <>
           <p style={{ textAlign: "center" }}>
-            {scoreAndResults.score.incorrectCount}もん まちがいました。
+            {scoreAndResults.score.incorrectCount}
+            <Ruby base="問" reading="もん" />{" "}
+            <Ruby base="間違" reading="まちが" />
+            いました。
           </p>
           <div>
-            <button type="button" onClick={onRestartReview}>
-              まちがった もんだい を もういちど
+            <button
+              type="button"
+              onClick={onRestartReview}
+              aria-label="間違った問題をもう一度"
+            >
+              <Ruby base="間違" reading="まちが" />
+              った
+              <Ruby base="問題" reading="もんだい" />
+              をもう
+              <Ruby base="一度" reading="いちど" />
             </button>
           </div>
         </>
       ) : (
         <>
           <div style={{ marginBottom: "20px" }}>
-            すべての もんだいに せいかいしました！
+            <Ruby base="全" reading="すべ" />
+            ての
+            <Ruby base="問題" reading="もんだい" />に
+            <Ruby base="正解" reading="せいかい" />
+            しました！
           </div>
           {scoreAndResults.results.length > 0 && (
             <LastAttemptDisplay results={scoreAndResults.results} />
           )}
           <div style={{ marginTop: "20px" }}>
-            <button type="button" onClick={onBackToStart}>
-              スタートがめんへ
+            <button
+              type="button"
+              onClick={onBackToStart}
+              aria-label="スタート画面へ"
+            >
+              スタート
+              <Ruby base="画面" reading="がめん" />へ
             </button>
           </div>
           {incorrects.length > 0 && (
@@ -58,7 +88,9 @@ export function ResultsView({
                   marginBottom: "10px",
                 }}
               >
-                まちがえた もんだい
+                <Ruby base="間違" reading="まちが" />
+                えた
+                <Ruby base="問題" reading="もんだい" />
               </h3>
               <div
                 style={{
@@ -78,7 +110,12 @@ export function ResultsView({
                         }}
                         style={{ fontSize: "1.6rem" }}
                       />
-                      <div>{result.incorrectCount}かい まちがえました</div>
+                      <div>
+                        {result.incorrectCount}
+                        <Ruby base="回" reading="かい" />{" "}
+                        <Ruby base="間違" reading="まちが" />
+                        えました
+                      </div>
                     </div>
                   ))}
               </div>

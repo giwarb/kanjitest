@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MenuDialog } from "./MenuDialog";
+import { Ruby } from "./Ruby";
 import "./Header.css";
 
 interface HeaderProps {
@@ -13,7 +14,11 @@ export function Header({ onReset, onBackToStart, resetLabel }: HeaderProps) {
 
   return (
     <div className="header">
-      <div className="header-content">かんじれんしゅう アプリ</div>
+      <div className="header-content">
+        <Ruby base="漢字" reading="かんじ" />
+        <Ruby base="練習" reading="れんしゅう" />
+        アプリ
+      </div>
       <button
         type="button"
         className="menu-button"

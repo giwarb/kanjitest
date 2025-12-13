@@ -7,7 +7,7 @@ interface PracticeCanvasProps {
   showAnswer: boolean;
   showSVG: boolean;
   svgContent: string;
-  result: string;
+  result: React.ReactNode;
 }
 
 export function PracticeCanvas({

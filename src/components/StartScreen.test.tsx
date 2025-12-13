@@ -49,27 +49,24 @@ describe("StartScreen", () => {
   });
 
   it("はじめの状態が正しく表示される", () => {
-    render(
+    const { container } = render(
       <StartScreen
         onStartPractice={mockOnStartPractice}
         memoryManager={mockMemoryManager}
       />
     );
 
-    const allStat = screen.getByText("ぜんぶ").closest(".stat-item");
-    expect(allStat && within(allStat).getByText(/20\s*もん/)).toBeInTheDocument();
+    const statItems = Array.from(
+      container.querySelectorAll(".statistics-grid .stat-item")
+    );
+    expect(statItems).toHaveLength(3);
 
-    const unattemptedStat = screen
-      .getByText("まだといていない")
-      .closest(".stat-item");
-    expect(
-      unattemptedStat && within(unattemptedStat).getByText(/10\s*もん/)
-    ).toBeInTheDocument();
-
-    const correctStat = screen.getByText("せいかいした").closest(".stat-item");
-    expect(
-      correctStat && within(correctStat).getByText(/5\s*もん/)
-    ).toBeInTheDocument();
+    const statValues = statItems.map(
+      (item) => item.querySelector(".stat-value")?.textContent ?? ""
+    );
+    expect(statValues[0]).toContain("20");
+    expect(statValues[1]).toContain("10");
+    expect(statValues[2]).toContain("5");
 
     // スタートボタンが無効になっていることを確認
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
@@ -107,37 +104,58 @@ describe("StartScreen", () => {
     // モード選択ダイアログを開く
     fireEvent.click(screen.getByRole("button", { name: /モード/ }));
 
-    // すべての問題モード（デフォルト）
-    const dialog = screen.getByRole("dialog");
-    const allButton = within(dialog).getByRole("button", {
-      name: /すべての もんだい/,
-    });
-    expect(allButton).toHaveTextContent("（12もん）");
-    fireEvent.click(allButton);
+    const selectModeByIndex = (index: number) => {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      expect(modeButtons.length).toBeGreaterThan(index);
+      fireEvent.click(modeButtons[index]);
+    };
 
-    // まだといたことない問題モード
-    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
-    const newButtonInDialog = screen.getByRole("button", {
-      name: /まだ といたことない もんだい/,
-    });
-    expect(newButtonInDialog).toHaveTextContent("（10もん）");
-    fireEvent.click(newButtonInDialog);
+    // すべての問題（デフォルト）
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      expect(modeButtons[0]).toHaveTextContent(/12/);
+    }
+    selectModeByIndex(0);
 
-    // まだ正解していない問題モード
+    // まだ解いたことがない問題
     fireEvent.click(screen.getByRole("button", { name: /モード/ }));
-    const unsolvedButtonInDialog = screen.getByRole("button", {
-      name: /まだ せいかい していない もんだい/,
-    });
-    expect(unsolvedButtonInDialog).toHaveTextContent("（8もん）");
-    fireEvent.click(unsolvedButtonInDialog);
+    {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      expect(modeButtons[1]).toHaveTextContent(/10/);
+    }
+    selectModeByIndex(1);
 
-    // この一週間で間違えた問題モード
+    // まだ正解していない問題
     fireEvent.click(screen.getByRole("button", { name: /モード/ }));
-    const recentMistakesButtonInDialog = screen.getByRole("button", {
-      name: /この いっしゅうかんで まちがえた もんだい/,
-    });
-    expect(recentMistakesButtonInDialog).toHaveTextContent("（3もん）");
-    fireEvent.click(recentMistakesButtonInDialog);
+    {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      expect(modeButtons[2]).toHaveTextContent(/8/);
+    }
+    selectModeByIndex(2);
+
+    // この1週間で間違えた問題
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+    {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      expect(modeButtons[3]).toHaveTextContent(/3/);
+    }
+    selectModeByIndex(3);
 
     // モード切り替え後はスタートボタンが無効になっていることを確認
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
@@ -161,18 +179,26 @@ describe("StartScreen", () => {
 
     // 問題数を選択
     fireEvent.click(screen.getByRole("button", { name: /もんだいすう/ }));
-    const fiveQuestionsButton = screen.getByRole("button", { name: "5もん" });
-    fireEvent.click(fiveQuestionsButton);
+    const dialog = screen.getByRole("dialog");
+    const countButtons = within(dialog)
+      .getAllByRole("button")
+      .filter((button) => button.className.includes("dialog-count-button"));
+    expect(countButtons.length).toBeGreaterThan(0);
+    expect(countButtons[0]).toHaveTextContent(/^5/);
+    fireEvent.click(countButtons[0]);
 
     // スタートボタンが有効になる
     expect(startButton).not.toBeDisabled();
 
     // モードを切り替えるとスタートボタンが再び無効になる
     fireEvent.click(screen.getByRole("button", { name: /モード/ }));
-    const newButtonInDialog = screen.getByRole("button", {
-      name: /まだ といたことない もんだい/,
-    });
-    fireEvent.click(newButtonInDialog);
+    {
+      const dialog = screen.getByRole("dialog");
+      const modeButtons = within(dialog)
+        .getAllByRole("button")
+        .filter((button) => button.className.includes("dialog-button"));
+      fireEvent.click(modeButtons[1]);
+    }
     expect(startButton).toBeDisabled();
   });
 
@@ -188,9 +214,7 @@ describe("StartScreen", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /もんだいすう/ }));
 
-    expect(
-      screen.getByText("このモードで とける もんだいが ありません")
-    ).toBeInTheDocument();
+    expect(screen.getByText(/このモードで/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
   });
 
@@ -206,9 +230,7 @@ describe("StartScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "メニュー" }));
 
     // 履歴リセットボタンをクリック
-    fireEvent.click(
-      screen.getByRole("button", { name: "がくしゅうりれきをリセット" })
-    );
+    fireEvent.click(screen.getByRole("button", { name: "学習履歴をリセット" }));
 
     // 確認ダイアログで「はい」をクリック
     fireEvent.click(screen.getByRole("button", { name: "はい" }));

@@ -18,7 +18,11 @@ describe("Header", () => {
     render(<Header onReset={mockOnReset} onBackToStart={mockOnBackToStart} />);
 
     fireEvent.click(screen.getByRole("button", { name: "メニュー" }));
-    expect(screen.getByText("さいしょから")).toBeInTheDocument();
-    expect(screen.getByText("スタートがめんへ")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "最初から" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "スタート画面へ" })
+    ).toBeInTheDocument();
   });
 });

@@ -65,7 +65,7 @@ describe("ResultsView", () => {
   const mockOnRestartReview = vi.fn();
 
   it("間違いがある場合、正しく結果を表示する", () => {
-    render(
+    const { container } = render(
       <ResultsView
         scoreAndResults={mockScoreAndResults}
         onRestartReview={mockOnRestartReview}
@@ -73,14 +73,26 @@ describe("ResultsView", () => {
       />
     );
 
-    expect(
-      screen.getByText("ぜん10もんちゅう、8もん せいかい！")
-    ).toBeDefined();
-    expect(screen.getByText("せいかいりつ: 80.0%")).toBeDefined();
-    expect(screen.getByText("2もん まちがいました。")).toBeDefined();
+    const summaryDiv = Array.from(container.querySelectorAll("div")).find(
+      (element) =>
+        element.textContent?.includes("もんちゅう") &&
+        element.textContent.includes("10") &&
+        element.textContent.includes("8") &&
+        element.textContent.includes("！")
+    );
+    expect(summaryDiv).toBeTruthy();
+
+    expect(screen.getByText(/80\.0/)).toBeDefined();
+
+    const incorrectParagraph = Array.from(container.querySelectorAll("p")).find(
+      (element) =>
+        element.textContent?.includes("2") &&
+        element.textContent.includes("まちが")
+    );
+    expect(incorrectParagraph).toBeTruthy();
     expect(
       screen.getByRole("button", {
-        name: "まちがった もんだい を もういちど",
+        name: "間違った問題をもう一度",
       })
     ).toBeDefined();
   });
@@ -104,10 +116,10 @@ describe("ResultsView", () => {
       />
     );
 
+    expect(screen.getByText(/しました！/)).toBeDefined();
     expect(
-      screen.getByText("すべての もんだいに せいかいしました！")
-    ).toBeDefined();
-    expect(screen.queryByText("まちがった もんだい を もういちど")).toBeNull();
+      screen.queryByRole("button", { name: "間違った問題をもう一度" })
+    ).toBeNull();
   });
 
   it("復習ボタンをクリックすると onRestartReview が呼ばれる", () => {
@@ -121,7 +133,7 @@ describe("ResultsView", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "まちがった もんだい を もういちど",
+        name: "間違った問題をもう一度",
       })
     );
     expect(mockOnRestartReview).toHaveBeenCalledTimes(1);

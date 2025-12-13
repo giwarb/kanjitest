@@ -6,7 +6,7 @@ type SelectionDialogProps = {
   onClose: () => void;
   onStart?: () => void;
   children: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   canStart?: boolean;
   showStartButton?: boolean;
 };
