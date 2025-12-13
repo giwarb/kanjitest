@@ -3,49 +3,57 @@ import { grade2SvgById } from "./grade2.svg";
 export const grade2 = [
   {
     id: "g2-05f15",
-    sentence: "<ruby>引<rt>ひ</rt></ruby>きだしを そっと しめた。",
+    sentence:
+      "<ruby>引<rt>ひ</rt></ruby>き<ruby>出<rt>だ</rt></ruby>しを そっと しめた。",
     target: "引",
     svg: grade2SvgById["g2-05f15"],
   },
   {
     id: "g2-07fbd",
-    sentence: "小さな <ruby>羽<rt>はね</rt></ruby>が ひらひら おちた。",
+    sentence:
+      "<ruby>小<rt>ちい</rt></ruby>さな <ruby>羽<rt>はね</rt></ruby>が ひらひら おちた。",
     target: "羽",
     svg: grade2SvgById["g2-07fbd"],
   },
   {
     id: "g2-096f2",
-    sentence: "白い <ruby>雲<rt>くも</rt></ruby>が ゆっくり うごく。",
+    sentence:
+      "<ruby>白<rt>しろ</rt></ruby>い <ruby>雲<rt>くも</rt></ruby>が ゆっくり うごく。",
     target: "雲",
     svg: grade2SvgById["g2-096f2"],
   },
   {
     id: "g2-05712",
-    sentence: "ちいさな <ruby>園<rt>えん</rt></ruby>で ブランコを こいだ。",
+    sentence:
+      "<ruby>小<rt>ちい</rt></ruby>さな <ruby>公<rt>こう</rt></ruby><ruby>園<rt>えん</rt></ruby>で ブランコを こいだ。",
     target: "園",
     svg: grade2SvgById["g2-05712"],
   },
   {
     id: "g2-09060",
-    sentence: "<ruby>遠<rt>とお</rt></ruby>くに やまが みえる。",
+    sentence:
+      "<ruby>遠<rt>とお</rt></ruby>くに <ruby>山<rt>やま</rt></ruby>が <ruby>見<rt>み</rt></ruby>える。",
     target: "遠",
     svg: grade2SvgById["g2-09060"],
   },
   {
     id: "g2-04f55",
-    sentence: "<ruby>何<rt>なに</rt></ruby>を たべたい？",
+    sentence:
+      "<ruby>何<rt>なに</rt></ruby>を <ruby>食<rt>た</rt></ruby>べたい？",
     target: "何",
     svg: grade2SvgById["g2-04f55"],
   },
   {
     id: "g2-079d1",
-    sentence: "<ruby>科<rt>か</rt></ruby>の ノートを ひらく。",
+    sentence:
+      "<ruby>教<rt>きょう</rt></ruby><ruby>科<rt>か</rt></ruby><ruby>書<rt>しょ</rt></ruby>を <ruby>開<rt>ひら</rt></ruby>く。",
     target: "科",
     svg: grade2SvgById["g2-079d1"],
   },
   {
     id: "g2-0590f",
-    sentence: "<ruby>夏<rt>なつ</rt></ruby>の よるに ほしを みた。",
+    sentence:
+      "<ruby>夏<rt>なつ</rt></ruby>の <ruby>夜<rt>よる</rt></ruby>に <ruby>星<rt>ほし</rt></ruby>を <ruby>見<rt>み</rt></ruby>た。",
     target: "夏",
     svg: grade2SvgById["g2-0590f"],
   },
@@ -63,7 +71,8 @@ export const grade2 = [
   },
   {
     id: "g2-0753b",
-    sentence: "<ruby>画<rt>え</rt></ruby>を じょうずに かけた。",
+    sentence:
+      "<ruby>画<rt>が</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>紙<rt>し</rt></ruby>に <ruby>絵<rt>え</rt></ruby>を かいた。",
     target: "画",
     svg: grade2SvgById["g2-0753b"],
   },
@@ -75,25 +84,29 @@ export const grade2 = [
   },
   {
     id: "g2-04f1a",
-    sentence: "友だちに <ruby>会<rt>あ</rt></ruby>えて うれしい。",
+    sentence:
+      "<ruby>友<rt>とも</rt></ruby>だちに <ruby>会<rt>あ</rt></ruby>えて うれしい。",
     target: "会",
     svg: grade2SvgById["g2-04f1a"],
   },
   {
     id: "g2-06d77",
-    sentence: "<ruby>海<rt>うみ</rt></ruby>の なみが きらきら する。",
+    sentence:
+      "<ruby>海<rt>うみ</rt></ruby>の <ruby>波<rt>なみ</rt></ruby>が きらきら する。",
     target: "海",
     svg: grade2SvgById["g2-06d77"],
   },
   {
     id: "g2-07d75",
-    sentence: "<ruby>絵<rt>え</rt></ruby>のぐで かわを ぬった。",
+    sentence:
+      "<ruby>絵<rt>え</rt></ruby>の<ruby>具<rt>ぐ</rt></ruby>で <ruby>川<rt>かわ</rt></ruby>を ぬった。",
     target: "絵",
     svg: grade2SvgById["g2-07d75"],
   },
   {
     id: "g2-05916",
-    sentence: "<ruby>外<rt>そと</rt></ruby>で シャボンだまを とばす。",
+    sentence:
+      "<ruby>外<rt>そと</rt></ruby>で シャボン<ruby>玉<rt>だま</rt></ruby>を とばす。",
     target: "外",
     svg: grade2SvgById["g2-05916"],
   },
@@ -111,13 +124,15 @@ export const grade2 = [
   },
   {
     id: "g2-06d3b",
-    sentence: "あさから げんきに <ruby>活<rt>かつ</rt></ruby>どう する。",
+    sentence:
+      "<ruby>朝<rt>あさ</rt></ruby>から <ruby>元気<rt>げんき</rt></ruby>に <ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>する。",
     target: "活",
     svg: grade2SvgById["g2-06d3b"],
   },
   {
     id: "g2-09593",
-    sentence: "ほんの <ruby>間<rt>あいだ</rt></ruby> に かぜが ふいた。",
+    sentence:
+      "ほんの <ruby>間<rt>あいだ</rt></ruby> に <ruby>風<rt>かぜ</rt></ruby>が ふいた。",
     target: "間",
     svg: grade2SvgById["g2-09593"],
   },
@@ -135,25 +150,29 @@ export const grade2 = [
   },
   {
     id: "g2-09854",
-    sentence: "えがおの <ruby>顔<rt>かお</rt></ruby>が すてき。",
+    sentence:
+      "<ruby>笑<rt>え</rt></ruby><ruby>顔<rt>がお</rt></ruby>が すてき。",
     target: "顔",
     svg: grade2SvgById["g2-09854"],
   },
   {
     id: "g2-06c7d",
-    sentence: "<ruby>汽<rt>き</rt></ruby>しゃの ふえが ひびく。",
+    sentence:
+      "<ruby>汽<rt>き</rt></ruby><ruby>車<rt>しゃ</rt></ruby>の <ruby>笛<rt>ふえ</rt></ruby>が ひびく。",
     target: "汽",
     svg: grade2SvgById["g2-06c7d"],
   },
   {
     id: "g2-08a18",
-    sentence: "きょうを <ruby>記<rt>しる</rt></ruby>して にっきを かく。",
+    sentence:
+      "<ruby>今日<rt>きょう</rt></ruby>の できごとを <ruby>日記<rt>にっき</rt></ruby>に <ruby>記<rt>しる</rt></ruby>す。",
     target: "記",
     svg: grade2SvgById["g2-08a18"],
   },
   {
     id: "g2-05e30",
-    sentence: "がっこうから <ruby>帰<rt>かえ</rt></ruby>って おやつを たべる。",
+    sentence:
+      "<ruby>学<rt>がっ</rt></ruby><ruby>校<rt>こう</rt></ruby>から <ruby>帰<rt>かえ</rt></ruby>って おやつを たべる。",
     target: "帰",
     svg: grade2SvgById["g2-05e30"],
   },
@@ -165,7 +184,8 @@ export const grade2 = [
   },
   {
     id: "g2-0725b",
-    sentence: "まきばで <ruby>牛<rt>うし</rt></ruby>が のんびり している。",
+    sentence:
+      "<ruby>牧<rt>まき</rt></ruby><ruby>場<rt>ば</rt></ruby>で <ruby>牛<rt>うし</rt></ruby>が のんびり している。",
     target: "牛",
     svg: grade2SvgById["g2-0725b"],
   },
@@ -177,25 +197,29 @@ export const grade2 = [
   },
   {
     id: "g2-04eac",
-    sentence: "<ruby>京<rt>きょう</rt></ruby>の まちを テレビで みた。",
+    sentence:
+      "<ruby>京<rt>きょう</rt></ruby><ruby>都<rt>と</rt></ruby>の <ruby>町<rt>まち</rt></ruby>を テレビで <ruby>見<rt>み</rt></ruby>た。",
     target: "京",
     svg: grade2SvgById["g2-04eac"],
   },
   {
     id: "g2-05f37",
-    sentence: "<ruby>強<rt>つよ</rt></ruby>い かぜが ふく。",
+    sentence:
+      "<ruby>強<rt>つよ</rt></ruby>い <ruby>風<rt>かぜ</rt></ruby>が ふく。",
     target: "強",
     svg: grade2SvgById["g2-05f37"],
   },
   {
     id: "g2-06559",
-    sentence: "せんせいが やさしく <ruby>教<rt>おし</rt></ruby>える。",
+    sentence:
+      "<ruby>先<rt>せん</rt></ruby><ruby>生<rt>せい</rt></ruby>が やさしく <ruby>教<rt>おし</rt></ruby>える。",
     target: "教",
     svg: grade2SvgById["g2-06559"],
   },
   {
     id: "g2-08fd1",
-    sentence: "<ruby>近<rt>ちか</rt></ruby>くの こうえんへ あるく。",
+    sentence:
+      "<ruby>近<rt>ちか</rt></ruby>くの <ruby>公<rt>こう</rt></ruby><ruby>園<rt>えん</rt></ruby>へ あるく。",
     target: "近",
     svg: grade2SvgById["g2-08fd1"],
   },
@@ -219,13 +243,15 @@ export const grade2 = [
   },
   {
     id: "g2-05143",
-    sentence: "<ruby>元<rt>げん</rt></ruby>きに あいさつ する。",
+    sentence:
+      "<ruby>元<rt>げん</rt></ruby><ruby>気<rt>き</rt></ruby>に あいさつ する。",
     target: "元",
     svg: grade2SvgById["g2-05143"],
   },
   {
     id: "g2-08a00",
-    sentence: "やさしい <ruby>言<rt>こと</rt></ruby>ばで つたえる。",
+    sentence:
+      "やさしい <ruby>言<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>で つたえる。",
     target: "言",
     svg: grade2SvgById["g2-08a00"],
   },
@@ -267,13 +293,15 @@ export const grade2 = [
   },
   {
     id: "g2-05de5",
-    sentence: "<ruby>工<rt>こう</rt></ruby>ぞうを みにいく。",
+    sentence:
+      "<ruby>工<rt>こう</rt></ruby><ruby>場<rt>じょう</rt></ruby>を みに いく。",
     target: "工",
     svg: grade2SvgById["g2-05de5"],
   },
   {
     id: "g2-0516c",
-    sentence: "<ruby>公<rt>こう</rt></ruby>えんで すべりだいを する。",
+    sentence:
+      "<ruby>公<rt>こう</rt></ruby><ruby>園<rt>えん</rt></ruby>の すべりだいで あそぶ。",
     target: "公",
     svg: grade2SvgById["g2-0516c"],
   },
@@ -285,7 +313,8 @@ export const grade2 = [
   },
   {
     id: "g2-04ea4",
-    sentence: "みちが <ruby>交<rt>ま</rt></ruby>じわる ばしょを わたる。",
+    sentence:
+      "<ruby>道<rt>みち</rt></ruby>が <ruby>交<rt>ま</rt></ruby>わる <ruby>場<rt>ば</rt></ruby><ruby>所<rt>しょ</rt></ruby>で <ruby>信<rt>しん</rt></ruby><ruby>号<rt>ごう</rt></ruby>を まつ。",
     target: "交",
     svg: grade2SvgById["g2-04ea4"],
   },
@@ -297,49 +326,57 @@ export const grade2 = [
   },
   {
     id: "g2-08003",
-    sentence: "よく <ruby>考<rt>かんが</rt></ruby>えて こたえを書く。",
+    sentence:
+      "よく <ruby>考<rt>かんが</rt></ruby>えて <ruby>答<rt>こた</rt></ruby>えを <ruby>書<rt>か</rt></ruby>く。",
     target: "考",
     svg: grade2SvgById["g2-08003"],
   },
   {
     id: "g2-0884c",
-    sentence: "ともだちと いっしょに <ruby>行<rt>い</rt></ruby>く。",
+    sentence:
+      "<ruby>友<rt>とも</rt></ruby>だちと いっしょに <ruby>行<rt>い</rt></ruby>く。",
     target: "行",
     svg: grade2SvgById["g2-0884c"],
   },
   {
     id: "g2-09ad8",
-    sentence: "<ruby>高<rt>たか</rt></ruby>い ところから みおろす。",
+    sentence:
+      "<ruby>高<rt>たか</rt></ruby>い ところから <ruby>見<rt>み</rt></ruby>おろす。",
     target: "高",
     svg: grade2SvgById["g2-09ad8"],
   },
   {
     id: "g2-09ec4",
-    sentence: "<ruby>黄<rt>き</rt></ruby>いろの はなが さいた。",
+    sentence:
+      "<ruby>黄<rt>き</rt></ruby><ruby>色<rt>いろ</rt></ruby>の はなが さいた。",
     target: "黄",
     svg: grade2SvgById["g2-09ec4"],
   },
   {
     id: "g2-05408",
-    sentence: "リズムを <ruby>合<rt>あ</rt></ruby>わせて てを たたく。",
+    sentence:
+      "リズムを <ruby>合<rt>あ</rt></ruby>わせて <ruby>手<rt>て</rt></ruby>を たたく。",
     target: "合",
     svg: grade2SvgById["g2-05408"],
   },
   {
     id: "g2-08c37",
-    sentence: "<ruby>谷<rt>たに</rt></ruby>に ひびく かわの おと。",
+    sentence:
+      "<ruby>谷<rt>たに</rt></ruby>に <ruby>川<rt>かわ</rt></ruby>の おとが ひびく。",
     target: "谷",
     svg: grade2SvgById["g2-08c37"],
   },
   {
     id: "g2-056fd",
-    sentence: "にほんという <ruby>国<rt>くに</rt></ruby>に すんでいる。",
+    sentence:
+      "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>という <ruby>国<rt>くに</rt></ruby>に すんでいる。",
     target: "国",
     svg: grade2SvgById["g2-056fd"],
   },
   {
     id: "g2-09ed2",
-    sentence: "<ruby>黒<rt>くろ</rt></ruby>い ぺんで じを かく。",
+    sentence:
+      "<ruby>黒<rt>くろ</rt></ruby>い ペンで <ruby>字<rt>じ</rt></ruby>を <ruby>書<rt>か</rt></ruby>く。",
     target: "黒",
     svg: grade2SvgById["g2-09ed2"],
   },
@@ -351,7 +388,8 @@ export const grade2 = [
   },
   {
     id: "g2-0624d",
-    sentence: "はち<ruby>才<rt>さい</rt></ruby>の たんじょうび。",
+    sentence:
+      "<ruby>八<rt>はっ</rt></ruby><ruby>才<rt>さい</rt></ruby>の たんじょうび。",
     target: "才",
     svg: grade2SvgById["g2-0624d"],
   },
@@ -369,7 +407,8 @@ export const grade2 = [
   },
   {
     id: "g2-07b97",
-    sentence: "<ruby>算<rt>さん</rt></ruby>すうの もんだいを とく。",
+    sentence:
+      "<ruby>算<rt>さん</rt></ruby><ruby>数<rt>すう</rt></ruby>の もんだいを とく。",
     target: "算",
     svg: grade2SvgById["g2-07b97"],
   },
@@ -381,7 +420,8 @@ export const grade2 = [
   },
   {
     id: "g2-05e02",
-    sentence: "わたしの すむ <ruby>市<rt>し</rt></ruby>の まち。",
+    sentence:
+      "わたしの <ruby>住<rt>す</rt></ruby>む <ruby>市<rt>し</rt></ruby>で <ruby>祭<rt>まつ</rt></ruby>りが ある。",
     target: "市",
     svg: grade2SvgById["g2-05e02"],
   },
@@ -417,7 +457,8 @@ export const grade2 = [
   },
   {
     id: "g2-081ea",
-    sentence: "<ruby>自<rt>じ</rt></ruby>分の なまえを かく。",
+    sentence:
+      "<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>の なまえを かく。",
     target: "自",
     svg: grade2SvgById["g2-081ea"],
   },
@@ -429,13 +470,15 @@ export const grade2 = [
   },
   {
     id: "g2-05ba4",
-    sentence: "おんがく<ruby>室<rt>しつ</rt></ruby>から ピアノが きこえる。",
+    sentence:
+      "<ruby>音<rt>おん</rt></ruby><ruby>楽<rt>がく</rt></ruby><ruby>室<rt>しつ</rt></ruby>から ピアノが きこえる。",
     target: "室",
     svg: grade2SvgById["g2-05ba4"],
   },
   {
     id: "g2-0793e",
-    sentence: "じん<ruby>社<rt>じゃ</rt></ruby>で てを あわせた。",
+    sentence:
+      "<ruby>神<rt>じん</rt></ruby><ruby>社<rt>じゃ</rt></ruby>で <ruby>手<rt>て</rt></ruby>を あわせた。",
     target: "社",
     svg: grade2SvgById["g2-0793e"],
   },
@@ -459,7 +502,8 @@ export const grade2 = [
   },
   {
     id: "g2-09031",
-    sentence: "こん<ruby>週<rt>しゅう</rt></ruby>の よていを かく。",
+    sentence:
+      "こん<ruby>週<rt>しゅう</rt></ruby>の <ruby>予<rt>よ</rt></ruby><ruby>定<rt>てい</rt></ruby>を かく。",
     target: "週",
     svg: grade2SvgById["g2-09031"],
   },
@@ -471,7 +515,8 @@ export const grade2 = [
   },
   {
     id: "g2-066f8",
-    sentence: "てがみを <ruby>書<rt>か</rt></ruby>いて だす。",
+    sentence:
+      "<ruby>手<rt>て</rt></ruby><ruby>紙<rt>がみ</rt></ruby>を <ruby>書<rt>か</rt></ruby>いて だす。",
     target: "書",
     svg: grade2SvgById["g2-066f8"],
   },
@@ -483,7 +528,8 @@ export const grade2 = [
   },
   {
     id: "g2-05834",
-    sentence: "うんどう<ruby>場<rt>じょう</rt></ruby>で はしる。",
+    sentence:
+      "<ruby>運<rt>うん</rt></ruby><ruby>動<rt>どう</rt></ruby><ruby>場<rt>じょう</rt></ruby>で はしる。",
     target: "場",
     svg: grade2SvgById["g2-05834"],
   },

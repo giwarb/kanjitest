@@ -1119,7 +1119,7 @@ export const grade3 = [
   },
   {
     id: "g3-06d0b",
-    sentence: "西<ruby>洋<rt>よう</rt></ruby>風。",
+    sentence: "西<ruby>洋<rt>よう</rt></ruby>風の建物を見た。",
     target: "洋",
     svg: grade3SvgById["g3-06d0b"],
   },
@@ -1137,7 +1137,7 @@ export const grade3 = [
   },
   {
     id: "g3-069d8",
-    sentence: "こんな<ruby>様<rt>よう</rt></ruby>子。",
+    sentence: "どんな<ruby>様<rt>よう</rt></ruby>子だったか話す。",
     target: "様",
     svg: grade3SvgById["g3-069d8"],
   },

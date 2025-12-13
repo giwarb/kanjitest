@@ -3,7 +3,7 @@ import { grade4SvgById } from "./grade4.svg";
 export const grade4 = [
   {
     id: "g4-0611b",
-    sentence: "家族への<ruby>愛<rt>あい</rt></ruby>。",
+    sentence: "家族への<ruby>愛<rt>あい</rt></ruby>を大切にする。",
     target: "愛",
     svg: grade4SvgById["g4-0611b"],
   },
@@ -15,7 +15,7 @@ export const grade4 = [
   },
   {
     id: "g4-04ee5",
-    sentence: "十<ruby>以<rt>い</rt></ruby>上。",
+    sentence: "十<ruby>以<rt>い</rt></ruby>上の数を数える。",
     target: "以",
     svg: grade4SvgById["g4-04ee5"],
   },
@@ -33,7 +33,7 @@ export const grade4 = [
   },
   {
     id: "g4-08328",
-    sentence: "<ruby>茨<rt>いばら</rt></ruby>城県。",
+    sentence: "<ruby>茨<rt>いばら</rt></ruby>城県に行った。",
     target: "茨",
     svg: grade4SvgById["g4-08328"],
   },
@@ -57,7 +57,7 @@ export const grade4 = [
   },
   {
     id: "g4-05a9b",
-    sentence: "愛<ruby>媛<rt>ひめ</rt></ruby>県。",
+    sentence: "愛<ruby>媛<rt>ひめ</rt></ruby>県に行った。",
     target: "媛",
     svg: grade4SvgById["g4-05a9b"],
   },
@@ -69,13 +69,13 @@ export const grade4 = [
   },
   {
     id: "g4-05ca1",
-    sentence: "福<ruby>岡<rt>おか</rt></ruby>県。",
+    sentence: "福<ruby>岡<rt>おか</rt></ruby>県に行った。",
     target: "岡",
     svg: grade4SvgById["g4-05ca1"],
   },
   {
     id: "g4-05104",
-    sentence: "一<ruby>億<rt>おく</rt></ruby>円。",
+    sentence: "一<ruby>億<rt>おく</rt></ruby>円という大きな数を学ぶ。",
     target: "億",
     svg: grade4SvgById["g4-05104"],
   },
@@ -99,7 +99,7 @@ export const grade4 = [
   },
   {
     id: "g4-08ab2",
-    sentence: "国語<ruby>課<rt>か</rt></ruby>の勉強。",
+    sentence: "国語の<ruby>課<rt>か</rt></ruby>題をする。",
     target: "課",
     svg: grade4SvgById["g4-08ab2"],
   },
@@ -153,7 +153,7 @@ export const grade4 = [
   },
   {
     id: "g4-06f5f",
-    sentence: "新<ruby>潟<rt>がた</rt></ruby>県。",
+    sentence: "新<ruby>潟<rt>がた</rt></ruby>県に行った。",
     target: "潟",
     svg: grade4SvgById["g4-06f5f"],
   },
@@ -165,7 +165,7 @@ export const grade4 = [
   },
   {
     id: "g4-05b98",
-    sentence: "<ruby>官<rt>かん</rt></ruby>公庁。",
+    sentence: "<ruby>官<rt>かん</rt></ruby>公庁の仕事を調べる。",
     target: "官",
     svg: grade4SvgById["g4-05b98"],
   },
@@ -195,7 +195,7 @@ export const grade4 = [
   },
   {
     id: "g4-05c90",
-    sentence: "岐<ruby>阜<rt>ふ</rt></ruby>県。",
+    sentence: "岐<ruby>阜<rt>ふ</rt></ruby>県に行った。",
     target: "岐",
     svg: grade4SvgById["g4-05c90"],
   },
@@ -207,7 +207,7 @@ export const grade4 = [
   },
   {
     id: "g4-05b63",
-    sentence: "四<ruby>季<rt>き</rt></ruby>。",
+    sentence: "四<ruby>季<rt>き</rt></ruby>の変化を感じる。",
     target: "季",
     svg: grade4SvgById["g4-05b63"],
   },
@@ -297,13 +297,13 @@ export const grade4 = [
   },
   {
     id: "g4-0718a",
-    sentence: "<ruby>熊<rt>くま</rt></ruby>本県。",
+    sentence: "<ruby>熊<rt>くま</rt></ruby>本県に行った。",
     target: "熊",
     svg: grade4SvgById["g4-0718a"],
   },
   {
     id: "g4-08a13",
-    sentence: "<ruby>訓<rt>くん</rt></ruby>読み。",
+    sentence: "漢字の<ruby>訓<rt>くん</rt></ruby>読みを調べる。",
     target: "訓",
     svg: grade4SvgById["g4-08a13"],
   },
@@ -321,7 +321,7 @@ export const grade4 = [
   },
   {
     id: "g4-07fa4",
-    sentence: "<ruby>群<rt>ぐん</rt></ruby>馬県。",
+    sentence: "<ruby>群<rt>ぐん</rt></ruby>馬県に行った。",
     target: "群",
     svg: grade4SvgById["g4-07fa4"],
   },
@@ -411,7 +411,7 @@ export const grade4 = [
   },
   {
     id: "g4-04f50",
-    sentence: "<ruby>佐<rt>さ</rt></ruby>賀県。",
+    sentence: "<ruby>佐<rt>さ</rt></ruby>賀県に行った。",
     target: "佐",
     svg: grade4SvgById["g4-04f50"],
   },
@@ -429,13 +429,13 @@ export const grade4 = [
   },
   {
     id: "g4-06700",
-    sentence: "<ruby>最<rt>さい</rt></ruby>高。",
+    sentence: "<ruby>最<rt>さい</rt></ruby>高の思い出になった。",
     target: "最",
     svg: grade4SvgById["g4-06700"],
   },
   {
     id: "g4-057fc",
-    sentence: "<ruby>埼<rt>さい</rt></ruby>玉県。",
+    sentence: "<ruby>埼<rt>さい</rt></ruby>玉県に行った。",
     target: "埼",
     svg: grade4SvgById["g4-057fc"],
   },
@@ -447,7 +447,7 @@ export const grade4 = [
   },
   {
     id: "g4-05d0e",
-    sentence: "長<ruby>崎<rt>さき</rt></ruby>県。",
+    sentence: "長<ruby>崎<rt>さき</rt></ruby>県に行った。",
     target: "崎",
     svg: grade4SvgById["g4-05d0e"],
   },
@@ -531,7 +531,7 @@ export const grade4 = [
   },
   {
     id: "g4-06ecb",
-    sentence: "<ruby>滋<rt>し</rt></ruby>賀県。",
+    sentence: "<ruby>滋<rt>し</rt></ruby>賀県に行った。",
     target: "滋",
     svg: grade4SvgById["g4-06ecb"],
   },
@@ -543,7 +543,7 @@ export const grade4 = [
   },
   {
     id: "g4-09e7f",
-    sentence: "<ruby>鹿<rt>しか</rt></ruby>児島県。",
+    sentence: "<ruby>鹿<rt>しか</rt></ruby>児島県に行った。",
     target: "鹿",
     svg: grade4SvgById["g4-09e7f"],
   },
@@ -633,7 +633,7 @@ export const grade4 = [
   },
   {
     id: "g4-081e3",
-    sentence: "家<ruby>臣<rt>しん</rt></ruby>。",
+    sentence: "昔の武将には家<ruby>臣<rt>しん</rt></ruby>がいた。",
     target: "臣",
     svg: grade4SvgById["g4-081e3"],
   },
@@ -645,7 +645,7 @@ export const grade4 = [
   },
   {
     id: "g4-04e95",
-    sentence: "福<ruby>井<rt>い</rt></ruby>県。",
+    sentence: "福<ruby>井<rt>い</rt></ruby>県に行った。",
     target: "井",
     svg: grade4SvgById["g4-04e95"],
   },
@@ -657,7 +657,7 @@ export const grade4 = [
   },
   {
     id: "g4-07701",
-    sentence: "文部科学<ruby>省<rt>しょう</rt></ruby>。",
+    sentence: "文部科学<ruby>省<rt>しょう</rt></ruby>の資料を読む。",
     target: "省",
     svg: grade4SvgById["g4-07701"],
   },
@@ -813,13 +813,13 @@ export const grade4 = [
   },
   {
     id: "g4-06c96",
-    sentence: "<ruby>沖<rt>おき</rt></ruby>縄県。",
+    sentence: "<ruby>沖<rt>おき</rt></ruby>縄県に行った。",
     target: "沖",
     svg: grade4SvgById["g4-06c96"],
   },
   {
     id: "g4-05146",
-    sentence: "一<ruby>兆<rt>ちょう</rt></ruby>円。",
+    sentence: "一<ruby>兆<rt>ちょう</rt></ruby>円という大きな数を学ぶ。",
     target: "兆",
     svg: grade4SvgById["g4-05146"],
   },
@@ -879,31 +879,31 @@ export const grade4 = [
   },
   {
     id: "g4-07279",
-    sentence: "<ruby>特<rt>とく</rt></ruby>別な日。",
+    sentence: "今日は<ruby>特<rt>とく</rt></ruby>別な日だ。",
     target: "特",
     svg: grade4SvgById["g4-07279"],
   },
   {
     id: "g4-05fb3",
-    sentence: "<ruby>徳<rt>とく</rt></ruby>島県。",
+    sentence: "<ruby>徳<rt>とく</rt></ruby>島県に行った。",
     target: "徳",
     svg: grade4SvgById["g4-05fb3"],
   },
   {
     id: "g4-06803",
-    sentence: "<ruby>栃<rt>とち</rt></ruby>木県。",
+    sentence: "<ruby>栃<rt>とち</rt></ruby>木県に行った。",
     target: "栃",
     svg: grade4SvgById["g4-06803"],
   },
   {
     id: "g4-05948",
-    sentence: "<ruby>奈<rt>な</rt></ruby>良県。",
+    sentence: "<ruby>奈<rt>な</rt></ruby>良県に行った。",
     target: "奈",
     svg: grade4SvgById["g4-05948"],
   },
   {
     id: "g4-068a8",
-    sentence: "山<ruby>梨<rt>なし</rt></ruby>県。",
+    sentence: "山<ruby>梨<rt>なし</rt></ruby>県に行った。",
     target: "梨",
     svg: grade4SvgById["g4-068a8"],
   },
@@ -915,7 +915,7 @@ export const grade4 = [
   },
   {
     id: "g4-05ff5",
-    sentence: "<ruby>念<rt>ねん</rt></ruby>のため。",
+    sentence: "<ruby>念<rt>ねん</rt></ruby>のため、もう一度確かめる。",
     target: "念",
     svg: grade4SvgById["g4-05ff5"],
   },
@@ -927,19 +927,19 @@ export const grade4 = [
   },
   {
     id: "g4-06885",
-    sentence: "<ruby>梅<rt>うめ</rt></ruby>の花。",
+    sentence: "<ruby>梅<rt>うめ</rt></ruby>の花が咲く。",
     target: "梅",
     svg: grade4SvgById["g4-06885"],
   },
   {
     id: "g4-0535a",
-    sentence: "<ruby>博<rt>はく</rt></ruby>物館。",
+    sentence: "<ruby>博<rt>はく</rt></ruby>物館へ行く。",
     target: "博",
     svg: grade4SvgById["g4-0535a"],
   },
   {
     id: "g4-0962a",
-    sentence: "大<ruby>阪<rt>さか</rt></ruby>府。",
+    sentence: "大<ruby>阪<rt>さか</rt></ruby>府に行った。",
     target: "阪",
     svg: grade4SvgById["g4-0962a"],
   },
@@ -981,7 +981,7 @@ export const grade4 = [
   },
   {
     id: "g4-0592b",
-    sentence: "<ruby>夫<rt>おっと</rt></ruby>と妻。",
+    sentence: "父は<ruby>夫<rt>おっと</rt></ruby>、母は妻だ。",
     target: "夫",
     svg: grade4SvgById["g4-0592b"],
   },
@@ -993,13 +993,13 @@ export const grade4 = [
   },
   {
     id: "g4-05e9c",
-    sentence: "大阪<ruby>府<rt>ふ</rt></ruby>。",
+    sentence: "大阪<ruby>府<rt>ふ</rt></ruby>に行った。",
     target: "府",
     svg: grade4SvgById["g4-05e9c"],
   },
   {
     id: "g4-0961c",
-    sentence: "岐<ruby>阜<rt>ふ</rt></ruby>県。",
+    sentence: "岐<ruby>阜<rt>ふ</rt></ruby>県に行った。",
     target: "阜",
     svg: grade4SvgById["g4-0961c"],
   },
@@ -1017,7 +1017,7 @@ export const grade4 = [
   },
   {
     id: "g4-05175",
-    sentence: "<ruby>兵<rt>へい</rt></ruby>庫県。",
+    sentence: "<ruby>兵<rt>へい</rt></ruby>庫県に行った。",
     target: "兵",
     svg: grade4SvgById["g4-05175"],
   },
