@@ -16,13 +16,13 @@ export interface NormalizedResult {
 }
 
 /**
- * SVGコンテンツからDOCTYPE宣言を除去します。
- * @param {string} svgContent - SVGコンテンツ
- * @returns {string} - DOCTYPE宣言を除去したSVGコンテンツ
+ * SVGコンテンツの先頭にある宣言（XML、DOCTYPE、内部Subsetなど）をすべて落とし、
+ * 最初の<svg …>から始まる文字列だけを返します。
  */
 export function cleanSvgContent(svgContent: string): string {
-  // DOCTYPE宣言とその内容（[...]も含む）を除去
-  return svgContent.replace(/<!DOCTYPE[^>]*(\[[^\]]*\])?>/, "");
+  const svgStart = svgContent.indexOf("<svg");
+  if (svgStart === -1) return svgContent;
+  return svgContent.slice(svgStart);
 }
 
 /**

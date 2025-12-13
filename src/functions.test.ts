@@ -1,5 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { getSVGStrokes, normalizeStrokes } from "./functions";
+import { cleanSvgContent, getSVGStrokes, normalizeStrokes } from "./functions";
+
+describe("cleanSvgContent", () => {
+  it("removes headers and declarations before the svg tag", () => {
+    const raw = `<?xml version="1.0"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+<!ATTLIST g kvg:element CDATA #IMPLIED >
+<!ATTLIST path kvg:type CDATA #IMPLIED >
+]>
+<svg width="10" height="10"><path d="M0,0 L1,1" /></svg>`;
+
+    const cleaned = cleanSvgContent(raw);
+
+    expect(cleaned.startsWith("<svg")).toBe(true);
+    expect(cleaned.includes("]>")).toBe(false);
+    expect(cleaned.includes("<!DOCTYPE")).toBe(false);
+    expect(cleaned.includes("<?xml")).toBe(false);
+  });
+});
 
 describe("SVG Path関連のテスト", () => {
   it("getSVGStrokesが空のSVG要素から空の配列を返すこと", () => {

@@ -36,11 +36,6 @@
   background-color: #f0f0f0;
 }
 
-.dialog-buttons button:last-child {
-  background-color: #007bff;
-  color: white;
-}
-
 .dialog-buttons button:hover {
   opacity: 0.8;
 }
