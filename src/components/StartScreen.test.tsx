@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
 
@@ -56,9 +56,20 @@ describe("StartScreen", () => {
       />
     );
 
-    expect(screen.getByText(/ぜんぶ：20もん/)).toBeInTheDocument();
-    expect(screen.getByText(/まだといていない：10もん/)).toBeInTheDocument();
-    expect(screen.getByText(/せいかいした：5もん/)).toBeInTheDocument();
+    const allStat = screen.getByText("ぜんぶ").closest(".stat-item");
+    expect(allStat && within(allStat).getByText(/20\s*もん/)).toBeInTheDocument();
+
+    const unattemptedStat = screen
+      .getByText("まだといていない")
+      .closest(".stat-item");
+    expect(
+      unattemptedStat && within(unattemptedStat).getByText(/10\s*もん/)
+    ).toBeInTheDocument();
+
+    const correctStat = screen.getByText("せいかいした").closest(".stat-item");
+    expect(
+      correctStat && within(correctStat).getByText(/5\s*もん/)
+    ).toBeInTheDocument();
 
     // スタートボタンが無効になっていることを確認
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
@@ -93,30 +104,40 @@ describe("StartScreen", () => {
       />
     );
 
+    // モード選択ダイアログを開く
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+
     // すべての問題モード（デフォルト）
-    const allButton = screen.getByRole("button", { name: /すべての もんだい/ });
+    const dialog = screen.getByRole("dialog");
+    const allButton = within(dialog).getByRole("button", {
+      name: /すべての もんだい/,
+    });
     expect(allButton).toHaveTextContent("（12もん）");
+    fireEvent.click(allButton);
 
     // まだといたことない問題モード
-    const newButton = screen.getByRole("button", {
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+    const newButtonInDialog = screen.getByRole("button", {
       name: /まだ といたことない もんだい/,
     });
-    fireEvent.click(newButton);
-    expect(newButton).toHaveTextContent("（10もん）");
+    expect(newButtonInDialog).toHaveTextContent("（10もん）");
+    fireEvent.click(newButtonInDialog);
 
     // まだ正解していない問題モード
-    const unsolvedButton = screen.getByRole("button", {
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+    const unsolvedButtonInDialog = screen.getByRole("button", {
       name: /まだ せいかい していない もんだい/,
     });
-    fireEvent.click(unsolvedButton);
-    expect(unsolvedButton).toHaveTextContent("（8もん）");
+    expect(unsolvedButtonInDialog).toHaveTextContent("（8もん）");
+    fireEvent.click(unsolvedButtonInDialog);
 
     // この一週間で間違えた問題モード
-    const recentMistakesButton = screen.getByRole("button", {
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+    const recentMistakesButtonInDialog = screen.getByRole("button", {
       name: /この いっしゅうかんで まちがえた もんだい/,
     });
-    fireEvent.click(recentMistakesButton);
-    expect(recentMistakesButton).toHaveTextContent("（3もん）");
+    expect(recentMistakesButtonInDialog).toHaveTextContent("（3もん）");
+    fireEvent.click(recentMistakesButtonInDialog);
 
     // モード切り替え後はスタートボタンが無効になっていることを確認
     expect(screen.getByRole("button", { name: "スタート" })).toBeDisabled();
@@ -139,17 +160,19 @@ describe("StartScreen", () => {
     expect(startButton).toBeDisabled();
 
     // 問題数を選択
-    const fiveQuestionsButton = screen.getByText("5もん");
+    fireEvent.click(screen.getByRole("button", { name: /もんだいすう/ }));
+    const fiveQuestionsButton = screen.getByRole("button", { name: "5もん" });
     fireEvent.click(fiveQuestionsButton);
 
     // スタートボタンが有効になる
     expect(startButton).not.toBeDisabled();
 
     // モードを切り替えるとスタートボタンが再び無効になる
-    const newButton = screen.getByRole("button", {
+    fireEvent.click(screen.getByRole("button", { name: /モード/ }));
+    const newButtonInDialog = screen.getByRole("button", {
       name: /まだ といたことない もんだい/,
     });
-    fireEvent.click(newButton);
+    fireEvent.click(newButtonInDialog);
     expect(startButton).toBeDisabled();
   });
 
@@ -162,6 +185,8 @@ describe("StartScreen", () => {
         memoryManager={mockMemoryManager}
       />
     );
+
+    fireEvent.click(screen.getByRole("button", { name: /もんだいすう/ }));
 
     expect(
       screen.getByText("このモードで とける もんだいが ありません")

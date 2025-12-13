@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach } from "vitest";
+import { describe, expect, test, beforeEach, afterEach, vi } from "vitest";
 import { MemoryManager } from "./MemoryManager";
 
 describe("MemoryManager", () => {
@@ -6,6 +6,8 @@ describe("MemoryManager", () => {
   let localStorageMock: { [key: string]: string };
 
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-01-22T09:40:00Z"));
     localStorageMock = {};
 
     Object.defineProperty(window, "localStorage", {
@@ -22,6 +24,10 @@ describe("MemoryManager", () => {
     });
 
     memoryManager = new MemoryManager();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   test("初期状態では空の履歴を返す", () => {
