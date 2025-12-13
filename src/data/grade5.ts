@@ -129,7 +129,8 @@ export const grade5 = [
   },
   {
     id: "g5-0683c",
-    sentence: "<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>が明るい。",
+    sentence:
+      "<ruby>性<rt>せい</rt></ruby><ruby>格<rt>かく</rt></ruby>が明るい。",
     target: "格",
     svg: grade5SvgById["g5-0683c"],
   },
@@ -207,7 +208,8 @@ export const grade5 = [
   },
   {
     id: "g5-07fa9",
-    sentence: "<ruby>正<rt>せい</rt></ruby><ruby>義<rt>ぎ</rt></ruby>を大切にする。",
+    sentence:
+      "<ruby>正<rt>せい</rt></ruby><ruby>義<rt>ぎ</rt></ruby>を大切にする。",
     target: "義",
     svg: grade5SvgById["g5-07fa9"],
   },
@@ -897,7 +899,8 @@ export const grade5 = [
   },
   {
     id: "g5-06bd2",
-    sentence: "知らないキノコには<ruby>毒<rt>どく</rt></ruby>があることがある。",
+    sentence:
+      "知らないキノコには<ruby>毒<rt>どく</rt></ruby>があることがある。",
     target: "毒",
     svg: grade5SvgById["g5-06bd2"],
   },
