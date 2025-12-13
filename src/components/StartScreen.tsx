@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { data } from "../data";
+import type { Question } from "../KanjiQuestionManager";
+import { datasets, defaultGrade, type GradeKey } from "../datasets";
 import type { MemoryManager, PracticeMode } from "../MemoryManager";
 import { Header } from "./Header";
 import "./StartScreen.css";
 
 type StartScreenProps = {
-  onStartPractice: (questions: typeof data) => void;
+  onStartPractice: (questions: Question[], grade: GradeKey) => void;
   memoryManager: MemoryManager;
 };
 
@@ -14,13 +15,15 @@ export function StartScreen({
   memoryManager,
 }: StartScreenProps) {
   const [_resetTrigger, setResetTrigger] = useState(0);
+  const [selectedGrade, setSelectedGrade] = useState<GradeKey>(defaultGrade);
   const [selectedCount, setSelectedCount] = useState<number | null>(null);
   const [selectedMode, setSelectedMode] = useState<PracticeMode>("all");
-  const totalQuestions = data.length;
-  const stats = memoryManager.getStatistics(data.map((q) => q.id));
+  const { questions, label } = datasets[selectedGrade];
+  const totalQuestions = questions.length;
+  const stats = memoryManager.getStatistics(questions.map((q) => q.id));
   const availableQuestions = memoryManager.getQuestionsByMode(
     selectedMode,
-    data.map((q) => q.id)
+    questions.map((q) => q.id)
   );
   const questionCounts = [];
 
@@ -47,7 +50,9 @@ export function StartScreen({
 
     // 選択されたモードに応じて問題を抽出
     const modeQuestionIds = new Set(availableQuestions);
-    const filteredQuestions = data.filter((q) => modeQuestionIds.has(q.id));
+    const filteredQuestions = questions.filter((q) =>
+      modeQuestionIds.has(q.id)
+    );
 
     // 問題数分のランダムな問題を選択
     const shuffled = [...filteredQuestions].sort(() => Math.random() - 0.5);
@@ -55,7 +60,7 @@ export function StartScreen({
       0,
       Math.min(selectedCount, filteredQuestions.length)
     );
-    onStartPractice(selected);
+    onStartPractice(selected, selectedGrade);
   };
 
   const handleResetHistory = useCallback(() => {
@@ -64,6 +69,8 @@ export function StartScreen({
     setSelectedCount(null);
     // モードをすべての問題に戻す
     setSelectedMode("all");
+    // 学年選択も初期値に戻す
+    setSelectedGrade(defaultGrade);
     setResetTrigger((prev) => prev + 1);
   }, [memoryManager]);
 
@@ -80,7 +87,7 @@ export function StartScreen({
   const getModeQuestionCount = (mode: PracticeMode): number => {
     return memoryManager.getQuestionsByMode(
       mode,
-      data.map((q) => q.id)
+      questions.map((q) => q.id)
     ).length;
   };
 
@@ -94,9 +101,30 @@ export function StartScreen({
       <div className="start-screen-container">
         <div className="start-screen-content">
           <div className="statistics">
+            <p>
+              がくねん：{label}（{stats.total}もん）
+            </p>
             <p>ぜんぶ：{stats.total}もん</p>
             <p>まだといていない：{stats.unattempted}もん</p>
             <p>せいかいした：{stats.correct}もん</p>
+          </div>
+          <div className="mode-section">
+            <p className="mode-text">がくねんをえらんでください：</p>
+            <div className="mode-buttons">
+              {Object.entries(datasets).map(([key, dataset]) => (
+                <button
+                  type="button"
+                  key={key}
+                  onClick={() => {
+                    setSelectedGrade(key as GradeKey);
+                    setSelectedCount(null);
+                  }}
+                  className={`mode-button ${selectedGrade === key ? "selected" : ""}`}
+                >
+                  {dataset.label}（{dataset.questions.length}もん）
+                </button>
+              ))}
+            </div>
           </div>
           <div className="mode-section">
             <p className="mode-text">モードをえらんでください：</p>

@@ -1,4 +1,4 @@
-export const data: Readonly<
+export const grade1: Readonly<
   {
     id: string;
     sentence: string;

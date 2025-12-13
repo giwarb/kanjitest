@@ -16,6 +16,16 @@ export interface NormalizedResult {
 }
 
 /**
+ * SVGコンテンツからDOCTYPE宣言を除去します。
+ * @param {string} svgContent - SVGコンテンツ
+ * @returns {string} - DOCTYPE宣言を除去したSVGコンテンツ
+ */
+export function cleanSvgContent(svgContent: string): string {
+  // DOCTYPE宣言とその内容（[...]も含む）を除去
+  return svgContent.replace(/<!DOCTYPE[^>]*(\[[^\]]*\])?>/, "");
+}
+
+/**
  * SVG要素からストロークデータを抽出します。
  * @param {SVGSVGElement} element
  * @returns {Array<Array<Point>>}

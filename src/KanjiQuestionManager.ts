@@ -1,6 +1,6 @@
 import type { NormalizedResult } from "./functions";
 
-interface Question {
+export interface Question {
   id: string;
   sentence: string;
   target: string;

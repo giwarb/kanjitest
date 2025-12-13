@@ -4,10 +4,11 @@ import {
   drawSampleStrokes,
   getSVGStrokes,
   drawStrokeResults,
+  cleanSvgContent,
 } from "./functions";
 import { KanjiQuestionManager } from "./KanjiQuestionManager";
 import { useDrawingManager } from "./hooks/useDrawingManager";
-import type { data } from "./data";
+import type { Question } from "./KanjiQuestionManager";
 import { ResultsView } from "./components/ResultsView";
 import { PracticeCanvas } from "./components/PracticeCanvas";
 import { ControlButtons } from "./components/ControlButtons";
@@ -51,7 +52,7 @@ function App() {
         "＿＿"
       );
       setQuestion(masked);
-      setSvgContent(currentQuestion.svg);
+      setSvgContent(cleanSvgContent(currentQuestion.svg));
       setShowNext(false);
       setShowAnswer(false);
       setShowSVG(false);
@@ -73,7 +74,7 @@ function App() {
     }
   }, [loadQuestion, manager]);
 
-  const handleStartPractice = (questions: typeof data) => {
+  const handleStartPractice = (questions: Question[], _grade: string) => {
     setManager(new KanjiQuestionManager(questions));
   };
 

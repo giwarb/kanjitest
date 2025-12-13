@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
 
 // data モジュールのモックを最初に定義
-vi.mock("../data", () => {
+vi.mock("../data/grade1", () => {
   const mockQuestionData = Array(12)
     .fill(null)
     .map((_, i) => ({
@@ -12,12 +12,12 @@ vi.mock("../data", () => {
       target: `target${i + 1}`,
       svg: `<svg>test${i + 1}</svg>`,
     }));
-  return { data: mockQuestionData };
+  return { grade1: mockQuestionData };
 });
 
 import { StartScreen } from "./StartScreen";
 import type { MemoryManager, PracticeMode } from "../MemoryManager";
-import { data } from "../data";
+import { grade1 as data } from "../data/grade1";
 
 describe("StartScreen", () => {
   const mockOnStartPractice = vi.fn();
