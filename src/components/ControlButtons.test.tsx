@@ -42,7 +42,11 @@ describe("ControlButtons", () => {
 
   it("ストロークがない時は評価・クリアボタンが無効になる", () => {
     render(
-      <ControlButtons {...defaultProps} hasStrokes={false} canEvaluate={false} />
+      <ControlButtons
+        {...defaultProps}
+        hasStrokes={false}
+        canEvaluate={false}
+      />
     );
 
     expect(screen.getByRole("button", { name: "評価" })).toBeDisabled();
