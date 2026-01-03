@@ -23,6 +23,7 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const answerCanvasRef = useRef<HTMLCanvasElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
+  const lastEvaluateAtRef = useRef(0);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
   const [manager, setManager] = useState<KanjiQuestionManager | null>(null);
   const memoryManagerRef = useRef<MemoryManager>(new MemoryManager());
@@ -86,10 +87,29 @@ function App() {
 
   const handleEvaluate = () => {
     if (!manager) return;
-    if (!answerRef.current) return;
     if (!canvasRef.current) return;
-    const svg = answerRef.current.querySelector("svg");
-    if (!svg) return;
+
+    // pointer(touch) と click の二重発火をガード
+    const now = Date.now();
+    if (now - lastEvaluateAtRef.current < 600) return;
+    lastEvaluateAtRef.current = now;
+
+    if (!svgContent) {
+      setResult("お手本を読み込み中です。もう一度押してね。 ");
+      return;
+    }
+
+    // SVG 文字列はブラウザ描画(HTMLパーサ)では扱えるが、XMLとしては不正な場合があり
+    // DOMParser(image/svg+xml) だと path が取れず画数=0 になることがある。
+    // 表示と同じ解釈に合わせるため innerHTML で in-memory 解析する。
+    const container = document.createElement("div");
+    container.innerHTML = svgContent;
+    const svg = container.querySelector("svg") as SVGSVGElement | null;
+    if (!svg) {
+      setResult("お手本の読み込みに失敗しました。もう一度押してね。 ");
+      return;
+    }
+
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
     const answerCtx = answerCanvasRef.current?.getContext("2d");
@@ -207,6 +227,11 @@ function App() {
   };
 
   const hasStrokes = userStrokes.length > 0;
+  const canEvaluate =
+    hasStrokes &&
+    !!svgContent &&
+    canvasRef.current !== null &&
+    answerCanvasRef.current !== null;
 
   if (!manager) {
     return (
@@ -255,6 +280,7 @@ function App() {
       <ControlButtons
         showNext={showNext}
         hasStrokes={hasStrokes}
+        canEvaluate={canEvaluate}
         onEvaluate={handleEvaluate}
         onClear={handleClear}
         onDontKnow={handleDontKnow}

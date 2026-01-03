@@ -14,6 +14,7 @@ describe("ControlButtons", () => {
   const defaultProps = {
     showNext: false,
     hasStrokes: true,
+    canEvaluate: true,
     ...mockHandlers,
   };
 
@@ -40,7 +41,9 @@ describe("ControlButtons", () => {
   });
 
   it("ストロークがない時は評価・クリアボタンが無効になる", () => {
-    render(<ControlButtons {...defaultProps} hasStrokes={false} />);
+    render(
+      <ControlButtons {...defaultProps} hasStrokes={false} canEvaluate={false} />
+    );
 
     expect(screen.getByRole("button", { name: "評価" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "クリア" })).toBeDisabled();
@@ -66,5 +69,15 @@ describe("ControlButtons", () => {
     rerender(<ControlButtons {...defaultProps} showNext={true} />);
     fireEvent.click(screen.getByRole("button", { name: "次の問題へ" }));
     expect(mockHandlers.onNextQuestion).toHaveBeenCalledTimes(1);
+  });
+
+  it("タッチ(pointer)でも評価ハンドラーが呼ばれる", () => {
+    render(<ControlButtons {...defaultProps} />);
+
+    fireEvent.pointerUp(screen.getByRole("button", { name: "評価" }), {
+      pointerType: "touch",
+    });
+
+    expect(mockHandlers.onEvaluate).toHaveBeenCalledTimes(1);
   });
 });

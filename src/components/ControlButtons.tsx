@@ -3,6 +3,7 @@ import { Ruby } from "./Ruby";
 interface ControlButtonsProps {
   showNext: boolean;
   hasStrokes: boolean;
+  canEvaluate: boolean;
   onEvaluate: () => void;
   onClear: () => void;
   onDontKnow: () => void;
@@ -12,6 +13,7 @@ interface ControlButtonsProps {
 export function ControlButtons({
   showNext,
   hasStrokes,
+  canEvaluate,
   onEvaluate,
   onClear,
   onDontKnow,
@@ -24,7 +26,14 @@ export function ControlButtons({
           <button
             type="button"
             onClick={onEvaluate}
-            disabled={!hasStrokes}
+            onPointerUp={(e) => {
+              // タッチ環境では click がキャンセルされることがあるため、pointer をフォールバックにする
+              if (e.pointerType !== "mouse") {
+                e.preventDefault();
+                onEvaluate();
+              }
+            }}
+            disabled={!hasStrokes || !canEvaluate}
             aria-label="評価"
           >
             <Ruby base="評価" reading="ひょうか" />
