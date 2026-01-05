@@ -41,6 +41,7 @@ function App() {
   const answerRef = useRef<HTMLDivElement>(null);
   const lastEvaluateAtRef = useRef(0);
   const isEvaluatingRef = useRef(false);
+  const isRestartingReviewRef = useRef(false);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
   const memoryManagerRef = useRef<MemoryManager>(new MemoryManager());
 
@@ -66,6 +67,10 @@ function App() {
       setState((prev) => ({
         ...prev,
         scoreAndResults: { score, results },
+        // 結果画面では不要なのでリセットしておく（次の遷移の安定化）
+        showNext: false,
+        showAnswer: false,
+        showSVG: false,
       }));
     } else {
       const currentQuestion = manager.getCurrentQuestion();
@@ -190,8 +195,8 @@ function App() {
               <Ruby base="画数" reading="かくすう" />が
               <Ruby base="違" reading="ちが" />
               うよ！（お
-              <Ruby base="手本" reading="てほん" />: {strokesSvg.length}、あなた:{" "}
-              {userStrokes.length}）
+              <Ruby base="手本" reading="てほん" />: {strokesSvg.length}
+              、あなた: {userStrokes.length}）
             </>
           ),
         }));
@@ -218,13 +223,12 @@ function App() {
             よう！
           </>
         );
-        ctx.clearRect(
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        drawStrokeResults(
+          ctx,
+          normalized,
+          KanjiQuestionManager.SCORE_THRESHOLD
         );
-        drawStrokeResults(ctx, normalized, KanjiQuestionManager.SCORE_THRESHOLD);
         drawSampleStrokes(
           answerCtx,
           normalized,
@@ -253,9 +257,44 @@ function App() {
 
   const handleRestartReview = () => {
     if (!manager) return;
-    manager.startReviewMode();
-    loadQuestion();
-    setState((prev) => ({ ...prev, scoreAndResults: null }));
+    if (isRestartingReviewRef.current) return;
+
+    isRestartingReviewRef.current = true;
+    try {
+      manager.startReviewMode();
+      const currentQuestion = manager.getCurrentQuestion();
+      if (!currentQuestion) {
+        setState((prev) => ({
+          ...prev,
+          scoreAndResults: null,
+          question: "",
+          svgContent: "",
+          showNext: false,
+          showAnswer: false,
+          showSVG: false,
+          result: "",
+        }));
+        return;
+      }
+      const masked = currentQuestion.sentence.replace(
+        new RegExp(currentQuestion.target, "g"),
+        "＿＿"
+      );
+      setState((prev) => ({
+        ...prev,
+        scoreAndResults: null,
+        question: masked,
+        svgContent: cleanSvgContent(currentQuestion.svg),
+        showNext: false,
+        showAnswer: false,
+        showSVG: false,
+        result: "",
+      }));
+      clearStrokes();
+      lastEvaluateAtRef.current = 0;
+    } finally {
+      isRestartingReviewRef.current = false;
+    }
   };
 
   const handleBackToStart = () => {

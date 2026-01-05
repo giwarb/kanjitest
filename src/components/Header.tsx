@@ -3,7 +3,7 @@ import { MenuDialog } from "./MenuDialog";
 import { Ruby } from "./Ruby";
 import "./Header.css";
 
-const APP_VERSION = "v1.1";
+const APP_VERSION = "v1.2";
 
 interface HeaderProps {
   onReset: () => void;
