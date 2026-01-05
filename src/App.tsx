@@ -117,6 +117,27 @@ function App() {
     const currentQuestion = manager.getCurrentQuestion();
     if (!currentQuestion) return;
     const strokesSvg = getSVGStrokes(svg);
+
+    const safeRecordAndSave = (
+      isCorrect: boolean,
+      normalized?: Parameters<KanjiQuestionManager["recordResult"]>[1]
+    ) => {
+      try {
+        manager.recordResult(isCorrect, normalized);
+      } catch (err) {
+        console.error("recordResult failed", err);
+      }
+      try {
+        memoryManagerRef.current.saveResult(
+          currentQuestion.id,
+          new Date().toISOString(),
+          isCorrect
+        );
+      } catch (err) {
+        console.error("saveResult failed", err);
+      }
+    };
+
     if (strokesSvg.length !== userStrokes.length) {
       setResult(
         <>
@@ -128,12 +149,8 @@ function App() {
         </>
       );
       setShowSVG(true);
-      manager.recordResult(false);
-      memoryManagerRef.current.saveResult(
-        currentQuestion.id,
-        new Date().toISOString(),
-        false
-      );
+      setShowNext(true);
+      safeRecordAndSave(false);
     } else {
       const normalized = normalizeStrokes(strokesSvg, userStrokes);
       const scores = normalized.strokeResults.map((result) => result.score);
@@ -169,14 +186,9 @@ function App() {
           {resultText}（{scoreText}）
         </>
       );
-      manager.recordResult(isCorrect, normalized);
-      memoryManagerRef.current.saveResult(
-        currentQuestion.id,
-        new Date().toISOString(),
-        isCorrect
-      );
+      setShowNext(true);
+      safeRecordAndSave(isCorrect, normalized);
     }
-    setShowNext(true);
   };
 
   const handleNextQuestion = () => {
