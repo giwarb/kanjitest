@@ -19,31 +19,54 @@ import { QuestionHeader } from "./components/QuestionHeader";
 import { MemoryManager } from "./MemoryManager";
 import { Ruby } from "./components/Ruby";
 
+type ScoreAndResults = {
+  score: ReturnType<KanjiQuestionManager["getScore"]>;
+  results: ReturnType<KanjiQuestionManager["getResults"]>;
+};
+
+type AppState = {
+  manager: KanjiQuestionManager | null;
+  question: string;
+  svgContent: string;
+  showNext: boolean;
+  showAnswer: boolean;
+  showSVG: boolean;
+  result: React.ReactNode;
+  scoreAndResults: ScoreAndResults | null;
+};
+
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const answerCanvasRef = useRef<HTMLCanvasElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
   const lastEvaluateAtRef = useRef(0);
+  const isEvaluatingRef = useRef(false);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
-  const [manager, setManager] = useState<KanjiQuestionManager | null>(null);
   const memoryManagerRef = useRef<MemoryManager>(new MemoryManager());
-  const [question, setQuestion] = useState("");
-  const [svgContent, setSvgContent] = useState("");
-  const [showNext, setShowNext] = useState(false);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [showSVG, setShowSVG] = useState(false);
-  const [result, setResult] = useState<React.ReactNode>("");
-  const [scoreAndResults, setScoreAndResults] = useState<{
-    score: ReturnType<KanjiQuestionManager["getScore"]>;
-    results: ReturnType<KanjiQuestionManager["getResults"]>;
-  } | null>(null);
+
+  const [state, setState] = useState<AppState>({
+    manager: null,
+    question: "",
+    svgContent: "",
+    showNext: false,
+    showAnswer: false,
+    showSVG: false,
+    result: "",
+    scoreAndResults: null,
+  });
+
+  const manager = state.manager;
+  const svgContent = state.svgContent;
 
   const loadQuestion = useCallback(() => {
     if (!manager) return;
     if (manager.isComplete()) {
       const score = manager.getScore();
       const results = manager.getResults();
-      setScoreAndResults({ score, results });
+      setState((prev) => ({
+        ...prev,
+        scoreAndResults: { score, results },
+      }));
     } else {
       const currentQuestion = manager.getCurrentQuestion();
       if (!currentQuestion) {
@@ -53,12 +76,16 @@ function App() {
         new RegExp(currentQuestion.target, "g"),
         "＿＿"
       );
-      setQuestion(masked);
-      setSvgContent(cleanSvgContent(currentQuestion.svg));
-      setShowNext(false);
-      setShowAnswer(false);
-      setShowSVG(false);
-      setResult("");
+      setState((prev) => ({
+        ...prev,
+        question: masked,
+        svgContent: cleanSvgContent(currentQuestion.svg),
+        showNext: false,
+        showAnswer: false,
+        showSVG: false,
+        result: "",
+        scoreAndResults: null,
+      }));
       clearStrokes();
     }
   }, [manager, clearStrokes]);
@@ -66,7 +93,7 @@ function App() {
   useEffect(() => {
     const restored = KanjiQuestionManager.restoreFromStorage();
     if (restored) {
-      setManager(restored);
+      setState((prev) => ({ ...prev, manager: restored }));
     }
   }, []);
 
@@ -77,117 +104,146 @@ function App() {
   }, [loadQuestion, manager]);
 
   const handleStartPractice = (questions: Question[], _grade: string) => {
-    setManager(new KanjiQuestionManager(questions));
+    setState((prev) => ({
+      ...prev,
+      manager: new KanjiQuestionManager(questions),
+      scoreAndResults: null,
+    }));
   };
 
   const handleClear = () => {
     clearStrokes();
-    setResult("");
+    setState((prev) => ({ ...prev, result: "" }));
   };
 
   const handleEvaluate = () => {
     if (!manager) return;
     if (!canvasRef.current) return;
+    if (state.showNext) return;
+    if (isEvaluatingRef.current) return;
 
     // pointer(touch) と click の二重発火をガード
     const now = Date.now();
     if (now - lastEvaluateAtRef.current < 600) return;
     lastEvaluateAtRef.current = now;
 
-    if (!svgContent) {
-      setResult("お手本を読み込み中です。もう一度押してね。 ");
-      return;
-    }
+    isEvaluatingRef.current = true;
 
-    // SVG 文字列はブラウザ描画(HTMLパーサ)では扱えるが、XMLとしては不正な場合があり
-    // DOMParser(image/svg+xml) だと path が取れず画数=0 になることがある。
-    // 表示と同じ解釈に合わせるため innerHTML で in-memory 解析する。
-    const container = document.createElement("div");
-    container.innerHTML = svgContent;
-    const svg = container.querySelector("svg") as SVGSVGElement | null;
-    if (!svg) {
-      setResult("お手本の読み込みに失敗しました。もう一度押してね。 ");
-      return;
-    }
-
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    const answerCtx = answerCanvasRef.current?.getContext("2d");
-    if (!answerCtx) return;
-    const currentQuestion = manager.getCurrentQuestion();
-    if (!currentQuestion) return;
-    const strokesSvg = getSVGStrokes(svg);
-
-    const safeRecordAndSave = (
-      isCorrect: boolean,
-      normalized?: Parameters<KanjiQuestionManager["recordResult"]>[1]
-    ) => {
-      try {
-        manager.recordResult(isCorrect, normalized);
-      } catch (err) {
-        console.error("recordResult failed", err);
+    try {
+      if (!svgContent) {
+        setState((prev) => ({
+          ...prev,
+          result: "お手本を読み込み中です。もう一度押してね。 ",
+        }));
+        return;
       }
-      try {
-        memoryManagerRef.current.saveResult(
-          currentQuestion.id,
-          new Date().toISOString(),
-          isCorrect
+
+      // SVG 文字列はブラウザ描画(HTMLパーサ)では扱えるが、XMLとしては不正な場合があり
+      // DOMParser(image/svg+xml) だと path が取れず画数=0 になることがある。
+      // 表示と同じ解釈に合わせるため innerHTML で in-memory 解析する。
+      const container = document.createElement("div");
+      container.innerHTML = svgContent;
+      const svg = container.querySelector("svg") as SVGSVGElement | null;
+      if (!svg) {
+        setState((prev) => ({
+          ...prev,
+          result: "お手本の読み込みに失敗しました。もう一度押してね。 ",
+        }));
+        return;
+      }
+
+      const ctx = canvasRef.current?.getContext("2d");
+      if (!ctx) return;
+      const answerCtx = answerCanvasRef.current?.getContext("2d");
+      if (!answerCtx) return;
+      const currentQuestion = manager.getCurrentQuestion();
+      if (!currentQuestion) return;
+      const strokesSvg = getSVGStrokes(svg);
+
+      const safeRecordAndSave = (
+        isCorrect: boolean,
+        normalized?: Parameters<KanjiQuestionManager["recordResult"]>[1]
+      ) => {
+        try {
+          manager.recordResult(isCorrect, normalized);
+        } catch (err) {
+          console.error("recordResult failed", err);
+        }
+        try {
+          memoryManagerRef.current.saveResult(
+            currentQuestion.id,
+            new Date().toISOString(),
+            isCorrect
+          );
+        } catch (err) {
+          console.error("saveResult failed", err);
+        }
+      };
+
+      if (strokesSvg.length !== userStrokes.length) {
+        setState((prev) => ({
+          ...prev,
+          showSVG: true,
+          showNext: true,
+          result: (
+            <>
+              <Ruby base="画数" reading="かくすう" />が
+              <Ruby base="違" reading="ちが" />
+              うよ！（お
+              <Ruby base="手本" reading="てほん" />: {strokesSvg.length}、あなた:{" "}
+              {userStrokes.length}）
+            </>
+          ),
+        }));
+        safeRecordAndSave(false);
+      } else {
+        const normalized = normalizeStrokes(strokesSvg, userStrokes);
+        const scores = normalized.strokeResults.map((result) => result.score);
+        const isCorrect = manager.isCorrect(scores);
+        const scoreText = manager.getScoreText(scores);
+        const resultText = isCorrect ? (
+          <>
+            <Ruby base="正解" reading="せいかい" />
+            ！よく
+            <Ruby base="書" reading="か" />
+            けました！
+          </>
+        ) : (
+          <>
+            <Ruby base="残念" reading="ざんねん" />
+            ！お
+            <Ruby base="手本" reading="てほん" />
+            をよく
+            <Ruby base="見" reading="み" />
+            よう！
+          </>
         );
-      } catch (err) {
-        console.error("saveResult failed", err);
+        ctx.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
+        drawStrokeResults(ctx, normalized, KanjiQuestionManager.SCORE_THRESHOLD);
+        drawSampleStrokes(
+          answerCtx,
+          normalized,
+          KanjiQuestionManager.SCORE_THRESHOLD
+        );
+        setState((prev) => ({
+          ...prev,
+          showAnswer: true,
+          showNext: true,
+          result: (
+            <>
+              {resultText}（{scoreText}）
+            </>
+          ),
+        }));
+        safeRecordAndSave(isCorrect, normalized);
       }
-    };
-
-    if (strokesSvg.length !== userStrokes.length) {
-      setResult(
-        <>
-          <Ruby base="画数" reading="かくすう" />が
-          <Ruby base="違" reading="ちが" />
-          うよ！（お
-          <Ruby base="手本" reading="てほん" />: {strokesSvg.length}、あなた:{" "}
-          {userStrokes.length}）
-        </>
-      );
-      setShowSVG(true);
-      setShowNext(true);
-      safeRecordAndSave(false);
-    } else {
-      const normalized = normalizeStrokes(strokesSvg, userStrokes);
-      const scores = normalized.strokeResults.map((result) => result.score);
-      const isCorrect = manager.isCorrect(scores);
-      const scoreText = manager.getScoreText(scores);
-      const resultText = isCorrect ? (
-        <>
-          <Ruby base="正解" reading="せいかい" />
-          ！よく
-          <Ruby base="書" reading="か" />
-          けました！
-        </>
-      ) : (
-        <>
-          <Ruby base="残念" reading="ざんねん" />
-          ！お
-          <Ruby base="手本" reading="てほん" />
-          をよく
-          <Ruby base="見" reading="み" />
-          よう！
-        </>
-      );
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      drawStrokeResults(ctx, normalized, KanjiQuestionManager.SCORE_THRESHOLD);
-      drawSampleStrokes(
-        answerCtx,
-        normalized,
-        KanjiQuestionManager.SCORE_THRESHOLD
-      );
-      setShowAnswer(true);
-      setResult(
-        <>
-          {resultText}（{scoreText}）
-        </>
-      );
-      setShowNext(true);
-      safeRecordAndSave(isCorrect, normalized);
+    } finally {
+      isEvaluatingRef.current = false;
     }
   };
 
@@ -199,43 +255,63 @@ function App() {
     if (!manager) return;
     manager.startReviewMode();
     loadQuestion();
-    setScoreAndResults(null);
+    setState((prev) => ({ ...prev, scoreAndResults: null }));
   };
 
   const handleBackToStart = () => {
     manager?.unloadFromStorage();
-    setManager(null);
-    setScoreAndResults(null);
+    setState((prev) => ({
+      ...prev,
+      manager: null,
+      scoreAndResults: null,
+      question: "",
+      svgContent: "",
+      showNext: false,
+      showAnswer: false,
+      showSVG: false,
+      result: "",
+    }));
   };
 
   const handleReset = () => {
     if (!manager) return;
     manager.reset();
     loadQuestion();
-    setScoreAndResults(null);
+    setState((prev) => ({ ...prev, scoreAndResults: null }));
   };
 
   const handleDontKnow = () => {
     if (!manager) return;
     const currentQuestion = manager.getCurrentQuestion();
     if (!currentQuestion) return;
-    setShowSVG(true);
-    setResult(
-      <>
-        <Ruby base="難" reading="むずか" />
-        しいですね。お
-        <Ruby base="手本" reading="てほん" />を
-        <Ruby base="見" reading="み" />
-        てみましょう！
-      </>
-    );
-    manager.recordResult(false);
-    memoryManagerRef.current.saveResult(
-      currentQuestion.id,
-      new Date().toISOString(),
-      false
-    );
-    setShowNext(true);
+    setState((prev) => ({
+      ...prev,
+      showSVG: true,
+      showNext: true,
+      result: (
+        <>
+          <Ruby base="難" reading="むずか" />
+          しいですね。お
+          <Ruby base="手本" reading="てほん" />を
+          <Ruby base="見" reading="み" />
+          てみましょう！
+        </>
+      ),
+    }));
+    try {
+      manager.recordResult(false);
+    } catch (err) {
+      console.error("recordResult failed", err);
+    }
+    try {
+      memoryManagerRef.current.saveResult(
+        currentQuestion.id,
+        new Date().toISOString(),
+        false
+      );
+    } catch (err) {
+      console.error("saveResult failed", err);
+    }
   };
 
   const hasStrokes = userStrokes.length > 0;
@@ -254,12 +330,12 @@ function App() {
     );
   }
 
-  if (scoreAndResults) {
+  if (state.scoreAndResults) {
     return (
       <div className="app">
         <Header onReset={handleReset} onBackToStart={handleBackToStart} />
         <ResultsView
-          scoreAndResults={scoreAndResults}
+          scoreAndResults={state.scoreAndResults}
           onRestartReview={handleRestartReview}
           onBackToStart={handleBackToStart}
         />
@@ -267,7 +343,7 @@ function App() {
     );
   }
 
-  const currentQuestionNumber = showNext
+  const currentQuestionNumber = state.showNext
     ? manager.getCurrentQuestionNumber() - 1
     : manager.getCurrentQuestionNumber();
 
@@ -277,20 +353,20 @@ function App() {
       <QuestionHeader
         currentQuestionNumber={currentQuestionNumber}
         totalQuestions={manager.getTotalQuestions()}
-        question={question}
+        question={state.question}
         isReviewMode={manager.isInReviewMode()}
       />
       <PracticeCanvas
         canvasRef={canvasRef}
         answerCanvasRef={answerCanvasRef}
         answerRef={answerRef}
-        showAnswer={showAnswer}
-        showSVG={showSVG}
-        svgContent={svgContent}
-        result={result}
+        showAnswer={state.showAnswer}
+        showSVG={state.showSVG}
+        svgContent={state.svgContent}
+        result={state.result}
       />
       <ControlButtons
-        showNext={showNext}
+        showNext={state.showNext}
         hasStrokes={hasStrokes}
         canEvaluate={canEvaluate}
         onEvaluate={handleEvaluate}
