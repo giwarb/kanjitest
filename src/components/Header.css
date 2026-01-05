@@ -16,6 +16,11 @@
   gap: 1rem;
 }
 
+.header-version {
+  font-size: 0.8rem;
+  color: #4a4a4a;
+}
+
 .question-counter {
   background-color: #4a4a4a;
   color: white;

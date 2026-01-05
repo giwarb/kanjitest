@@ -3,6 +3,8 @@ import { MenuDialog } from "./MenuDialog";
 import { Ruby } from "./Ruby";
 import "./Header.css";
 
+const APP_VERSION = "v1.0";
+
 interface HeaderProps {
   onReset: () => void;
   onBackToStart?: () => void;
@@ -18,6 +20,9 @@ export function Header({ onReset, onBackToStart, resetLabel }: HeaderProps) {
         <Ruby base="漢字" reading="かんじ" />
         <Ruby base="練習" reading="れんしゅう" />
         アプリ
+        <span className="header-version" aria-label="バージョン">
+          {APP_VERSION}
+        </span>
       </div>
       <button
         type="button"

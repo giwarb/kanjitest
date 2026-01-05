@@ -17,6 +17,8 @@ describe("Header", () => {
   it("クリックしたらメニューが開くこと", () => {
     render(<Header onReset={mockOnReset} onBackToStart={mockOnBackToStart} />);
 
+    expect(screen.getByText("v1.0")).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "メニュー" }));
     expect(
       screen.getByRole("button", { name: "最初から" })
