@@ -40,6 +40,7 @@ function App() {
   const answerCanvasRef = useRef<HTMLCanvasElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
   const lastEvaluateAtRef = useRef(0);
+  const lastRestartReviewAtRef = useRef(0);
   const isEvaluatingRef = useRef(false);
   const isRestartingReviewRef = useRef(false);
   const { userStrokes, clearStrokes } = useDrawingManager(canvasRef.current);
@@ -75,6 +76,16 @@ function App() {
     } else {
       const currentQuestion = manager.getCurrentQuestion();
       if (!currentQuestion) {
+        // 防御: 内部状態が壊れて currentQuestion が取れない場合にUIが固まらないようにする
+        const score = manager.getScore();
+        const results = manager.getResults();
+        setState((prev) => ({
+          ...prev,
+          scoreAndResults: { score, results },
+          showNext: false,
+          showAnswer: false,
+          showSVG: false,
+        }));
         return;
       }
       const masked = currentQuestion.sentence.replace(
@@ -259,38 +270,16 @@ function App() {
     if (!manager) return;
     if (isRestartingReviewRef.current) return;
 
+    // pointer(touch) と click の二重発火や連打をガード
+    const now = Date.now();
+    if (now - lastRestartReviewAtRef.current < 600) return;
+    lastRestartReviewAtRef.current = now;
+
     isRestartingReviewRef.current = true;
     try {
       manager.startReviewMode();
-      const currentQuestion = manager.getCurrentQuestion();
-      if (!currentQuestion) {
-        setState((prev) => ({
-          ...prev,
-          scoreAndResults: null,
-          question: "",
-          svgContent: "",
-          showNext: false,
-          showAnswer: false,
-          showSVG: false,
-          result: "",
-        }));
-        return;
-      }
-      const masked = currentQuestion.sentence.replace(
-        new RegExp(currentQuestion.target, "g"),
-        "＿＿"
-      );
-      setState((prev) => ({
-        ...prev,
-        scoreAndResults: null,
-        question: masked,
-        svgContent: cleanSvgContent(currentQuestion.svg),
-        showNext: false,
-        showAnswer: false,
-        showSVG: false,
-        result: "",
-      }));
-      clearStrokes();
+      // 復習開始後の状態反映は共通ロジックに寄せてブレを無くす
+      loadQuestion();
       lastEvaluateAtRef.current = 0;
     } finally {
       isRestartingReviewRef.current = false;

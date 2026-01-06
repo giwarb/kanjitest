@@ -29,20 +29,25 @@ export class KanjiQuestionManager {
   private results: QuestionResult[];
   private totalResults: QuestionResult[];
   private isReviewMode: boolean;
+  private shouldSaveState: boolean;
   private static readonly STORAGE_KEY = "kanjiQuestionManagerState";
   public static readonly SCORE_THRESHOLD = 0.6;
 
-  constructor(questions: Readonly<Question[]>) {
+  constructor(questions: Readonly<Question[]>, opts?: { saveState?: boolean }) {
     this.questions = questions;
     this.targetQuestionIdices = [...Array(questions.length).keys()];
     this.currentIndex = 0;
     this.results = [];
     this.totalResults = [];
     this.isReviewMode = false;
-    this.saveState();
+    this.shouldSaveState = opts?.saveState ?? true;
+    if (this.shouldSaveState) {
+      this.saveState();
+    }
   }
 
   private saveState(): void {
+    if (!this.shouldSaveState) return;
     const state = {
       questions: this.questions,
       targetQuestionIdices: this.targetQuestionIdices,
@@ -63,12 +68,16 @@ export class KanjiQuestionManager {
       return null;
     }
     const state = JSON.parse(savedState) as KanjiQuestionManagerState;
-    const manager = new KanjiQuestionManager(state.questions);
+    // restore 中に constructor がストレージを書き換えると状態が壊れるので抑止する
+    const manager = new KanjiQuestionManager(state.questions, { saveState: false });
     manager.targetQuestionIdices = state.targetQuestionIdices;
     manager.currentIndex = state.currentIndex;
     manager.results = state.results;
     manager.totalResults = state.totalResults;
     manager.isReviewMode = state.isReviewMode;
+    // 復元した状態をストレージにも反映しておく
+    manager.shouldSaveState = true;
+    manager.saveState();
     return manager;
   }
 
@@ -119,6 +128,10 @@ export class KanjiQuestionManager {
   }
 
   startReviewMode(): void {
+    // 二重クリック等で連続実行されると results が空になり復習対象が消えるため、空なら no-op
+    if (this.results.length === 0) {
+      return;
+    }
     this.isReviewMode = true;
     this.currentIndex = 0;
     this.targetQuestionIdices = this.results

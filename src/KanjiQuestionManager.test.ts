@@ -148,6 +148,23 @@ describe("漢字問題管理クラス", () => {
     expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
   });
 
+  it("復習開始が連続で呼ばれても復習対象が消えないこと", () => {
+    const manager = new KanjiQuestionManager(mockQuestions);
+
+    manager.recordResult(true);
+    manager.recordResult(false);
+    manager.recordResult(false);
+
+    manager.startReviewMode();
+    expect(manager.getTotalQuestions()).toBe(2);
+    expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
+
+    // 二重押し等で startReviewMode が続けて呼ばれても no-op になり、対象が消えない
+    manager.startReviewMode();
+    expect(manager.getTotalQuestions()).toBe(2);
+    expect(manager.getCurrentQuestion()).toEqual(mockQuestions[1]);
+  });
+
   it("正しくリセットできること", () => {
     const manager = new KanjiQuestionManager(mockQuestions);
 
@@ -312,6 +329,23 @@ describe("漢字問題管理クラス", () => {
       expect(restoredManager).not.toBeNull();
       expect(restoredManager?.getCurrentQuestion()).toEqual(mockQuestions[1]); // 2問目から開始
       expect(restoredManager?.getScore().total).toBe(1); // 1問回答済み
+    });
+
+    it("restoreFromStorage がストレージの状態を壊さないこと", () => {
+      const manager1 = new KanjiQuestionManager(mockQuestions);
+      manager1.recordResult(false);
+
+      const before = mockLocalStorage.getItem("kanjiQuestionManagerState");
+      expect(before).not.toBeNull();
+      const beforeState = JSON.parse(before || "");
+      expect(beforeState.results).toHaveLength(1);
+
+      KanjiQuestionManager.restoreFromStorage();
+
+      const after = mockLocalStorage.getItem("kanjiQuestionManagerState");
+      expect(after).not.toBeNull();
+      const afterState = JSON.parse(after || "");
+      expect(afterState.results).toHaveLength(1);
     });
 
     it("状態が存在しない場合、静的復元メソッドがnullを返すこと", () => {
