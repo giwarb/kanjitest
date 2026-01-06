@@ -69,7 +69,9 @@ export class KanjiQuestionManager {
     }
     const state = JSON.parse(savedState) as KanjiQuestionManagerState;
     // restore 中に constructor がストレージを書き換えると状態が壊れるので抑止する
-    const manager = new KanjiQuestionManager(state.questions, { saveState: false });
+    const manager = new KanjiQuestionManager(state.questions, {
+      saveState: false,
+    });
     manager.targetQuestionIdices = state.targetQuestionIdices;
     manager.currentIndex = state.currentIndex;
     manager.results = state.results;
